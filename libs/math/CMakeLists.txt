@@ -3,4 +3,4 @@ add_library(Math
     "include/math/vec3.h"
 )
 
-target_include_directories(Math PRIVATE "include")
+target_include_directories(Math PUBLIC "include")

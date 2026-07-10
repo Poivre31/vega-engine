@@ -19,6 +19,5 @@ add_executable(VegaEngine)
 
 add_subdirectory(libs/math)
 target_link_libraries(VegaEngine PRIVATE Math)
-target_include_directories(VegaEngine PRIVATE libs/math/include)
 
 target_sources(VegaEngine PRIVATE src/main.cpp)

@@ -12,7 +12,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Poivre31/vega-engine">
-    <img src="res/main_title.jpg" alt="Vega's neighbour M57" width="200" height="200">
+    <img src="data/main_title.jpg" alt="Vega's neighbour M57" width="200" height="200">
   </a>
 
   <h3 align="center">Vega Engine</h3>
@@ -195,16 +195,16 @@ Coming soon
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/othneildrew/Best-README-Template.svg?style=for-the-badge
-[contributors-url]: https://github.com/othneildrew/Best-README-Template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/othneildrew/Best-README-Template.svg?style=for-the-badge
-[forks-url]: https://github.com/othneildrew/Best-README-Template/network/members
-[stars-shield]: https://img.shields.io/github/stars/othneildrew/Best-README-Template.svg?style=for-the-badge
-[stars-url]: https://github.com/othneildrew/Best-README-Template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge
-[issues-url]: https://github.com/othneildrew/Best-README-Template/issues
-[license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
-[license-url]: https://github.com/othneildrew/Best-README-Template/blob/master/LICENSE.txt
+[contributors-shield]: https://img.shields.io/github/contributors/Poivre31/vega-engine.svg?style=for-the-badge
+[contributors-url]: https://github.com/Poivre31/vega-engine/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/Poivre31/vega-engine.svg?style=for-the-badge
+[forks-url]: https://github.com/Poivre31/vega-engine/network/members
+[stars-shield]: https://img.shields.io/github/stars/Poivre31/vega-engine.svg?style=for-the-badge
+[stars-url]: https://github.com/Poivre31/vega-engine/stargazers
+[issues-shield]: https://img.shields.io/github/issues/Poivre31/vega-engine.svg?style=for-the-badge
+[issues-url]: https://github.com/Poivre31/vega-engine/issues
+[license-shield]: https://img.shields.io/github/license/Poivre31/vega-engine.svg?style=for-the-badge
+[license-url]: https://github.com/Poivre31/vega-engine/blob/master/LICENSE.txt
 
 [ImGui-shield]: https://img.shields.io/badge/github-ImGui-blue?logo=github
 [ImGui-url]: https://github.com/ocornut/imgui

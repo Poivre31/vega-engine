@@ -69,6 +69,8 @@ Started as a summer ray-tracing programming project after my freshman year in 20
 ### Built With
 
 * [![ImGui-shield]][ImGui-url]
+* [![nanobench-shield]][nanobench-url]
+* [![googletest-shield]][googletest-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -209,3 +211,8 @@ Coming soon
 [ImGui-shield]: https://img.shields.io/badge/github-ImGui-blue?logo=github
 [ImGui-url]: https://github.com/ocornut/imgui
 
+[nanobench-shield]: https://img.shields.io/badge/github-nanobench-blue?logo=github
+[nanobench-url]: https://github.com/martinus/nanobench
+
+[googletest-shield]: https://img.shields.io/badge/github-GoogleTest-blue?logo=github
+[googletest-url]: https://github.com/google/googletest

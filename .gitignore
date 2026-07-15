@@ -1,1 +1,8 @@
-build/
+build/*
+
+# external/*
+!external/CMakeLists.txt
+
+.vscode/*
+
+.cache/*

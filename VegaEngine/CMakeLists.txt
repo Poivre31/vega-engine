@@ -34,8 +34,10 @@ target_link_libraries(VegaEngine PUBLIC Math)
 add_subdirectory(libs/math/tests)
 
 # ------------------
-# add_subdirectory(libs/console)
-# target_link_libraries(VegaEngine PRIVATE Console)
+add_subdirectory(libs/console)
+target_link_libraries(VegaEngine PUBLIC Console)
+add_subdirectory(libs/console/tests)
+
 target_sources(VegaEngine PRIVATE src/src.cpp)
 
 # ------------------

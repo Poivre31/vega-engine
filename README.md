@@ -71,6 +71,7 @@ Started as a summer ray-tracing programming project after my freshman year in 20
 * [![ImGui-shield]][ImGui-url]
 * [![nanobench-shield]][nanobench-url]
 * [![googletest-shield]][googletest-url]
+* [![spdlog-shield]][spdlog-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -216,3 +217,6 @@ Coming soon
 
 [googletest-shield]: https://img.shields.io/badge/github-GoogleTest-blue?logo=github
 [googletest-url]: https://github.com/google/googletest
+
+[spdlog-shield]: https://img.shields.io/badge/github-spdlog-blue?logo=github
+[spdlog-url]: https://https://github.com/gabime/spdlog

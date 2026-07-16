@@ -11,4 +11,6 @@ target_include_directories(Math PUBLIC
     "include/integration"
 )
 
+target_link_libraries(Math PRIVATE Console)
+
 add_subdirectory(bench)

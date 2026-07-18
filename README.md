@@ -110,8 +110,10 @@ Coming soon
 - [ ] Reintroduce features from PBRT project
     - [ ] Math library
     - [ ] Utility
+        - [x] Console
+        - [x] Timer
         - [ ] Main loop
-        - [ ] Benchmarkin
+        - [x] Benchmarking
     - [ ] Graphics library
         - [ ] GPU computing
         - [ ] 3D rendering and interface
@@ -122,8 +124,8 @@ Coming soon
 - [ ] Basic audio system
 - [ ] Automated testing
 - [ ] OS Support
-    - [x] Windows
-    - [ ] Linux
+    - [ ] Windows
+    - [x] Linux
 - [ ] Multi-language Support
     - [x] English
     - [ ] French

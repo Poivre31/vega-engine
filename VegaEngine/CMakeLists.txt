@@ -33,10 +33,13 @@ add_subdirectory(libs/math)
 target_link_libraries(VegaEngine PUBLIC Math)
 add_subdirectory(libs/math/tests)
 
-# ------------------
 add_subdirectory(libs/console)
 target_link_libraries(VegaEngine PUBLIC Console)
 add_subdirectory(libs/console/tests)
+
+add_subdirectory(libs/timer)
+target_link_libraries(VegaEngine PUBLIC Timer)
+add_subdirectory(libs/timer/tests)
 
 target_sources(VegaEngine PRIVATE src/src.cpp)
 

@@ -3,16 +3,8 @@
 #include <memory>
 #include <spdlog/common.h>
 #include <spdlog/logger.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
-
-/**
- * @brief Create a spdlog console (color mt) named @param name if it doesn't
- * exist, returns existing console otherwise
- *
- * @param name Console name
- * @return Shared pointer to spdlog logger
- */
-std::shared_ptr<spdlog::logger> create_console(std::string name);
 
 namespace level {
 
@@ -24,3 +16,38 @@ using spdlog::level::trace;
 using spdlog::level::warn;
 
 } // namespace level
+
+/**
+ * @brief Console class to manage spdlog loggers
+ * [VegaEngine] console is always available and the default return to `sget`
+ *
+ */
+class console {
+  public:
+    /**
+     * @brief Creates a spdlog logger called @param name if it doesn't exist
+     yet, otherwise prints an error. Use `create_or_get` if the console might
+     already exist.
+     */
+    static std::shared_ptr<spdlog::logger>
+    create(std::string name, spdlog::level::level_enum level = level::trace);
+
+    /**
+    * @brief Creates a spdlog logger called @param name if it doesn't exist
+    yet, otherwise returns existing logger.
+    */
+    static std::shared_ptr<spdlog::logger>
+    create_or_get(std::string name,
+                  spdlog::level::level_enum level = level::trace);
+
+    /**
+     * @brief Returns existing spdlog logger called @param name, if it doesn't
+     exist otherwise prints an error. Use `create_or_get` if the console might
+     not already exist.
+     * Default logger is [VegaEngine] which is created at program start.
+     */
+    static std::shared_ptr<spdlog::logger> get(std::string name = "VegaEngine");
+
+  private:
+    static inline auto _vega_console = create("VegaEngine", level::trace);
+};

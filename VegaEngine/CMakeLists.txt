@@ -45,4 +45,8 @@ target_sources(VegaEngine PRIVATE src/src.cpp)
 
 # ------------------
 # ------------------
-target_compile_options(VegaEngine PRIVATE -Wall -Wextra)
+if(MSVC)
+   target_compile_options(VegaEngine PRIVATE -Wall -W4)
+else()
+   target_compile_options(VegaEngine PRIVATE -Wall -Wextra -Wpedantic -Wshadow -Wconversion)
+endif()

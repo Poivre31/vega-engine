@@ -5,9 +5,9 @@
 #include <chrono>
 #include <mutex>
 #include <ratio>
+#include <stdexcept>
 #include <string>
 #include <thread>
-#include <unordered_map>
 
 using std::chrono::duration;
 using std::chrono::nanoseconds;
@@ -17,25 +17,41 @@ bool is_protected(const std::string& name) {
     return !name.compare(protected_global_console);
 }
 
-const std::unordered_map<time_unit, double> factors{
-    {time_unit::second, 1e-9},
-    {time_unit::millisecond, 1e-6},
-    {time_unit::microsecond, 1e-3},
-    {time_unit::nanosecond, 1e0},
-};
+constexpr double factor(time_unit unit) {
+    switch (unit) {
+        case time_unit::second:
+            return 1e-9;
+        case time_unit::millisecond:
+            return 1e-6;
+        case time_unit::microsecond:
+            return 1e-3;
+        case time_unit::nanosecond:
+            return 1e0;
+            break;
+    }
+    throw std::invalid_argument("Unknown `time_unit`");
+}
 
-const std::unordered_map<time_unit, const std::string> units{
-    {time_unit::second, "s"},
-    {time_unit::millisecond, "ms"},
-    {time_unit::microsecond, "µs"},
-    {time_unit::nanosecond, "ns"},
-};
+constexpr std::string_view unit_text(time_unit unit) {
+    switch (unit) {
+        case time_unit::second:
+            return "s";
+        case time_unit::millisecond:
+            return "ms";
+        case time_unit::microsecond:
+            return "µs";
+        case time_unit::nanosecond:
+            return "ns";
+            break;
+    }
+    throw std::invalid_argument("Unknown `time_unit`");
+}
 
 double delta_time(steady_clock::time_point t1, steady_clock::time_point t2,
                   time_unit unit) {
     auto delta =
         static_cast<double>(duration_cast<nanoseconds>(t2 - t1).count());
-    return delta * factors.at(unit);
+    return delta * factor(unit);
 }
 
 std::shared_ptr<spdlog::logger> timer::get_console() { return _console; }
@@ -137,12 +153,12 @@ void timer::print_elapsed_time(const std::string& name, time_unit unit,
             "hasn't been created",
             name);
     } else {
-        double dt = _watches.at(name).offset * factors.at(unit);
+        double dt = _watches.at(name).offset * factor(unit);
         if (_watches.at(name).running)
             dt += delta_time(_watches.at(name).t0, t, unit);
         _console->info(fmt::runtime("Time since timer [{:s}] start: {:." +
                                     std::to_string(precision) + "g} {:s}"),
-                       name, dt, units.at(unit));
+                       name, dt, unit_text(unit));
     }
 }
 
@@ -157,7 +173,7 @@ double timer::get_elapsed_time(const std::string& name, time_unit unit) {
             name);
         return 0.;
     } else {
-        double dt = _watches.at(name).offset * factors.at(unit);
+        double dt = _watches.at(name).offset * factor(unit);
         if (_watches.at(name).running) {
             dt += delta_time(_watches.at(name).t0, t, unit);
         }
@@ -169,7 +185,7 @@ void timer::stall(double time, time_unit unit) {
     auto t0 = steady_clock::now();
     auto sleep_margin = duration<double, std::milli>(2);
     std::this_thread::sleep_for(
-        duration<double, std::nano>(time / factors.at(unit)) - sleep_margin);
+        duration<double, std::nano>(time / factor(unit)) - sleep_margin);
     while (delta_time(t0, steady_clock::now(), unit) < time) {
     }
 }

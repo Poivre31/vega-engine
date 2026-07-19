@@ -4,6 +4,7 @@
 #include <timer/timer.h>
 
 #include <cmath>
+#include <numbers>
 
 double f(double x) { return sin(x); }
 
@@ -19,7 +20,7 @@ int main() {
 
     orion_console->info(
         "The integral of sin between 0 and pi is around : {:.4f}",
-        integration::trapezium(0, M_PI, f, 1000000));
+        integration::trapezium(0, std::numbers::pi, f, 1000000));
 
     orion_console->debug("Successeful integration !");
 

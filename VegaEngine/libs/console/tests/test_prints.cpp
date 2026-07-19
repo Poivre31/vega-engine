@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
+#include <numbers>
 #include <string>
 
 TEST(TestConsole, TestLogLevels) {
@@ -19,8 +20,8 @@ TEST(TestConsole, TestLogLevels) {
         test_console->warn("This is a message... {:s}", "(warn)");
         test_console->error("This is a message... {:s}", "(error)");
         test_console->critical("This is a message... {:s}", "(critical)");
-        test_console->info("This is a number... {:.5f}", M_PI);
-        test_console->info("This is a number... {:+.5g}", M_PI););
+        test_console->info("This is a number... {:.5f}", std::numbers::pi);
+        test_console->info("This is a number... {:+.5g}", std::numbers::pi););
 
     EXPECT_NO_FATAL_FAILURE(
         auto vega_console = console::get();

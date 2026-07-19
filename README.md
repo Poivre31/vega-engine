@@ -122,10 +122,10 @@ Coming soon
      
 - [ ] UI features
 - [ ] Basic audio system
-- [ ] Automated testing
-- [ ] OS Support
-    - [ ] Windows
-    - [x] Linux
+- [ ] Continous integration
+- [x] OS Support
+    - [x] Windows (MSVC, GCC)
+    - [x] Linux (GCC, Clang)
 - [ ] Multi-language Support
     - [x] English
     - [ ] French

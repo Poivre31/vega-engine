@@ -19,4 +19,8 @@ target_link_libraries(OrionTracer VegaEngine)
 
 # ------------------
 # ------------------
-target_compile_options(OrionTracer PRIVATE -Wall -Wextra)
+if(MSVC)
+   target_compile_options(VegaEngine PRIVATE -Wall -W4)
+else()
+   target_compile_options(VegaEngine PRIVATE -Wall -Wextra -Wpedantic -Wshadow -Wconversion)
+endif()

@@ -1,0 +1,14 @@
+{
+    "logLevel" : 6,
+
+    "consoleColors" : [
+        {
+            "trace" : "green",
+            "debug" : "blue",
+            "info" : "cyan",
+            "warn" : "yellow",
+            "error" : "red",
+            "fatal" : "white"    
+        }
+    ]
+}

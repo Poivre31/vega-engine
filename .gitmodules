@@ -4,3 +4,6 @@
 [submodule "external/nanobench"]
 	path = VegaEngine/external/nanobench
 	url = https://github.com/martinus/nanobench.git
+[submodule "VegaEngine/external/spdlog"]
+	path = VegaEngine/external/spdlog
+	url = https://github.com/gabime/spdlog.git

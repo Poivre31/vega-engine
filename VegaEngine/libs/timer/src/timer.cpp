@@ -14,7 +14,7 @@ using std::chrono::nanoseconds;
 using std::chrono::steady_clock;
 
 bool is_protected(const std::string& name) {
-    return !name.compare(protected_global_console);
+    return name == protected_global_console;
 }
 
 constexpr double factor(time_unit unit) {
@@ -57,7 +57,7 @@ double delta_time(steady_clock::time_point t1, steady_clock::time_point t2,
 std::shared_ptr<spdlog::logger> timer::get_console() { return _console; }
 
 void timer::start(const std::string& name) {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::scoped_lock<std::mutex> lock(_mutex);
 
     if (is_protected(name)) {
         _console->error("Trying to (re)create [global] timer");
@@ -68,7 +68,7 @@ void timer::start(const std::string& name) {
 }
 
 void timer::pause(const std::string& name) {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::scoped_lock<std::mutex> lock(_mutex);
 
     if (is_protected(name)) {
         _console->error("Trying to pause  [global] timer");
@@ -89,7 +89,7 @@ void timer::pause(const std::string& name) {
 }
 
 void timer::restart(const std::string& name) {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::scoped_lock<std::mutex> lock(_mutex);
 
     auto t = steady_clock::now();
     if (is_protected(name)) {
@@ -113,7 +113,7 @@ void timer::restart(const std::string& name) {
 }
 
 void timer::reset(const std::string& name) {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::scoped_lock<std::mutex> lock(_mutex);
 
     if (is_protected(name)) {
         _console->error("Trying to reset [global] timer");
@@ -129,7 +129,7 @@ void timer::reset(const std::string& name) {
 }
 
 void timer::destroy(const std::string& name) {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::scoped_lock<std::mutex> lock(_mutex);
 
     if (is_protected(name)) {
         _console->error("Trying to destroy [global] timer");
@@ -144,7 +144,7 @@ void timer::destroy(const std::string& name) {
 
 void timer::print_elapsed_time(const std::string& name, time_unit unit,
                                size_t precision) {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::scoped_lock<std::mutex> lock(_mutex);
 
     auto t = steady_clock::now();
     if (!_watches.contains(name)) {
@@ -154,8 +154,9 @@ void timer::print_elapsed_time(const std::string& name, time_unit unit,
             name);
     } else {
         double dt = _watches.at(name).offset * factor(unit);
-        if (_watches.at(name).running)
+        if (_watches.at(name).running) {
             dt += delta_time(_watches.at(name).t0, t, unit);
+        }
         _console->info(fmt::runtime("Time since timer [{:s}] start: {:." +
                                     std::to_string(precision) + "g} {:s}"),
                        name, dt, unit_text(unit));
@@ -163,7 +164,7 @@ void timer::print_elapsed_time(const std::string& name, time_unit unit,
 }
 
 double timer::get_elapsed_time(const std::string& name, time_unit unit) {
-    std::lock_guard<std::mutex> lock(_mutex);
+    std::scoped_lock<std::mutex> lock(_mutex);
 
     auto t = steady_clock::now();
     if (!_watches.contains(name)) {

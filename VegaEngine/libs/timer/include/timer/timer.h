@@ -11,8 +11,8 @@
 
 enum class time_unit : char { second, millisecond, microsecond, nanosecond };
 const time_unit default_unit = time_unit::millisecond;
-const char protected_global_console[] = "global";
-const char main_console[] = "main";
+const std::string protected_global_console = "global";
+const std::string main_console = "main";
 
 struct timer_data {
     std::chrono::steady_clock::time_point t0;

@@ -9,15 +9,12 @@ vec3 construct(double x, double y, double z) {
 
 void print(vec3 v) { v.print(); }
 
-bool equals(vec3 a, vec3 b) {
-    if (a.x == b.x && a.y == b.y && a.z == b.z)
-        return true;
-    else
-        return false;
-}
+bool equals(vec3 a, vec3 b) { return (a.x == b.x && a.y == b.y && a.z == b.z); }
 
 TEST(TestMath, TestVec3) {
-    double x = 3, y = 2, z = 1;
+    double x = 3;
+    double y = 2;
+    double z = 1;
     EXPECT_NO_FATAL_FAILURE(construct(x, y, z));
     auto v = construct(x, y, z);
     EXPECT_NO_FATAL_FAILURE(print(v));

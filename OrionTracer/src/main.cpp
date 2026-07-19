@@ -3,7 +3,6 @@
 #include <math/vec3.h>
 #include <timer/timer.h>
 
-#include <cmath>
 #include <numbers>
 
 double f(double x) { return sin(x); }

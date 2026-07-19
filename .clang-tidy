@@ -1,20 +1,36 @@
 Checks: >
   -*,
   bugprone-*,
-  -bugprone-easily-swappable-parameters,
   performance-*,
-  modernize-use-override,
-  modernize-use-nullptr,
-  modernize-use-default-member-init,
-  modernize-pass-by-value,
-  modernize-use-emplace,
-  readability-else-after-return,
-  readability-redundant-*,
-  readability-container-size-empty,
-  readability-identifier-naming,
-  cppcoreguidelines-special-member-functions,
-  cppcoreguidelines-slicing,
+  modernize-*,
+  readability-*,
+  cppcoreguidelines-*,
   clang-analyzer-*,
-  -readability-else-after-return
+  portability-*,
+
+  -bugprone-easily-swappable-parameters,
+
+  -modernize-use-trailing-return-type,
+
+  -readability-magic-numbers,
+  -readability-identifier-length,
+  -readability-else-after-return,
+
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+
+  -altera-*,
+  -android-*,
+  -abseil-*,
+  -boost-*,
+  -darwin-*,
+  -fuchsia-*,
+  -linuxkernel-*,
+  -llvm-*,
+  -llvmlibc-*,
+  -mpi-*,
+  -objc-*,
+  -zircon-*,
 
 HeaderFilterRegex: '.*/(VegaEngine|OrionTracer)/(?!external/).*'

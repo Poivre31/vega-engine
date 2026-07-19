@@ -8,3 +8,5 @@ add_library(Console
 target_link_libraries(Console PUBLIC spdlog::spdlog)
 
 target_include_directories(Console PUBLIC "include")
+
+target_compile_options(Console PRIVATE -Wall -Wextra -Wpedantic -Wshadow -Wconversion)

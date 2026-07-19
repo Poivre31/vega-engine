@@ -14,3 +14,5 @@ target_include_directories(Math PUBLIC
 target_link_libraries(Math PRIVATE Console)
 
 add_subdirectory(bench)
+
+target_compile_options(Math PRIVATE -Wall -Wextra -Wpedantic -Wshadow -Wconversion)

@@ -19,4 +19,4 @@ target_link_libraries(OrionTracer VegaEngine)
 
 # ------------------
 # ------------------
-target_compile_options(VegaEngine PRIVATE -Wall -Wextra)
+target_compile_options(OrionTracer PRIVATE -Wall -Wextra)

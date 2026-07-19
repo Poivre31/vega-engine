@@ -1,18 +1,21 @@
 #pragma once
-#include "spdlog/logger.h"
-#include <chrono>
 #include <console/console.h>
+
+#include <chrono>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 
-using namespace std::chrono;
+#include "spdlog/logger.h"
 
-enum class time_unit : size_t { second, millisecond, microsecond, nanosecond };
+enum class time_unit : char { second, millisecond, microsecond, nanosecond };
 const time_unit default_unit = time_unit::millisecond;
+const char protected_global_console[] = "global";
+const char main_console[] = "main";
 
 struct timer_data {
-    high_resolution_clock::time_point t0;
+    std::chrono::steady_clock::time_point t0;
     double offset = 0.;
     bool running = true;
 };
@@ -23,8 +26,8 @@ struct timer_data {
  *
  * @return double
  */
-double delta_time(high_resolution_clock::time_point t1,
-                  high_resolution_clock::time_point t2, time_unit unit);
+double delta_time(std::chrono::steady_clock::time_point t1,
+                  std::chrono::steady_clock::time_point t2, time_unit unit);
 
 /**
  * @brief Timer class to manage multiple watches.
@@ -44,33 +47,37 @@ double delta_time(high_resolution_clock::time_point t1,
  *
  */
 class timer {
-  public:
+   public:
     static std::shared_ptr<spdlog::logger> get_console();
 
-    static void start(std::string name = "main");
+    static void start(const std::string& name = main_console);
 
-    static void pause(std::string name = "main");
+    static void pause(const std::string& name = main_console);
 
-    static void restart(std::string name = "main");
+    static void restart(const std::string& name = main_console);
 
-    static void reset(std::string name = "main");
+    static void reset(const std::string& name = main_console);
 
-    static void destroy(std::string name = "main");
+    static void destroy(const std::string& name = main_console);
 
-    static void print_ellapsed_time(std::string name = "main",
-                                    time_unit unit = default_unit,
-                                    size_t precision = 4);
+    static void print_elapsed_time(const std::string& name = main_console,
+                                   time_unit unit = default_unit,
+                                   size_t precision = 4);
 
-    static double get_ellapsed_time(std::string name = "main",
-                                    time_unit unit = default_unit);
+    static double get_elapsed_time(const std::string& name = main_console,
+                                   time_unit unit = default_unit);
 
     static void stall(double time, time_unit unit = time_unit::second);
 
-  private:
+   private:
+    static inline std::mutex _mutex;
+
     static inline std::shared_ptr<spdlog::logger> _console =
         console::create("VegaEngine.timer");
 
     static inline std::unordered_map<std::string, timer_data> _watches{
-        std::pair("global", timer_data{.t0 = high_resolution_clock::now()}),
-        std::pair("main", timer_data{.t0 = high_resolution_clock::now()})};
+        std::pair(protected_global_console,
+                  timer_data{.t0 = std::chrono::steady_clock::now()}),
+        std::pair(main_console,
+                  timer_data{.t0 = std::chrono::steady_clock::now()})};
 };

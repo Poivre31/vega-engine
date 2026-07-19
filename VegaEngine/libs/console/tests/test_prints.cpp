@@ -1,5 +1,6 @@
 #include <console/console.h>
 #include <gtest/gtest.h>
+
 #include <iostream>
 #include <string>
 
@@ -24,7 +25,7 @@ TEST(TestConsole, TestLogLevels) {
     EXPECT_NO_FATAL_FAILURE(
         auto vega_console = console::get();
         vega_console->set_level(level::warn);
-        std::cout << "Changed log level to 'warn'" << std::endl;
+        std::cout << "Changed log level to 'warn'\n";
         vega_console->trace("This is a message... {:s}", "(trace)");
         vega_console->debug("This is a message... {:s}", "(debug)");
         vega_console->info("This is a message... {:s}", "(info)");

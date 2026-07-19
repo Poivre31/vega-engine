@@ -1,7 +1,7 @@
-#include "math/vec3.h"
 #include <console/console.h>
-
 #include <gtest/gtest.h>
+
+#include "math/vec3.h"
 
 TEST(TestConsole, TestPrintMath) {
     auto test_console = console::create("OrionConsole");

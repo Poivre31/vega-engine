@@ -1,8 +1,9 @@
-#include <cmath>
 #include <console/console.h>
 #include <math/trapezium.h>
 #include <math/vec3.h>
 #include <timer/timer.h>
+
+#include <cmath>
 
 double f(double x) { return sin(x); }
 
@@ -22,13 +23,13 @@ int main() {
 
     orion_console->debug("Successeful integration !");
 
-    timer::print_ellapsed_time("halo");
+    timer::print_elapsed_time("halo");
     timer::pause("halo");
-    timer::print_ellapsed_time();
+    timer::print_elapsed_time();
 
     console::get()->warn("Ending program execution...");
     timer::stall(0.05, time_unit::second);
 
-    timer::print_ellapsed_time("halo");
-    timer::print_ellapsed_time();
+    timer::print_elapsed_time("halo");
+    timer::print_elapsed_time();
 }

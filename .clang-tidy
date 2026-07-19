@@ -1,0 +1,20 @@
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  performance-*,
+  modernize-use-override,
+  modernize-use-nullptr,
+  modernize-use-default-member-init,
+  modernize-pass-by-value,
+  modernize-use-emplace,
+  readability-else-after-return,
+  readability-redundant-*,
+  readability-container-size-empty,
+  readability-identifier-naming,
+  cppcoreguidelines-special-member-functions,
+  cppcoreguidelines-slicing,
+  clang-analyzer-*,
+  -readability-else-after-return
+
+HeaderFilterRegex: '.*/(VegaEngine|OrionTracer)/(?!external/).*'

@@ -1,5 +1,5 @@
 if(BUILD_TESTING)
-    add_executable(math_test test_vec3.cpp test_integration.cpp test_format.cpp)
+    add_executable(math_test test_vec3.cpp test_integration.cpp test_format.cpp test_ode.cpp)
     target_link_libraries(math_test PRIVATE GTest::gtest_main)
     target_link_libraries(math_test PRIVATE Math)
     target_link_libraries(math_test PRIVATE Console)

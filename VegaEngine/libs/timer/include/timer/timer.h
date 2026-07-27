@@ -7,8 +7,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "spdlog/logger.h"
-
 enum class time_unit : char { second, millisecond, microsecond, nanosecond };
 const time_unit default_unit = time_unit::millisecond;
 const std::string protected_global_console = "global";

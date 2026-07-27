@@ -11,7 +11,7 @@ class vec3 {
 
     vec3(double _x, double _y, double _z) : x(_x), y(_y), z(_z) {}
 
-    void print() { std::cout << x << " " << y << " " << z << "\n"; }
+    void print() const { std::cout << x << " " << y << " " << z << "\n"; }
 };
 
 template <>

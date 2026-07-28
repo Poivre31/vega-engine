@@ -27,7 +27,6 @@ constexpr double factor(time_unit unit) {
             return 1e-3;
         case time_unit::nanosecond:
             return 1e0;
-            break;
     }
     throw std::invalid_argument("Unknown `time_unit`");
 }
@@ -42,7 +41,6 @@ constexpr std::string_view unit_text(time_unit unit) {
             return "µs";
         case time_unit::nanosecond:
             return "ns";
-            break;
     }
     throw std::invalid_argument("Unknown `time_unit`");
 }
@@ -53,8 +51,6 @@ double delta_time(steady_clock::time_point t1, steady_clock::time_point t2,
         static_cast<double>(duration_cast<nanoseconds>(t2 - t1).count());
     return delta * factor(unit);
 }
-
-std::shared_ptr<spdlog::logger> timer::get_console() { return _console; }
 
 void timer::start(const std::string& name) {
     std::scoped_lock<std::mutex> lock(_mutex);

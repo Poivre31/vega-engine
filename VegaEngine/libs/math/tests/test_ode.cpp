@@ -18,7 +18,7 @@ TEST(TestMath, TestODE) {
     solver::euler<double> solver;
     solver.set_initial_conditions(x0, 0.);
     EXPECT_NEAR(solver.solve(tf, n, f1), x0 * exp(sin(tf)), 0.01);
-    console::get("VegaEngine.math")
+    console::get(default_consoles::math)
         ->info("Result of ODE solve is {:.5g}", solver.get_state());
 
     solver::euler<Rn<6>> solver_n;
@@ -26,6 +26,6 @@ TEST(TestMath, TestODE) {
     solver_n.set_initial_conditions(X0, 0.);
     solver_n.solve(tf, n, f2);
     EXPECT_LE((solver_n.get_state() - X0 * exp(-tf * 0.3)).max_abs(), 0.01);
-    console::get("VegaEngine.math")
+    console::get(default_consoles::math)
         ->info("Result of ODE solve is {:.5g}", solver_n.get_state()[0]);
 }

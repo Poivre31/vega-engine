@@ -45,8 +45,8 @@ class base_solver {
     T solve(const double tf, const size_t N,
             const std::function<T(T X, double t)>& update_function) {
         if (!update_function) {
-            _console->error(
-                "Assign an update function before using the solver");
+            console::get(default_consoles::math)
+                ->error("Assign an update function before using the solver");
             return _state;
         } else if (N == 0) {
             return _state;
@@ -64,8 +64,6 @@ class base_solver {
    private:
     double _t = 0;
     T _state{};
-    inline static const auto _console =
-        console::create_or_get("VegaEngine.math");
 };
 
 }  // namespace solver

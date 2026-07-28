@@ -62,7 +62,7 @@ Rn<N> unabstracted(double t0, double tf, size_t n) {
 int main() {
     ankerl::nanobench::Bench bench;
     console::get()->set_level(level::info);
-    console::get("VegaEngine.math")->set_level(level::info);
+    console::get(default_consoles::math)->set_level(level::info);
     Rn<N> result{};
 
     solver::euler<Rn<N>> _solver;

@@ -54,3 +54,15 @@ std::shared_ptr<spdlog::logger> console::get(const std::string& name) {
         return console;
     }
 }
+
+std::shared_ptr<spdlog::logger> console::get(
+    default_consoles default_consoles) {
+    switch (default_consoles) {
+        case default_consoles::vega:
+            return _vega_console;
+        case default_consoles::math:
+            return _math_console;
+        case default_consoles::timer:
+            return _timer_console;
+    }
+}

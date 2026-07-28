@@ -4,6 +4,7 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -19,6 +20,8 @@ using spdlog::level::trace;
 using spdlog::level::warn;
 
 }  // namespace level
+
+enum class default_consoles : uint8_t { vega, math, timer };
 
 /**
  * @brief Console class to manage spdlog loggers
@@ -53,6 +56,15 @@ class console {
     static std::shared_ptr<spdlog::logger> get(
         const std::string& name = "VegaEngine");
 
+    /**
+     * @brief Returns one of the default spdlog logger such as [VegaEngine] or
+     * [VegaMath].
+     */
+    static std::shared_ptr<spdlog::logger> get(
+        default_consoles default_consoles);
+
    private:
     static inline auto _vega_console = create("VegaEngine", level::trace);
+    static inline auto _math_console = create("VegaMath", level::trace);
+    static inline auto _timer_console = create("VegaTimer", level::trace);
 };

@@ -2,7 +2,10 @@
 
 #include <cmath>
 
+#include "math/numbers.h"
 #include "math/vec.h"
+#include "math/vec3.h"
+#include "math/vec3_ops.h"
 
 void print(const vec3d& v) { v.print(); }
 
@@ -26,4 +29,16 @@ TEST(TestMath, TestVec3) {
     EXPECT_LE((6. / v - vec3d(2., 3., 6.)).norm_L1(), .00001);
     EXPECT_EQ(vec3d(axis::x).norm_L0(), 1);
     EXPECT_EQ(cos(v), v.applied_element_wise(cosf64));
+
+    EXPECT_LE((rotate(vec3d(1, 1, 1), axis::x, math::pi_by_2) - vec3d(1, -1, 1))
+                  .norm_inf(),
+              1e-10);
+    EXPECT_LE((rotate(vec3d(1, 1, 1), axis::y, math::pi_by_2) - vec3d(1, 1, -1))
+                  .norm_inf(),
+              1e-10);
+    EXPECT_LE((rotate(vec3d(1, 1, 1), axis::z, math::pi_by_2) - vec3d(-1, 1, 1))
+                  .norm_inf(),
+              1e-10);
+    EXPECT_EQ(project(v, vec3d(axis::y)), 2. * vec3d(axis::y));
+    EXPECT_EQ(project(v, {vec3d(axis::x), vec3d(axis::z)}), vec3d(3., 0., 1.));
 }

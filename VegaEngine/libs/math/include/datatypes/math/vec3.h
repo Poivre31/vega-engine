@@ -79,6 +79,7 @@ class vec3 {
         return static_cast<size_t>(x != 0) + static_cast<size_t>(y != 0) +
                static_cast<size_t>(z != 0);
     }
+    [[nodiscard]] double norm_inf() const { return max_abs(); }
     [[nodiscard]] double max() const { return std::max(x, std::max(y, z)); }
     [[nodiscard]] double max_abs() const {
         return std::max(abs(x), std::max(abs(y), abs(z)));
@@ -115,10 +116,12 @@ class vec3 {
         return vec3(ceil(x), ceil(y), ceil(z));
     }
 
-    void print() const { _console->info("{}", *this); }
+    void print() const {
+        console::get(default_consoles::math)->info("{}", *this);
+    }
 
     void print(const std::string& message) const {
-        _console->info("{:s} {}", message, *this);
+        console::get(default_consoles::math)->info("{:s} {}", message, *this);
     }
 
     // vec3<bool> Equals(vec3<T> ref) {
@@ -197,9 +200,10 @@ class vec3 {
 
     friend vec3 operator/(const vec3& u, const vec3& v) {
         if (v.x == 0 || v.y == 0 || v.z == 0) {
-            _console->critical(
-                "Division by zero (trying to divide vec3 by vec3 with some "
-                "zero components)");
+            console::get(default_consoles::math)
+                ->critical(
+                    "Division by zero (trying to divide vec3 by vec3 with some "
+                    "zero components)");
             return u;
         }
         vec3 out;
@@ -211,8 +215,9 @@ class vec3 {
 
     friend vec3 operator/(const vec3& u, T a) {
         if (a == 0) {
-            _console->critical(
-                "Division by zero (trying to divide vec3 by null number");
+            console::get(default_consoles::math)
+                ->critical(
+                    "Division by zero (trying to divide vec3 by null number");
             return u;
         }
         vec3 out;
@@ -225,9 +230,10 @@ class vec3 {
 
     friend vec3 operator/(T a, const vec3& v) {
         if (v.x == 0 || v.y == 0 || v.z == 0) {
-            _console->critical(
-                "Division by zero (trying to divide vec3 by vec3 with some "
-                "zero components)");
+            console::get(default_consoles::math)
+                ->critical(
+                    "Division by zero (trying to divide vec3 by vec3 with some "
+                    "zero components)");
             return vec3(a);
         }
         return vec3(a / v.x, a / v.y, a / v.z);
@@ -235,9 +241,10 @@ class vec3 {
 
     vec3& operator/=(const vec3& v) {
         if (v.x == 0 || v.y == 0 || v.z == 0) {
-            _console->critical(
-                "Division by zero (trying to divide vec3 by vec3 with some "
-                "zero components)");
+            console::get(default_consoles::math)
+                ->critical(
+                    "Division by zero (trying to divide vec3 by vec3 with some "
+                    "zero components)");
             return *this;
         }
         x /= v.x;
@@ -249,8 +256,9 @@ class vec3 {
     template <typename U>
     vec3& operator/=(U a) {
         if (a == 0) {
-            _console->critical(
-                "Division by zero (trying to divide vec3 by null number");
+            console::get(default_consoles::math)
+                ->critical(
+                    "Division by zero (trying to divide vec3 by null number");
             return *this;
         }
         double inv = 1. / static_cast<double>(a);
@@ -299,9 +307,6 @@ class vec3 {
     }
 
     T dot(const vec3& u) const { return (x * u.x) + (y * u.y) + (z * u.z); }
-
-    inline static const auto _console =
-        console::create_or_get("VegaEngine.math");
 };
 
 using vec3f = vec3<float>;

@@ -71,7 +71,7 @@ class timer {
     static inline std::mutex _mutex;
 
     static inline std::shared_ptr<spdlog::logger> _console =
-        console::create("VegaEngine.timer");
+        console::get(default_consoles::timer);
 
     static inline std::unordered_map<std::string, timer_data> _watches{
         std::pair(protected_global_console,

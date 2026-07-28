@@ -13,7 +13,7 @@ int main() {
     orion_console->set_level(level::debug);
     orion_console->info("Hello world !");
 
-    vec3 a(3, 2, 1);
+    vec3d a(3, 2, 1);
 
     orion_console->info("{: .2f}", a);
 

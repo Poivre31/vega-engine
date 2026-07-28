@@ -1,15 +1,15 @@
 add_library(Math
-    "src/datatypes/vec3.cpp"
-    "include/datatypes/math/vec3.h"
-
     "include/datatypes/math/coordinates.h"
+    "include/datatypes/math/vec3.h"
+    "include/math/vec.h"
+
 
     "src/integration/trapezium.cpp"
     "include/integration/math/trapezium.h"
+    "include/math/integration.h"
 
-    "include/numbers.h"
+    "include/math/numbers.h"
 
-    "include/integration.h"
 
     "include/ode/math/solver.h"
 
@@ -23,6 +23,7 @@ target_include_directories(Math PUBLIC
     "include/datatypes"
     "include/integration"
     "include/ode"
+    "include"
 )
 
 

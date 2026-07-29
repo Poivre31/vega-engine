@@ -1,0 +1,15 @@
+#include <gtest/gtest.h>
+
+#include "console/console.h"
+#include "math/random.h"
+
+TEST(TestMath, TestRandom) {
+    auto console = console::create("Random");
+    EXPECT_NO_FATAL_FAILURE(std::vector<double> v; v.reserve(10);
+                            for (size_t i = 0; i < 10; i++) {
+                                v.push_back(random::uniform(0., 2.));
+                            } console->info("({:.4g})", fmt::join(v, ", ")););
+    EXPECT_NO_FATAL_FAILURE(console->info(
+        "Random vector: {:.4g}",
+        random::uniform_3(vec3d(-1., 0., 1.), vec3d(1., 1., 3.))));
+}

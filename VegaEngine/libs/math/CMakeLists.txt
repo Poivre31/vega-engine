@@ -1,28 +1,32 @@
 add_library(Math
     "include/datatypes/math/coordinates.h"
     "include/datatypes/math/vec3.h"
+    "include/datatypes/math/vec3_math.h"
+    "include/datatypes/math/vec3_ops.h"
+
     "include/math/vec.h"
 
 
     "src/integration/trapezium.cpp"
     "include/integration/math/trapezium.h"
+
     "include/math/integration.h"
+
 
     "include/math/numbers.h"
 
 
     "include/ode/math/solver.h"
+    "include/ode/math/euler.h"
 
-    # "include/eqdiff/math/euler.h"
-    # include/eqdiff/math/base_solver.h
-    # include/eqdiff/math/solver_I.h
-    # include/eqdiff/math/solver_II.h
+    "include/math/ode_solver.h"
 )
 
 target_include_directories(Math PUBLIC
     "include/datatypes"
     "include/integration"
     "include/ode"
+    "include/random"
     "include"
 )
 

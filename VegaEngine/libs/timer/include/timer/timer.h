@@ -46,6 +46,8 @@ double delta_time(std::chrono::steady_clock::time_point t1,
  */
 class timer {
    public:
+    timer() = delete;
+
     static std::shared_ptr<spdlog::logger> get_console();
 
     static void start(const std::string& name = main_console);

@@ -1,6 +1,10 @@
 #pragma once
 
 #include <numbers>
+#include <type_traits>
+
+template <typename T>
+concept is_numeric = std::is_integral<T>() || std::is_floating_point<T>();
 
 namespace math {
 using std::numbers::e;

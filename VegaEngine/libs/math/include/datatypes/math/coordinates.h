@@ -1,4 +1,6 @@
 #pragma once
+#include <console/console.h>
+
 #include <array>
 #include <concepts>
 #include <cstddef>
@@ -123,6 +125,24 @@ class symplectic_view {
 
     T position{};
     T velocity{};
+};
+
+template <size_t N>
+struct fmt::formatter<Rn<N>> : fmt::formatter<double> {
+    auto format(Rn<N> v, format_context& ctx) const -> decltype(ctx.out()) {
+        auto out = fmt::format_to(ctx.out(), "(");
+
+        ctx.advance_to(out);
+        out = fmt::formatter<double>::format(v[0], ctx);
+
+        for (size_t i = 1; i < N; i++) {
+            out = fmt::format_to(out, ", ");
+            ctx.advance_to(out);
+            out = fmt::formatter<double>::format(v[i], ctx);
+        }
+
+        return fmt::format_to(out, ")");
+    }
 };
 
 // template <size_t N>

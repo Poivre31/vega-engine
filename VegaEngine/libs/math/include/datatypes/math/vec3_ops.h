@@ -5,7 +5,7 @@
 
 /** According to right hand rule */
 template <std::floating_point T>
-vec3<T> rotate(const vec3<T>& v, const axis ax, const double theta) {
+inline vec3<T> rotate(const vec3<T>& v, const axis ax, const double theta) {
     switch (ax) {
         case axis::x:
             return vec3(v.x, (cos(theta) * v.y) - (sin(theta) * v.z),
@@ -20,7 +20,7 @@ vec3<T> rotate(const vec3<T>& v, const axis ax, const double theta) {
 }
 
 template <std::floating_point T>
-vec3<T> project(const vec3<T>& vec, vec3<T> axis) {
+inline vec3<T> project(const vec3<T>& vec, vec3<T> axis) {
     double d2 = axis.norm_sqr();
     if (d2 == 0.) {
         return 0.;
@@ -32,7 +32,8 @@ vec3<T> project(const vec3<T>& vec, vec3<T> axis) {
 /** Returns zero if the two vectors don't define a plane (ie if they are zero or
  * colinear) */
 template <std::floating_point T>
-vec3<T> project(const vec3<T>& vec, const std::pair<vec3<T>, vec3<T>>& plane) {
+inline vec3<T> project(const vec3<T>& vec,
+                       const std::pair<vec3<T>, vec3<T>>& plane) {
     auto u = cross(plane.first, plane.second);
     double d2 = u.norm_sqr();
     if (d2 == 0.) {

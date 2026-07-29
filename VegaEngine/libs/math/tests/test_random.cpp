@@ -11,5 +11,5 @@ TEST(TestMath, TestRandom) {
                             } console->info("({:.4g})", fmt::join(v, ", ")););
     EXPECT_NO_FATAL_FAILURE(console->info(
         "Random vector: {:.4g}",
-        random::uniform_3(vec3d(-1., 0., 1.), vec3d(1., 1., 3.))));
+        random::uniform_vec3(vec3d(-1., 0., 1.), vec3d(1., 1., 3.))));
 }

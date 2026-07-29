@@ -8,10 +8,15 @@
 #include <unordered_map>
 
 enum class time_unit : char { second, millisecond, microsecond, nanosecond };
-const time_unit default_unit = time_unit::millisecond;
-const std::string protected_global_console = "global";
-const std::string main_console = "main";
+const time_unit default_time_unit = time_unit::millisecond;
+/** The global timer, starts at program startup and is always avalaible but
+ * can't be paused, restarted or reset, always running */
+const std::string protected_global_timer = "global";
+/** The main timer, starts at program startup and is always avalaible */
+const std::string main_timer = "main";
 
+/** Struct containing the time point of last timer start, an offset counter to
+ * enable pausing, and a bool to keep track of paused/running state. */
 struct timer_data {
     std::chrono::steady_clock::time_point t0;
     double offset = 0.;
@@ -24,8 +29,9 @@ struct timer_data {
  *
  * @return double
  */
-double delta_time(std::chrono::steady_clock::time_point t1,
-                  std::chrono::steady_clock::time_point t2, time_unit unit);
+[[nodiscard]] constexpr double delta_time(
+    std::chrono::steady_clock::time_point t1,
+    std::chrono::steady_clock::time_point t2, time_unit unit) noexcept;
 
 /**
  * @brief Timer class to manage multiple watches.
@@ -48,25 +54,36 @@ class timer {
    public:
     timer() = delete;
 
-    static std::shared_ptr<spdlog::logger> get_console();
+    /** Creates a timer @param name at this instant */
+    static void start(const std::string& name = main_timer);
 
-    static void start(const std::string& name = main_console);
+    /** Pauses the execution of timer @param name until restart, keeping track
+     * of time spent until this instant */
+    static void pause(const std::string& name = main_timer);
 
-    static void pause(const std::string& name = main_console);
+    /** Unpause a paused timer */
+    static void restart(const std::string& name = main_timer);
 
-    static void restart(const std::string& name = main_console);
+    /** Same as start() but doesn't create the timer if it doesn't exist, use
+     * this rather than start() when you know the timer has already been
+     * created */
+    static void reset(const std::string& name = main_timer);
 
-    static void reset(const std::string& name = main_console);
+    /** Erase a timer from memory */
+    static void destroy(const std::string& name = main_timer);
 
-    static void destroy(const std::string& name = main_console);
-
-    static void print_elapsed_time(const std::string& name = main_console,
-                                   time_unit unit = default_unit,
+    /** Prints time elapsed since timer creating, excluding time spent paused */
+    static void print_elapsed_time(const std::string& name = main_timer,
+                                   time_unit unit = default_time_unit,
                                    size_t precision = 4);
 
-    static double get_elapsed_time(const std::string& name = main_console,
-                                   time_unit unit = default_unit);
+    /** Returns time elapsed since timer creating, excluding time spent paused
+     */
+    [[nodiscard]] static double get_elapsed_time(
+        const std::string& name = main_timer,
+        time_unit unit = default_time_unit);
 
+    /** Stops the execution of all threads until @param time has passed */
     static void stall(double time, time_unit unit = time_unit::second);
 
    private:
@@ -76,8 +93,8 @@ class timer {
         console::get(default_consoles::timer);
 
     static inline std::unordered_map<std::string, timer_data> _watches{
-        std::pair(protected_global_console,
+        std::pair(protected_global_timer,
                   timer_data{.t0 = std::chrono::steady_clock::now()}),
-        std::pair(main_console,
+        std::pair(main_timer,
                   timer_data{.t0 = std::chrono::steady_clock::now()})};
 };

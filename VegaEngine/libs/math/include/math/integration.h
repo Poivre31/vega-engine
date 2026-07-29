@@ -1,3 +1,3 @@
 #pragma once
 
-#include "math/trapezium.h"  // IWYU pragma: export
+#include "math/integration/trapezium.h"  // IWYU pragma: export

@@ -8,6 +8,9 @@
 
 enum class axis : std::uint8_t { x, y, z };
 
+template <std::integral T>
+class vec3i;
+
 template <std::floating_point T>
 class vec3 {
    public:
@@ -22,13 +25,13 @@ class vec3 {
     vec3(vec3&& v) = default;
     vec3& operator=(vec3&& v) = default;
 
-    vec3(T a) : x(a), y(a), z(a) {}
+    constexpr explicit vec3(T a) : x(a), y(a), z(a) {}
 
-    vec3(T x, T y, T z) : x(x), y(y), z(z) {}
+    constexpr vec3(T x, T y, T z) : x(x), y(y), z(z) {}
 
-    vec3(const vec3& ref) : x(ref.x), y(ref.y), z(ref.z) {}
+    constexpr vec3(const vec3& ref) : x(ref.x), y(ref.y), z(ref.z) {}
 
-    vec3(axis ax) {
+    constexpr vec3(axis ax) noexcept {
         x = 0., y = 0., z = 0.;
         switch (ax) {
             case axis::x:
@@ -43,28 +46,38 @@ class vec3 {
         }
     }
 
-    void set_zero() {
+    template <std::integral U>
+    [[nodiscard]] constexpr explicit operator vec3i<U>() const noexcept {
+        return vec3(static_cast<T>(x), static_cast<T>(y), static_cast<T>(z));
+    }
+
+    template <std::floating_point U>
+    [[nodiscard]] constexpr explicit operator vec3<U>() const noexcept {
+        return vec3<U>(static_cast<U>(x), static_cast<U>(y), static_cast<U>(z));
+    }
+
+    constexpr void set_zero() noexcept {
         x = 0.;
         y = 0.;
         z = 0.;
     }
 
-    [[nodiscard]] double norm() const {
+    [[nodiscard]] T norm() const noexcept {
         return sqrt((x * x) + (y * y) + (z * z));
     }
 
-    [[nodiscard]] double norm_sqr() const {
+    [[nodiscard]] constexpr T norm_sqr() const noexcept {
         return (x * x) + (y * y) + (z * z);
     }
 
-    void normalize() {
-        double r = norm_sqr();
+    void normalize() noexcept {
+        T r = norm_sqr();
         if (r != 0) {
             *this *= static_cast<T>(1. / sqrt(r));
         }
     }
 
-    [[nodiscard]] vec3 normalized() const {
+    [[nodiscard]] vec3 normalized() const noexcept {
         vec3 v(*this);
         double r = norm_sqr();
         if (r != 0) {
@@ -73,46 +86,52 @@ class vec3 {
         return v;
     }
 
-    [[nodiscard]] double sum() const { return x + y + z; }
-    [[nodiscard]] double norm_L1() const { return abs(x) + abs(y) + abs(z); }
-    [[nodiscard]] size_t norm_L0() const {
+    [[nodiscard]] constexpr T sum() const noexcept { return x + y + z; }
+    [[nodiscard]] constexpr T norm_L1() const noexcept {
+        return abs(x) + abs(y) + abs(z);
+    }
+    [[nodiscard]] constexpr size_t norm_L0() const noexcept {
         return static_cast<size_t>(x != 0) + static_cast<size_t>(y != 0) +
                static_cast<size_t>(z != 0);
     }
-    [[nodiscard]] double norm_inf() const { return max_abs(); }
-    [[nodiscard]] double max() const { return std::max(x, std::max(y, z)); }
-    [[nodiscard]] double max_abs() const {
+    [[nodiscard]] constexpr T norm_inf() const noexcept { return max_abs(); }
+    [[nodiscard]] constexpr T max() const noexcept {
+        return std::max(x, std::max(y, z));
+    }
+    [[nodiscard]] constexpr T max_abs() const noexcept {
         return std::max(abs(x), std::max(abs(y), abs(z)));
     }
-    [[nodiscard]] double min() const { return std::min(x, std::min(y, z)); }
-    [[nodiscard]] double min_abs() const {
+    [[nodiscard]] constexpr T min() const noexcept {
+        return std::min(x, std::min(y, z));
+    }
+    [[nodiscard]] constexpr T min_abs() const noexcept {
         return std::min(abs(x), std::min(abs(y), abs(z)));
     }
 
-    void round() {
+    void round() noexcept {
         x = round(x);
         y = round(y);
         z = round(z);
     }
-    [[nodiscard]] vec3 rounded() const {
+    [[nodiscard]] vec3 rounded() const noexcept {
         return vec3(round(x), round(y), round(z));
     }
 
-    void floor() {
+    void floor() noexcept {
         x = floor(x);
         y = floor(y);
         z = floor(z);
     }
-    [[nodiscard]] vec3 floored() const {
+    [[nodiscard]] vec3 floored() const noexcept {
         return vec3(floor(x), floor(y), floor(z));
     }
 
-    void ceil() {
+    void ceil() noexcept {
         x = ceil(x);
         y = ceil(y);
         z = ceil(z);
     }
-    [[nodiscard]] vec3 ceiled() const {
+    [[nodiscard]] vec3 ceiled() const noexcept {
         return vec3(ceil(x), ceil(y), ceil(z));
     }
 
@@ -146,27 +165,21 @@ class vec3 {
     //     return vec3<bool>(x >= ref.x, y >= ref.y, z >= ref.z);
     // }
 
-    void apply_element_wise(const std::function<T(T)>& func) {
+    void transform(const std::function<T(T)>& func) {
         x = func(x);
         y = func(y);
         z = func(z);
     }
 
-    [[nodiscard]] vec3 applied_element_wise(
-        const std::function<T(T)>& func) const {
+    [[nodiscard]] vec3 transformed(const std::function<T(T)>& func) const {
         return vec3(func(x), func(y), func(z));
     }
 
-    template <std::floating_point U>
-    operator vec3<U>() const {
-        return vec3<U>(static_cast<U>(x), static_cast<U>(y), static_cast<U>(z));
-    }
-
-    bool operator==(const vec3& v) const {
+    [[nodiscard]] constexpr bool operator==(const vec3& v) const noexcept {
         return (x == v.x && y == v.y && z == v.z);
     }
 
-    friend vec3 operator*(T a, const vec3& v) {
+    [[nodiscard]] constexpr friend vec3 operator*(T a, const vec3& v) noexcept {
         vec3 out;
         out.x = v.x * a;
         out.y = v.y * a;
@@ -174,9 +187,12 @@ class vec3 {
         return out;
     }
 
-    friend vec3 operator*(const vec3& v, T a) { return a * v; }
+    [[nodiscard]] constexpr friend vec3 operator*(const vec3& v, T a) noexcept {
+        return a * v;
+    }
 
-    friend vec3 operator*(const vec3& u, const vec3& v) {
+    [[nodiscard]] constexpr friend vec3 operator*(const vec3& u,
+                                                  const vec3& v) noexcept {
         vec3 out;
         out.x = u.x * v.x;
         out.y = u.y * v.y;
@@ -184,21 +200,22 @@ class vec3 {
         return out;
     }
 
-    vec3& operator*=(T a) {
+    constexpr vec3& operator*=(T a) noexcept {
         x *= a;
         y *= a;
         z *= a;
         return *this;
     }
 
-    vec3& operator*=(const vec3& u) {
+    constexpr vec3& operator*=(const vec3& u) noexcept {
         x *= u.x;
         y *= u.y;
         z *= u.z;
         return *this;
     }
 
-    friend vec3 operator/(const vec3& u, const vec3& v) {
+    [[nodiscard]] constexpr friend vec3 operator/(const vec3& u,
+                                                  const vec3& v) {
         if (v.x == 0 || v.y == 0 || v.z == 0) {
             console::get(default_consoles::math)
                 ->critical(
@@ -213,7 +230,7 @@ class vec3 {
         return out;
     }
 
-    friend vec3 operator/(const vec3& u, T a) {
+    [[nodiscard]] constexpr friend vec3 operator/(const vec3& u, T a) {
         if (a == 0) {
             console::get(default_consoles::math)
                 ->critical(
@@ -228,7 +245,7 @@ class vec3 {
         return out;
     }
 
-    friend vec3 operator/(T a, const vec3& v) {
+    [[nodiscard]] constexpr friend vec3 operator/(T a, const vec3& v) {
         if (v.x == 0 || v.y == 0 || v.z == 0) {
             console::get(default_consoles::math)
                 ->critical(
@@ -239,7 +256,7 @@ class vec3 {
         return vec3(a / v.x, a / v.y, a / v.z);
     }
 
-    vec3& operator/=(const vec3& v) {
+    constexpr vec3& operator/=(const vec3& v) {
         if (v.x == 0 || v.y == 0 || v.z == 0) {
             console::get(default_consoles::math)
                 ->critical(
@@ -254,7 +271,7 @@ class vec3 {
     }
 
     template <typename U>
-    vec3& operator/=(U a) {
+    constexpr vec3& operator/=(U a) {
         if (a == 0) {
             console::get(default_consoles::math)
                 ->critical(
@@ -268,7 +285,8 @@ class vec3 {
         return *this;
     }
 
-    friend vec3 operator+(const vec3& u, const vec3& v) {
+    [[nodiscard]] constexpr friend vec3 operator+(const vec3& u,
+                                                  const vec3& v) noexcept {
         vec3 out;
         out.x = u.x + v.x;
         out.y = u.y + v.y;
@@ -276,14 +294,15 @@ class vec3 {
         return out;
     }
 
-    vec3& operator+=(const vec3& v) {
+    constexpr vec3& operator+=(const vec3& v) noexcept {
         x += v.x;
         y += v.y;
         z += v.z;
         return *this;
     }
 
-    friend vec3 operator-(const vec3& u, const vec3& v) {
+    [[nodiscard]] constexpr friend vec3 operator-(const vec3& u,
+                                                  const vec3& v) noexcept {
         vec3 out;
         out.x = u.x - v.x;
         out.y = u.y - v.y;
@@ -291,14 +310,14 @@ class vec3 {
         return out;
     }
 
-    vec3& operator-=(const vec3& v) {
+    constexpr vec3& operator-=(const vec3& v) noexcept {
         x -= v.x;
         y -= v.y;
         z -= v.z;
         return *this;
     }
 
-    vec3 operator-() const {
+    [[nodiscard]] constexpr vec3 operator-() const noexcept {
         vec3 out;
         out.x = -x;
         out.y = -y;
@@ -306,7 +325,14 @@ class vec3 {
         return out;
     }
 
-    T dot(const vec3& u) const { return (x * u.x) + (y * u.y) + (z * u.z); }
+    [[nodiscard]] constexpr T dot(const vec3& u) const noexcept {
+        return (x * u.x) + (y * u.y) + (z * u.z);
+    }
+
+    [[nodiscard]] constexpr vec3 cross(const vec3& v) const noexcept {
+        return vec3((y * v.z) - (z * v.y), (z * v.x) - (x * v.z),
+                    (x * v.y) - (y * v.x));
+    }
 };
 
 using vec3f = vec3<float>;

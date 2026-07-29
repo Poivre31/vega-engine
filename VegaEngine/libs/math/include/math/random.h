@@ -5,7 +5,7 @@
 #include <concepts>
 #include <random>
 
-#include "math/coordinates.h"
+#include "math/types/coordinates.h"
 #include "math/vec.h"
 
 const size_t seed = 42;
@@ -25,22 +25,31 @@ class random {
     }
 
     template <std::floating_point T>
-    static vec3<T> uniform_3(const T lower, const T upper) {
+    static vec3<T> uniform_vec3(const T lower, const T upper) {
         return vec3<T>(uniform(lower, upper), uniform(lower, upper),
                        uniform(lower, upper));
     }
 
     template <std::floating_point T>
-    static vec3<T> uniform_3(const vec3<T>& lower, const vec3<T>& upper) {
+    static vec3<T> uniform_vec3(const vec3<T>& lower, const vec3<T>& upper) {
         return vec3<T>(uniform(lower.x, upper.x), uniform(lower.y, upper.y),
                        uniform(lower.z, upper.z));
     }
 
     template <size_t N>
-    static Rn<N> uniform_n(const double lower, const double upper) {
+    static Rn<N> uniform_Rn(const double lower, const double upper) {
         Rn<N> X;
         for (auto& x : X) {
             x = uniform(lower, upper);
+        }
+        return X;
+    }
+
+    template <size_t N>
+    static Rn<N> uniform_Rn(const Rn<N>& lower, const Rn<N>& upper) {
+        Rn<N> X;
+        for (size_t i = 0; i < N; i++) {
+            X[i] = uniform(lower[i], upper[i]);
         }
         return X;
     }

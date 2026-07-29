@@ -6,7 +6,7 @@
 #include <functional>
 
 #include "console/console.h"
-#include "math/euler.h"
+#include "math/ode_solver.h"
 
 double f1(double x, double t) { return x * cos(t); }
 Rn<6> f2(Rn<6> x, double t) { return -0.3 * x; }

@@ -25,7 +25,7 @@ std::shared_ptr<spdlog::logger> console::create(
 }
 
 std::shared_ptr<spdlog::logger> console::create_or_get(
-    const std::string& name, spdlog::level::level_enum level) {
+    const std::string& name, spdlog::level::level_enum level) noexcept {
     std::shared_ptr<spdlog::logger> console(spdlog::get(name));
     if (console) {
         console->trace("Console already exists, returning myself [{:s}]", name);
@@ -64,5 +64,8 @@ std::shared_ptr<spdlog::logger> console::get(
             return _math_console;
         case default_consoles::timer:
             return _timer_console;
+        default:
+            _vega_console->error("The given default console does not exist");
+            return nullptr;
     }
 }

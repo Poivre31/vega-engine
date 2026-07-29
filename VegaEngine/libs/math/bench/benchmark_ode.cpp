@@ -5,8 +5,8 @@
 #include <iostream>
 
 #include "console/console.h"
-#include "math/coordinates.h"
-#include "math/euler.h"
+#include "math/ode_solver.h"
+#include "math/types/coordinates.h"
 
 // template <size_t N>
 // symplectic_view<Rn<N>> g(symplectic_view<Rn<N>> X, double t) {
@@ -47,7 +47,7 @@
 //     return acceleration;
 // }
 
-const size_t N = 100;
+const size_t N = 10;
 const Rn<N> x0{1., 2., 3., 4., 5., 6., 7., 8., 9., 10.};
 
 Rn<N> unabstracted(double t0, double tf, size_t n) {

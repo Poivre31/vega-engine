@@ -1,9 +1,8 @@
 #include <console/console.h>
-#include <math/trapezium.h>
-#include <math/vec3.h>
+#include <math/integration.h>
+#include <math/numbers.h>
+#include <math/vec.h>
 #include <timer/timer.h>
-
-#include <numbers>
 
 double f(double x) { return sin(x); }
 
@@ -19,7 +18,7 @@ int main() {
 
     orion_console->info(
         "The integral of sin between 0 and pi is around : {:.4f}",
-        integration::trapezium(0, std::numbers::pi, f, 1000000));
+        integration::trapezium(0, math::pi, f, 1000000));
 
     orion_console->debug("Successeful integration !");
 
@@ -32,4 +31,17 @@ int main() {
 
     timer::print_elapsed_time("halo");
     timer::print_elapsed_time();
+
+    console::get(default_consoles::math)
+        ->info("Reviving program thanks to maths !");
+    vec3d v{3., 2., 1.};
+    console::get(default_consoles::math)
+        ->info(
+            "Projecting {:.4g} on the plane defined by {:.4g} and {:.4g} "
+            ": result is {:.4g}",
+            v, vec3d{1., 2., 0.}, vec3d(axis::y),
+            project(v, {{1., 2., 0.}, axis::y}));
+
+    v.set_zero();
+    v.print();
 }

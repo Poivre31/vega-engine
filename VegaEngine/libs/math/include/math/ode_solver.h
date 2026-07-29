@@ -1,4 +1,4 @@
 #pragma once
 
-#include "math/euler.h"   // IWYU pragma: export
-#include "math/solver.h"  // IWYU pragma: export
+#include "math/ode/euler.h"   // IWYU pragma: export
+#include "math/ode/solver.h"  // IWYU pragma: export

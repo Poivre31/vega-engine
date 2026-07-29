@@ -3,7 +3,7 @@
 #include <cmath>
 #include <functional>
 
-#include "math/trapezium.h"
+#include "math/integration.h"
 
 TEST(TestMath, TestIntegrate) {
     double a = -.5;

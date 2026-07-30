@@ -80,8 +80,8 @@ constexpr std::string_view time_unit_text(time_unit unit) noexcept {
  *
  * You can stall the execution of the program for a given time with `stall`
  *
- *  Status and time is printer using [VegaEngine.timer] console which is
- available with `get_console`
+ *  Status and time is printer using [VegaTimer] console which is
+ available with `console::get(default_consoles::timer)`
  *
  * [global] timer starts at program startup and can't be paused/reset.
  * [main] is available by default and can be manipulated like other timers.

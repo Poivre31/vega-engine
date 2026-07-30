@@ -1,12 +1,13 @@
 #pragma once
 
+#include <concepts>
 #include <numbers>
-#include <type_traits>
-
-template <typename T>
-concept is_numeric = std::is_integral<T>() || std::is_floating_point<T>();
 
 namespace math {
+
+template <typename T>
+concept numeric = std::integral<T> || std::floating_point<T>;
+
 using std::numbers::e;
 using std::numbers::egamma;
 using std::numbers::inv_pi;
@@ -22,12 +23,12 @@ using std::numbers::sqrt2;
 using std::numbers::sqrt3;
 
 /** 2 * pi */
-const double tau = 6.283185307179586476925286766559005768L;
+inline constexpr double tau = 6.283185307179586476925286766559005768;
 /** sqrt(pi) */
-const double sqrtpi = 1.772453850905516027298167483341145182L;
+inline constexpr double sqrtpi = 1.772453850905516027298167483341145182;
 /** pi / 2 */
-const double pi_by_2 = 1.570796326794896619231321691639751442L;
+inline constexpr double pi_by_2 = 1.570796326794896619231321691639751442;
 /** 3 * pi /2 */
-const double pi_3_by_2 = 4.712388980384689857693965074919254326L;
+inline constexpr double pi_3_by_2 = 4.712388980384689857693965074919254326;
 
 }  // namespace math

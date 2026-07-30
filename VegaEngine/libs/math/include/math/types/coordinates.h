@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <functional>
 
+namespace math {
 /**
  * @brief Class that supports default initialisation, scalar multiplication and
  * binary addition (eg double, vec3...)
@@ -21,6 +22,8 @@ concept stable_space = requires(T x, T y, double a) {
     { x - y } -> std::same_as<T>;
     { -x } -> std::same_as<T>;
 };
+
+}  // namespace math
 
 /**
  * @brief A fixed size vector derived from std::array<double> satisfying

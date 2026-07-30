@@ -8,7 +8,9 @@
 #include "math/types/coordinates.h"
 #include "math/vec.h"
 
-const size_t seed = 42;
+inline constexpr size_t seed =
+    42;  // For now fixed seed shared across threads for reproductability, will
+         // change in the future
 
 class random {
    public:

@@ -27,7 +27,7 @@ namespace solver {
  * @tparam T is the unknown variable's type (eg double or vec3 but might be any
  * type that satisfies 'stable_space' criterias)
  */
-template <stable_space T>
+template <math::stable_space T>
 class base_solver {
    public:
     [[nodiscard]] virtual T iteration(

@@ -23,7 +23,7 @@ namespace solver {
  * @tparam T is the unknown variable's type (eg double or vec3 but might be any
  * type that satisfies 'stable_space' criterias)
  */
-template <stable_space T>
+template <math::stable_space T>
 class euler : public base_solver<T> {
     T iteration(const T& X, const double t,
                 const std::function<T(T X, double t)>& dXdt,

@@ -22,7 +22,7 @@ using spdlog::level::warn;
 }  // namespace level
 
 /** The engine's consoles that are created at startup and always available. */
-enum class default_consoles : uint8_t { vega, math, timer };
+enum class default_consoles : uint8_t { vega, math, timer, test };
 
 /**
  * @brief Console class to manage spdlog loggers
@@ -46,7 +46,7 @@ class console {
     */
     static std::shared_ptr<spdlog::logger> create_or_get(
         const std::string& name,
-        spdlog::level::level_enum level = level::trace) noexcept;
+        spdlog::level::level_enum level = level::trace);
 
     /**
      * @brief Returns existing spdlog logger called @param name, if it doesn't
@@ -68,4 +68,5 @@ class console {
     static inline auto _vega_console = create("VegaEngine", level::trace);
     static inline auto _math_console = create("VegaMath", level::trace);
     static inline auto _timer_console = create("VegaTimer", level::trace);
+    static inline auto _test_console = create("VegaTest", level::trace);
 };

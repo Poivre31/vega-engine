@@ -19,15 +19,9 @@ add_library(Math
     "include/math/ode/euler.h"
 
     "include/math/ode_solver.h"
-    src/types/vec3.cpp
-    include/math/types/vec3i.h
 )
 
 target_include_directories(Math PUBLIC
-    "include/types"
-    "include/integration"
-    "include/ode"
-    "include/random"
     "include"
 )
 
@@ -37,7 +31,7 @@ target_link_libraries(Math PUBLIC Console)
 add_subdirectory(bench)
 
 if(MSVC)
-    target_compile_options(VegaEngine PRIVATE -Wall -W4)
+    target_compile_options(Math PRIVATE -Wall -W4)
 else()
-    target_compile_options(VegaEngine PRIVATE -Wall -Wextra -Wpedantic -Wshadow -Wconversion)
+    target_compile_options(Math PRIVATE -Wall -Wextra -Wpedantic -Wshadow -Wconversion)
 endif()

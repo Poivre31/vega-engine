@@ -1,3 +1,15 @@
-add_executable(math_bench benchmark_ode.cpp)
-target_link_libraries(math_bench PRIVATE nanobench)
-target_link_libraries(math_bench PRIVATE Math)
+add_executable(math_bench_ode bench_ode.cpp)
+target_link_libraries(math_bench_ode PRIVATE nanobench)
+target_link_libraries(math_bench_ode PRIVATE Math)
+
+add_executable(math_bench_integration bench_integration.cpp)
+target_link_libraries(math_bench_integration PRIVATE nanobench)
+target_link_libraries(math_bench_integration PRIVATE Math)
+
+add_executable(math_bench_random bench_random.cpp)
+target_link_libraries(math_bench_random PRIVATE nanobench)
+target_link_libraries(math_bench_random PRIVATE Math)
+
+add_executable(math_bench_vec3 bench_vec3.cpp)
+target_link_libraries(math_bench_vec3 PRIVATE nanobench)
+target_link_libraries(math_bench_vec3 PRIVATE Math)

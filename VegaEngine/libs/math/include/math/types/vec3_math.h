@@ -2,62 +2,55 @@
 #include <concepts>
 
 #include "math/types/vec3.h"
-#include "math/types/vec3i.h"
 
-template <std::floating_point T>
+template <math::numeric T>
 [[nodiscard]] constexpr T dot(const vec3<T>& u, const vec3<T>& v) noexcept {
     return u.dot(v);
 }
-template <std::integral T>
-[[nodiscard]] constexpr T dot(const vec3i<T>& u, const vec3i<T>& v) noexcept {
-    return u.dot(v);
-}
 
-template <std::floating_point T>
+template <math::numeric T>
 [[nodiscard]] constexpr vec3<T> cross(const vec3<T>& u,
                                       const vec3<T>& v) noexcept {
-    return u.cross(v);
-}
-template <std::integral T>
-[[nodiscard]] constexpr vec3i<T> cross(const vec3i<T>& u,
-                                       const vec3i<T>& v) noexcept {
     return u.cross(v);
 }
 
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> cos(const vec3<T>& u) noexcept {
-    return vec3<T>(cos(u.x), cos(u.y), cos(u.z));
+    return vec3<T>(std::cos(u.x), std::cos(u.y), std::cos(u.z));
 }
 
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> sin(const vec3<T>& u) noexcept {
-    return vec3<T>(sin(u.x), sin(u.y), sin(u.z));
+    return vec3<T>(std::sin(u.x), std::sin(u.y), std::sin(u.z));
 }
 
 template <std::floating_point T>
-[[nodiscard]] inline vec3<T> tan(const vec3<T>& u) {
-    return vec3<T>(tan(u.x), tan(u.y), tan(u.z));
+[[nodiscard]] inline vec3<T> tan(const vec3<T>& u) noexcept {
+    return vec3<T>(std::tan(u.x), std::tan(u.y), std::tan(u.z));
 }
 
 template <std::floating_point T>
-[[nodiscard]] inline vec3<T> exp(const vec3<T>& u) {
-    return vec3<T>(exp(u.x), exp(u.y), exp(u.z));
+[[nodiscard]] inline vec3<T> exp(const vec3<T>& u) noexcept {
+    return vec3<T>(std::exp(u.x), std::exp(u.y), std::exp(u.z));
 }
 
-/** According to right hand rule */
+/** Rotates vector around one of the cartesian axis according to right hand rule
+ * and anti-clockwise rotatation */
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> rotate(const vec3<T>& v, const axis ax,
                                     const double theta) noexcept {
+    const double cos_t = std::cos(theta);
+    const double sin_t = std::sin(theta);
     switch (ax) {
         case axis::x:
-            return vec3(v.x, (cos(theta) * v.y) - (sin(theta) * v.z),
-                        (sin(theta) * v.y) + (cos(theta) * v.z));
+            return vec3(v.x, (cos_t * v.y) - (sin_t * v.z),
+                        (sin_t * v.y) + (cos_t * v.z));
         case axis::y:
-            return vec3((cos(theta) * v.x) + (sin(theta) * v.z), v.y,
-                        (-sin(theta) * v.x) + (cos(theta) * v.z));
+            return vec3((cos_t * v.x) + (sin_t * v.z), v.y,
+                        (-sin_t * v.x) + (cos_t * v.z));
         case axis::z:
-            return vec3((cos(theta) * v.x) - (sin(theta) * v.y),
-                        (sin(theta) * v.x) + (cos(theta) * v.y), v.z);
+            return vec3((cos_t * v.x) - (sin_t * v.y),
+                        (sin_t * v.x) + (cos_t * v.y), v.z);
         default:
             console::get(default_consoles::math)
                 ->error(
@@ -67,6 +60,11 @@ template <std::floating_point T>
     }
 }
 
+/**
+ * @brief Projects vector @param vec on the axis @param axis (eg
+ * project(vec={1,2,3},axis={0,1,0}) = {0,2,0}). @param axis does not need to be
+ * normalized.
+ */
 template <std::floating_point T>
 [[nodiscard]] constexpr vec3<T> project(const vec3<T>& vec,
                                         const vec3<T>& axis) noexcept {
@@ -78,7 +76,12 @@ template <std::floating_point T>
     }
 }
 
-/** Returns zero if the two vectors don't define a plane (ie if they are zero or
+/**
+ * @brief Projects vector @param vec on the plane defined by the vector pair
+ * @param plane (eg project(vec={1,2,3},plane=({1,0,0}, {0,1,0}) = {1,2,0}).
+ * @param plane vectors do not need to be normalized.
+ *
+ * Returns zero if the two vectors don't define a plane (ie if they are zero or
  * colinear) */
 template <std::floating_point T>
 [[nodiscard]] constexpr vec3<T> project(

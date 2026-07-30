@@ -10,36 +10,35 @@
 #include "math/numbers.h"
 
 template <math::numeric T>
-class vec3 {
+class vec2 {
    public:
     T x{};
     T y{};
-    T z{};
 
-    vec3() = default;
-    ~vec3() = default;
+    vec2() = default;
+    ~vec2() = default;
 
-    vec3& operator=(const vec3& v) = default;
-    vec3(vec3&& v) = default;
-    vec3& operator=(vec3&& v) = default;
+    vec2& operator=(const vec2& v) = default;
+    vec2(vec2&& v) = default;
+    vec2& operator=(vec2&& v) = default;
 
-    constexpr explicit vec3(T a) : x(a), y(a), z(a) {}
+    constexpr explicit vec2(T a) : x(a), y(a) {}
 
-    constexpr vec3(T x, T y, T z) : x(x), y(y), z(z) {}
+    constexpr vec2(T x, T y) : x(x), y(y) {}
 
-    constexpr vec3(const vec3& ref) : x(ref.x), y(ref.y), z(ref.z) {}
+    constexpr vec2(const vec2& ref) : x(ref.x), y(ref.y) {}
 
-    constexpr vec3(axis ax) noexcept
+    constexpr vec2(axis ax) noexcept
         requires std::floating_point<T>;
 
     template <math::numeric U>
-    [[nodiscard]] constexpr explicit operator vec3<U>() const noexcept {
-        return vec3(static_cast<T>(x), static_cast<T>(y), static_cast<T>(z));
+    [[nodiscard]] constexpr explicit operator vec2<U>() const noexcept {
+        return vec2(static_cast<T>(x), static_cast<T>(y));
     }
 
     constexpr void set_zero() noexcept;
     constexpr void fill(T a) noexcept;
-    constexpr void copy(const vec3& v) noexcept;
+    constexpr void copy(const vec2& v) noexcept;
 
     [[nodiscard]] constexpr T sum() const noexcept;
     [[nodiscard]] constexpr size_t norm_L0() const noexcept;
@@ -57,26 +56,25 @@ class vec3 {
 
     void normalize() noexcept
         requires std::floating_point<T>;
-    [[nodiscard]] vec3 normalized() const noexcept
+    [[nodiscard]] vec2 normalized() const noexcept
         requires std::floating_point<T>;
 
     void round() noexcept
         requires std::floating_point<T>;
-    [[nodiscard]] vec3 rounded() const noexcept
+    [[nodiscard]] vec2 rounded() const noexcept
         requires std::floating_point<T>;
 
     void floor() noexcept
         requires std::floating_point<T>;
-    [[nodiscard]] vec3 floored() const noexcept
+    [[nodiscard]] vec2 floored() const noexcept
         requires std::floating_point<T>;
 
     void ceil() noexcept
         requires std::floating_point<T>;
-    [[nodiscard]] vec3 ceiled() const noexcept
+    [[nodiscard]] vec2 ceiled() const noexcept
         requires std::floating_point<T>;
 
-    [[nodiscard]] constexpr T dot(const vec3& u) const noexcept;
-    [[nodiscard]] constexpr vec3 cross(const vec3& v) const noexcept;
+    [[nodiscard]] constexpr T dot(const vec2& u) const noexcept;
 
     void print(const std::shared_ptr<spdlog::logger>& console =
                    console::get(default_consoles::math)) const;
@@ -87,160 +85,147 @@ class vec3 {
 
     void transform(const std::function<T(T)>& func);
 
-    [[nodiscard]] vec3 transformed(const std::function<T(T)>& func) const;
+    [[nodiscard]] vec2 transformed(const std::function<T(T)>& func) const;
 
     template <std::floating_point U>
-    [[nodiscard]] vec3<U> transformed(const std::function<U(T)>& func) const
+    [[nodiscard]] vec2<U> transformed(const std::function<U(T)>& func) const
         requires std::integral<T>
     {
-        return vec3<U>(func(x), func(y), func(z));
+        return vec2<U>(func(x), func(y));
     }
 
-    [[nodiscard]] constexpr bool operator==(const vec3& v) const noexcept {
-        return (x == v.x && y == v.y && z == v.z);
+    [[nodiscard]] constexpr bool operator==(const vec2& v) const noexcept {
+        return (x == v.x && y == v.y);
     }
 
-    [[nodiscard]] constexpr friend vec3 operator+(const vec3& u,
-                                                  const vec3& v) noexcept {
-        vec3 out;
+    [[nodiscard]] constexpr friend vec2 operator+(const vec2& u,
+                                                  const vec2& v) noexcept {
+        vec2 out;
         out.x = u.x + v.x;
         out.y = u.y + v.y;
-        out.z = u.z + v.z;
         return out;
     }
 
-    constexpr vec3& operator+=(const vec3& v) noexcept {
+    constexpr vec2& operator+=(const vec2& v) noexcept {
         x += v.x;
         y += v.y;
-        z += v.z;
         return *this;
     }
 
-    [[nodiscard]] constexpr friend vec3 operator-(const vec3& u,
-                                                  const vec3& v) noexcept {
-        vec3 out;
+    [[nodiscard]] constexpr friend vec2 operator-(const vec2& u,
+                                                  const vec2& v) noexcept {
+        vec2 out;
         out.x = u.x - v.x;
         out.y = u.y - v.y;
-        out.z = u.z - v.z;
         return out;
     }
 
-    constexpr vec3& operator-=(const vec3& v) noexcept {
+    constexpr vec2& operator-=(const vec2& v) noexcept {
         x -= v.x;
         y -= v.y;
-        z -= v.z;
         return *this;
     }
 
-    [[nodiscard]] constexpr vec3 operator-() const noexcept {
-        vec3 out;
+    [[nodiscard]] constexpr vec2 operator-() const noexcept {
+        vec2 out;
         out.x = -x;
         out.y = -y;
-        out.z = -z;
         return out;
     }
 
-    [[nodiscard]] constexpr friend vec3 operator*(T a, const vec3& v) noexcept {
-        vec3 out;
+    [[nodiscard]] constexpr friend vec2 operator*(T a, const vec2& v) noexcept {
+        vec2 out;
         out.x = v.x * a;
         out.y = v.y * a;
-        out.z = v.z * a;
         return out;
     }
 
-    [[nodiscard]] constexpr friend vec3 operator*(const vec3& v, T a) noexcept {
+    [[nodiscard]] constexpr friend vec2 operator*(const vec2& v, T a) noexcept {
         return a * v;
     }
 
-    [[nodiscard]] constexpr friend vec3 operator*(const vec3& u,
-                                                  const vec3& v) noexcept {
-        vec3 out;
+    [[nodiscard]] constexpr friend vec2 operator*(const vec2& u,
+                                                  const vec2& v) noexcept {
+        vec2 out;
         out.x = u.x * v.x;
         out.y = u.y * v.y;
-        out.z = u.z * v.z;
         return out;
     }
 
-    constexpr vec3& operator*=(T a) noexcept {
+    constexpr vec2& operator*=(T a) noexcept {
         x *= a;
         y *= a;
-        z *= a;
         return *this;
     }
 
-    constexpr vec3& operator*=(const vec3& u) noexcept {
+    constexpr vec2& operator*=(const vec2& u) noexcept {
         x *= u.x;
         y *= u.y;
-        z *= u.z;
         return *this;
     }
 
-    [[nodiscard]] constexpr friend vec3 operator/(const vec3& u, const vec3& v)
+    [[nodiscard]] constexpr friend vec2 operator/(const vec2& u, const vec2& v)
         requires std::floating_point<T>
     {
-        if (v.x == 0 || v.y == 0 || v.z == 0) [[unlikely]] {
+        if (v.x == 0 || v.y == 0) [[unlikely]] {
             throw std::runtime_error(
-                "Division by zero (trying to divide vec3 by vec3 with some "
+                "Division by zero (trying to divide vec2 by vec2 with some "
                 "zero components)");
         }
-        vec3 out;
+        vec2 out;
         out.x = u.x / v.x;
         out.y = u.y / v.y;
-        out.z = u.z / v.z;
         return out;
     }
 
-    [[nodiscard]] constexpr friend vec3 operator/(const vec3& u, T a)
+    [[nodiscard]] constexpr friend vec2 operator/(const vec2& u, T a)
         requires std::floating_point<T>
     {
         if (a == 0) [[unlikely]] {
             throw std::runtime_error(
-                "Division by zero (trying to divide vec3 by null number ");
+                "Division by zero (trying to divide vec2 by null number ");
         }
-        vec3 out;
+        vec2 out;
         out.x = u.x / a;
         out.y = u.y / a;
-        out.z = u.z / a;
         return out;
     }
 
-    constexpr vec3& operator/=(const vec3& v)
+    constexpr vec2& operator/=(const vec2& v)
         requires std::floating_point<T>
     {
-        if (v.x == 0 || v.y == 0 || v.z == 0) [[unlikely]] {
+        if (v.x == 0 || v.y == 0) [[unlikely]] {
             throw std::runtime_error(
-                "Division by zero (trying to divide vec3 by vec3 with some "
+                "Division by zero (trying to divide vec2 by vec2 with some "
                 "zero components)");
         }
         x /= v.x;
         y /= v.y;
-        z /= v.z;
         return *this;
     }
 
     template <typename U>
-    constexpr vec3& operator/=(U a)
+    constexpr vec2& operator/=(U a)
         requires std::floating_point<T>
     {
         if (a == 0) [[unlikely]] {
             throw std::runtime_error(
-                "Division by zero (trying to divide vec3 by null number ");
+                "Division by zero (trying to divide vec2 by null number ");
         }
         x /= a;
         y /= a;
-        z /= a;
         return *this;
     }
 };
 
-using vec3f = vec3<float>;
-using vec3d = vec3<double>;
-using vec3i = vec3<int32_t>;
-using vec3l = vec3<int64_t>;
+using vec2f = vec2<float>;
+using vec2d = vec2<double>;
+using vec2i = vec2<int32_t>;
+using vec2l = vec2<int64_t>;
 
 template <math::numeric T>
-struct fmt::formatter<vec3<T>> : fmt::formatter<T> {
-    auto format(vec3<T> v, format_context& ctx) const -> decltype(ctx.out()) {
+struct fmt::formatter<vec2<T>> : fmt::formatter<T> {
+    auto format(vec2<T> v, format_context& ctx) const -> decltype(ctx.out()) {
         auto out = fmt::format_to(ctx.out(), "(");
 
         ctx.advance_to(out);
@@ -249,10 +234,6 @@ struct fmt::formatter<vec3<T>> : fmt::formatter<T> {
         out = fmt::format_to(out, ", ");
         ctx.advance_to(out);
         out = fmt::formatter<T>::format(v.y, ctx);
-
-        out = fmt::format_to(out, ", ");
-        ctx.advance_to(out);
-        out = fmt::formatter<T>::format(v.z, ctx);
 
         return fmt::format_to(out, ")");
     }

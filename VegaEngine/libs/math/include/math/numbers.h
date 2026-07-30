@@ -32,3 +32,5 @@ inline constexpr double pi_by_2 = 1.570796326794896619231321691639751442;
 inline constexpr double pi_3_by_2 = 4.712388980384689857693965074919254326;
 
 }  // namespace math
+
+enum class axis : std::uint8_t { x, y, z };

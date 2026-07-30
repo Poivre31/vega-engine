@@ -1,6 +1,9 @@
 #pragma once
+#include <algorithm>
+#include <cmath>
 #include <cstdlib>
 
+#include "math/helper.h"
 #include "math/types/vec2.h"
 
 /** Returns (0,0) if axis is axis::z */
@@ -154,6 +157,29 @@ vec2<T> vec2<T>::ceiled() const noexcept
     requires std::floating_point<T>
 {
     return vec2(std::ceil(x), std::ceil(y));
+}
+
+template <math::numeric T>
+constexpr bool vec2<T>::is_within(T lower, T upper) noexcept {
+    return math::is_within(x, lower, upper) && math::is_within(y, lower, upper);
+}
+
+template <math::numeric T>
+constexpr bool vec2<T>::is_within(vec2 lower, vec2 upper) noexcept {
+    return math::is_within(x, lower.x, upper.x) &&
+           math::is_within(y, lower.y, upper.y);
+}
+
+template <math::numeric T>
+constexpr bool vec2<T>::is_strictly_within(T lower, T upper) noexcept {
+    return math::is_strictly_within(x, lower, upper) &&
+           math::is_strictly_within(y, lower, upper);
+}
+
+template <math::numeric T>
+constexpr bool vec2<T>::is_strictly_within(vec2 lower, vec2 upper) noexcept {
+    return math::is_strictly_within(x, lower.x, upper.x) &&
+           math::is_strictly_within(y, lower.y, upper.y);
 }
 
 template <math::numeric T>

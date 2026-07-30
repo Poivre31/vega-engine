@@ -1,5 +1,4 @@
 #pragma once
-#include <basetsd.h>
 #include <console/console.h>
 
 #include <concepts>
@@ -34,7 +33,7 @@ class vec3 {
 
     template <math::numeric U>
     [[nodiscard]] constexpr explicit operator vec3<U>() const noexcept {
-        return vec3(static_cast<T>(x), static_cast<T>(y), static_cast<T>(z));
+        return vec3<U>(static_cast<U>(x), static_cast<U>(y), static_cast<U>(z));
     }
 
     constexpr void set_zero() noexcept;
@@ -74,6 +73,21 @@ class vec3 {
         requires std::floating_point<T>;
     [[nodiscard]] vec3 ceiled() const noexcept
         requires std::floating_point<T>;
+
+    /** Checks if x, y and z are in the [ @param lower, @param upper ] range
+     * (bornes included) */
+    [[nodiscard]] constexpr bool is_within(T lower, T upper) noexcept;
+    /** Checks if x, y and z are in the [ @param lower, @param upper ] range
+     * (bornes included) */
+    [[nodiscard]] constexpr bool is_within(vec3 lower, vec3 upper) noexcept;
+
+    /** Checks if x, y and z are in the [ @param lower, @param upper ] range
+     * (bornes excluded) */
+    [[nodiscard]] constexpr bool is_strictly_within(T lower, T upper) noexcept;
+    /** Checks if x, y and z are in the [ @param lower, @param upper ] range
+     * (bornes excluded) */
+    [[nodiscard]] constexpr bool is_strictly_within(vec3 lower,
+                                                    vec3 upper) noexcept;
 
     [[nodiscard]] constexpr T dot(const vec3& u) const noexcept;
     [[nodiscard]] constexpr vec3 cross(const vec3& v) const noexcept;

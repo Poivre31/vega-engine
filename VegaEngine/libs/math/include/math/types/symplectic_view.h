@@ -1,4 +1,8 @@
+#pragma once
+#include <utility>
+
 #include "math/types/stable_space.h"
+
 
 /**
  * @brief Provides the stable_space requirements to a (position,velocity) pair.

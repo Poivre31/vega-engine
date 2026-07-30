@@ -11,7 +11,7 @@ class generator {
     static void iterate() { seed = ((seed * 1103515245) + 12345) % (1 << 31); }
 
     static double randd(double a, double b) {
-        double x = double(seed) / (1U << 31) * (b - a);
+        double x = a + (double(seed) / (1U << 31) * (b - a));
         iterate();
         return x;
     }

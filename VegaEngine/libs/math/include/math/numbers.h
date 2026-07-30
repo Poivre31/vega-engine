@@ -1,12 +1,14 @@
 #pragma once
 
 #include <concepts>
+#include <cstdint>
 #include <numbers>
 
 namespace math {
 
+/**Signed integers or floating point numbers */
 template <typename T>
-concept numeric = std::integral<T> || std::floating_point<T>;
+concept numeric = std::signed_integral<T> || std::floating_point<T>;
 
 using std::numbers::e;
 using std::numbers::egamma;

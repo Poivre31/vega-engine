@@ -31,6 +31,8 @@ namespace solver {
 template <math::stable_space T>
 class base_solver {
    public:
+    virtual ~base_solver() = default;
+
     [[nodiscard]] virtual T iteration(
         const T& X, double t, const std::function<T(T X, double t)>& dXdt,
         double dt) const = 0;
@@ -75,8 +77,8 @@ class base_solver {
         const double t0 = _t;
         const double dt = (tf - t0) / static_cast<double>(N);
         for (size_t i = 0; i < N; i++) {
-            _t += dt;
             _state = iteration(_state, _t, dXdt, dt);
+            _t += dt;
         }
         return _state;
     }

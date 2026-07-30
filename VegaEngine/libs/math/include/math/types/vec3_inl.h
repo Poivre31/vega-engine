@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdlib>
 
+#include "math/helper.h"
 #include "math/types/vec3.h"
 
 template <math::numeric T>
@@ -160,6 +161,33 @@ vec3<T> vec3<T>::ceiled() const noexcept
     requires std::floating_point<T>
 {
     return vec3(std::ceil(x), std::ceil(y), std::ceil(z));
+}
+
+template <math::numeric T>
+constexpr bool vec3<T>::is_within(T lower, T upper) noexcept {
+    return math::is_within(x, lower, upper) &&
+           math::is_within(y, lower, upper) && math::is_within(z, lower, upper);
+}
+
+template <math::numeric T>
+constexpr bool vec3<T>::is_within(vec3 lower, vec3 upper) noexcept {
+    return math::is_within(x, lower.x, upper.x) &&
+           math::is_within(y, lower.y, upper.y) &&
+           math::is_within(z, lower.z, upper.z);
+}
+
+template <math::numeric T>
+constexpr bool vec3<T>::is_strictly_within(T lower, T upper) noexcept {
+    return math::is_strictly_within(x, lower, upper) &&
+           math::is_strictly_within(y, lower, upper) &&
+           math::is_strictly_within(z, lower, upper);
+}
+
+template <math::numeric T>
+constexpr bool vec3<T>::is_strictly_within(vec3 lower, vec3 upper) noexcept {
+    return math::is_strictly_within(x, lower.x, upper.x) &&
+           math::is_strictly_within(y, lower.y, upper.y) &&
+           math::is_strictly_within(z, lower.z, upper.z);
 }
 
 template <math::numeric T>

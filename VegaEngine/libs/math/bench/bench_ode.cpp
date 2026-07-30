@@ -53,7 +53,7 @@ const Rn<N> x0{1., 2., 3., 4., 5., 6., 7., 8., 9., 10.};
 Rn<N> unabstracted(double t0, double tf, size_t n) {
     Rn<N> x(x0);
     double dt = (tf - t0) / double(n);
-    for (size_t i = 0; i < n + 1; i++) {
+    for (size_t i = 0; i < n; i++) {
         x = x - 0.3 * x * dt;
     }
     return x;

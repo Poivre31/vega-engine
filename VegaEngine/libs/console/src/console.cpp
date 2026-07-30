@@ -3,14 +3,18 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
+#include <stdexcept>
+
 #include "spdlog/common.h"
 
 std::shared_ptr<spdlog::logger> console::create(
     const std::string& name, spdlog::level::level_enum level) {
     std::shared_ptr<spdlog::logger> console(spdlog::get(name));
     if (console) {
-        throw "Tried to create existing console [{:s}], returning nullptr "
-            "(use create_or_get to ignore this error)";
+        throw std::invalid_argument(fmt::format(
+            "Tried to create existing console [{:s}], (use create_or_get to "
+            "ignore this error)",
+            name));
     } else {
         console = spdlog::stdout_color_mt(name);
         console->set_level(level);
@@ -40,12 +44,10 @@ std::shared_ptr<spdlog::logger> console::create_or_get(
 std::shared_ptr<spdlog::logger> console::get(const std::string& name) {
     std::shared_ptr<spdlog::logger> console(spdlog::get(name));
     if (!console) {
-        _vega_console->error(
-            "Tried to get console [{:s}] that doesn't exist, "
-            "returning nullptr (use "
-            "create_or_get to automatically create it)",
-            name);
-        return nullptr;
+        throw std::invalid_argument(
+            fmt::format("Tried to get console [{:s}] that doesn't exist,  (use "
+                        "create_or_get to automatically create it)",
+                        name));
     } else {
         console->trace("Found console [{:s}]", name);
         return console;

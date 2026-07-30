@@ -82,14 +82,14 @@ template <std::floating_point T>
 [[nodiscard]] constexpr vec3<T> project(
     const vec3<T>& vec, const std::pair<vec3<T>, vec3<T>>& plane) noexcept {
     auto u = cross(plane.first, plane.second);
-    double d2 = u.norm_sqr();
+    T d2 = u.norm_sqr();
     if (d2 == 0.) {
         // console::get(default_consoles::math)
         //     ->warn(
         //         "The two given vectors ({} and {}) do not define a plane,
         //         they " "must be non zero and non colinear", plane.first,
         //         plane.second);
-        return vec3(0.);
+        return vec3<T>(0.);
     } else {
         return vec - (dot(vec, u) / d2 * u);
     }

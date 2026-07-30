@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 enum class time_unit : char { second, millisecond, microsecond, nanosecond };
+
 const time_unit default_time_unit = time_unit::millisecond;
 /** The global timer, starts at program startup and is always avalaible but
  * can't be paused, restarted or reset, always running */
@@ -23,6 +24,38 @@ struct timer_data {
     bool running = true;
 };
 
+constexpr bool is_timer_protected(const std::string& name) {
+    return name == protected_global_timer;
+}
+
+constexpr double time_unit_factor(time_unit unit) noexcept {
+    switch (unit) {
+        case time_unit::second:
+            return 1e-9;
+        case time_unit::millisecond:
+            return 1e-6;
+        case time_unit::microsecond:
+            return 1e-3;
+        case time_unit::nanosecond:
+            return 1e0;
+    }
+    std::abort();
+}
+
+constexpr std::string_view time_unit_text(time_unit unit) noexcept {
+    switch (unit) {
+        case time_unit::second:
+            return "s";
+        case time_unit::millisecond:
+            return "ms";
+        case time_unit::microsecond:
+            return "µs";
+        case time_unit::nanosecond:
+            return "ns";
+    }
+    std::abort();
+}
+
 /**
  * @brief Returns time difference between @param t1 and @param t2 in given time
  * unit @param unit
@@ -31,7 +64,11 @@ struct timer_data {
  */
 [[nodiscard]] constexpr double delta_time(
     std::chrono::steady_clock::time_point t1,
-    std::chrono::steady_clock::time_point t2, time_unit unit) noexcept;
+    std::chrono::steady_clock::time_point t2, time_unit unit) noexcept {
+    auto delta = static_cast<double>(
+        duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
+    return delta * time_unit_factor(unit);
+}
 
 /**
  * @brief Timer class to manage multiple watches.

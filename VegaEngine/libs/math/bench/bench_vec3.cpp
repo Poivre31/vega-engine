@@ -15,9 +15,11 @@ int main() {
               [&] { ankerl::nanobench::doNotOptimizeAway(x1 / x2); });
     double x = 1;
     bench.run("Vec3 ops", [&] {
-        ankerl::nanobench::detail::doNotOptimizeAway(x += (v / (x * a)).norm());
+        ankerl::nanobench::doNotOptimizeAway(x += (v / (x * a)).norm());
     });
     bench.minEpochIterations(0);
-    console::get(default_consoles::math)->set_level(level::critical);
+    console::get(default_consoles::math)
+        ->set_level(level::critical);  // Silences the console to benchmark
+                                       // v.print() overhead
     bench.run("Vec3 print", [&] { v.print(); });
 }

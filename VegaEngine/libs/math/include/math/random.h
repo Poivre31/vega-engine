@@ -7,10 +7,6 @@
 
 #include "math/types.h"
 
-inline constexpr size_t seed =
-    42;  // For now fixed seed shared across threads for reproductability, will
-         // change in the future
-
 class random {
    public:
     random() = delete;
@@ -56,5 +52,8 @@ class random {
     }
 
    private:
-    static thread_local inline std::default_random_engine _engine{seed};
+    static constexpr size_t _seed =
+        42;  // For now fixed seed shared across threads for reproductability,
+             // will change in the future
+    static thread_local inline std::default_random_engine _engine{_seed};
 };

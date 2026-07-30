@@ -2,8 +2,9 @@
 #include <console/console.h>
 
 #include <functional>
+#include <stdexcept>
 
-#include "math/types/coordinates.h"
+#include "math/types/stable_space.h"
 
 namespace solver {
 
@@ -65,10 +66,9 @@ class base_solver {
     T solve(const double tf, const size_t N,
             const std::function<T(T X, double t)>& dXdt) {
         if (!dXdt) {
-            console::get(default_consoles::math)
-                ->error("Assign an update function before using the solver");
-            return _state;
-        } else if (N == 0) {
+            throw std::invalid_argument("Function dXdt is null");
+        }
+        if (N == 0) {
             return _state;
         }
 

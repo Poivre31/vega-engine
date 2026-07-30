@@ -1,4 +1,6 @@
 #pragma once
+#include <cstdlib>
+
 #include "math/types/vec3.h"
 
 template <math::numeric T>

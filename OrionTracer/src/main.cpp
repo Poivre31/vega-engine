@@ -41,7 +41,4 @@ int main() {
             ": result is {:.4g}",
             v, vec3d{1., 2., 0.}, vec3d(axis::y),
             project(v, {{1., 2., 0.}, axis::y}));
-
-    v.set_zero();
-    v.print();
 }

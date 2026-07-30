@@ -6,7 +6,7 @@
 
 #include "console/console.h"
 #include "math/ode_solver.h"
-#include "math/types/coordinates.h"
+#include "math/types.h"
 
 // template <size_t N>
 // symplectic_view<Rn<N>> g(symplectic_view<Rn<N>> X, double t) {

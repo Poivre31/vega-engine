@@ -2,10 +2,10 @@
 #include <basetsd.h>
 #include <console/console.h>
 
-#include <algorithm>
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
+#include <stdexcept>
 
 #include "math/numbers.h"
 
@@ -181,11 +181,9 @@ class vec3 {
         requires std::floating_point<T>
     {
         if (v.x == 0 || v.y == 0 || v.z == 0) [[unlikely]] {
-            console::get(default_consoles::math)
-                ->critical(
-                    "Division by zero (trying to divide vec3 by vec3 with some "
-                    "zero components)");
-            return u;
+            throw std::runtime_error(
+                "Division by zero (trying to divide vec3 by vec3 with some "
+                "zero components)");
         }
         vec3 out;
         out.x = u.x / v.x;
@@ -197,42 +195,24 @@ class vec3 {
     [[nodiscard]] constexpr friend vec3 operator/(const vec3& u, T a)
         requires std::floating_point<T>
     {
-        if (a == 0) {
-            console::get(default_consoles::math)
-                ->critical(
-                    "Division by zero (trying to divide vec3 by null number");
-            return u;
+        if (a == 0) [[unlikely]] {
+            throw std::runtime_error(
+                "Division by zero (trying to divide vec3 by null number ");
         }
         vec3 out;
-        T inv = static_cast<T>(1) / a;
-        out.x = u.x * inv;
-        out.y = u.y * inv;
-        out.z = u.z * inv;
+        out.x = u.x / a;
+        out.y = u.y / a;
+        out.z = u.z / a;
         return out;
-    }
-
-    [[nodiscard]] constexpr friend vec3 operator/(T a, const vec3& v)
-        requires std::floating_point<T>
-    {
-        if (v.x == 0 || v.y == 0 || v.z == 0) {
-            console::get(default_consoles::math)
-                ->critical(
-                    "Division by zero (trying to divide vec3 by vec3 with some "
-                    "zero components)");
-            return vec3(a);
-        }
-        return vec3(a / v.x, a / v.y, a / v.z);
     }
 
     constexpr vec3& operator/=(const vec3& v)
         requires std::floating_point<T>
     {
-        if (v.x == 0 || v.y == 0 || v.z == 0) {
-            console::get(default_consoles::math)
-                ->critical(
-                    "Division by zero (trying to divide vec3 by vec3 with some "
-                    "zero components)");
-            return *this;
+        if (v.x == 0 || v.y == 0 || v.z == 0) [[unlikely]] {
+            throw std::runtime_error(
+                "Division by zero (trying to divide vec3 by vec3 with some "
+                "zero components)");
         }
         x /= v.x;
         y /= v.y;
@@ -244,16 +224,13 @@ class vec3 {
     constexpr vec3& operator/=(U a)
         requires std::floating_point<T>
     {
-        if (a == 0) {
-            console::get(default_consoles::math)
-                ->critical(
-                    "Division by zero (trying to divide vec3 by null number");
-            return *this;
+        if (a == 0) [[unlikely]] {
+            throw std::runtime_error(
+                "Division by zero (trying to divide vec3 by null number ");
         }
-        double inv = 1. / static_cast<double>(a);
-        x *= inv;
-        y *= inv;
-        z *= inv;
+        x /= a;
+        y /= a;
+        z /= a;
         return *this;
     }
 };

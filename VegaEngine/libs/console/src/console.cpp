@@ -63,8 +63,6 @@ std::shared_ptr<spdlog::logger> console::get(
             return _timer_console;
         case default_consoles::test:
             return _test_console;
-        default:
-            _vega_console->error("The given default console does not exist");
-            return nullptr;
     }
+    std::abort();
 }

@@ -6,7 +6,7 @@
 
 int main() {
     ankerl::nanobench::Bench bench;
-    bench.warmup(1000000).minEpochIterations(1000000);
+    bench.warmup(1000).minEpochIterations(1000000);
     auto v = random::uniform_vec3(-1., 1.);
     auto a = random::uniform_vec3(-1., 1.);
     double x1 = random::uniform(-1., 1.);
@@ -17,4 +17,7 @@ int main() {
     bench.run("Vec3 ops", [&] {
         ankerl::nanobench::detail::doNotOptimizeAway(x += (v / (x * a)).norm());
     });
+    bench.minEpochIterations(0);
+    console::get(default_consoles::math)->set_level(level::critical);
+    bench.run("Vec3 print", [&] { v.print(); });
 }

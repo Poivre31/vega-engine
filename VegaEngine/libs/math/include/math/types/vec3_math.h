@@ -38,7 +38,7 @@ template <std::floating_point T>
  * and anti-clockwise rotatation */
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> rotate(const vec3<T>& v, const axis ax,
-                                    const double theta) noexcept {
+                                    const double theta) {
     const double cos_t = std::cos(theta);
     const double sin_t = std::sin(theta);
     switch (ax) {
@@ -51,13 +51,8 @@ template <std::floating_point T>
         case axis::z:
             return vec3((cos_t * v.x) - (sin_t * v.y),
                         (sin_t * v.x) + (cos_t * v.y), v.z);
-        default:
-            console::get(default_consoles::math)
-                ->error(
-                    "Trying to rotate vector around an axis that does not "
-                    "exist");
-            return v;
     }
+    std::abort();
 }
 
 /**

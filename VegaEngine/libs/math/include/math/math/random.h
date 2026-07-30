@@ -5,7 +5,7 @@
 #include <concepts>
 #include <random>
 
-#include "math/types/coordinates.h"
+#include "math/types/Rn.h"
 #include "math/vec.h"
 
 const size_t seed = 42;

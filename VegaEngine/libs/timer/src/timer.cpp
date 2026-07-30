@@ -26,9 +26,8 @@ constexpr double time_unit_factor(time_unit unit) noexcept {
             return 1e-3;
         case time_unit::nanosecond:
             return 1e0;
-        default:
-            return 0.;
     }
+    std::abort();
 }
 
 constexpr std::string_view time_unit_text(time_unit unit) noexcept {
@@ -41,9 +40,8 @@ constexpr std::string_view time_unit_text(time_unit unit) noexcept {
             return "µs";
         case time_unit::nanosecond:
             return "ns";
-        default:
-            return "";
     }
+    std::abort();
 }
 
 constexpr double delta_time(steady_clock::time_point t1,

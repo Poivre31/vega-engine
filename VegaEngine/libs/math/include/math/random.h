@@ -5,8 +5,7 @@
 #include <concepts>
 #include <random>
 
-#include "math/types/coordinates.h"
-#include "math/vec.h"
+#include "math/types.h"
 
 inline constexpr size_t seed =
     42;  // For now fixed seed shared across threads for reproductability, will

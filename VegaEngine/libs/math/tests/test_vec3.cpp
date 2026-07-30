@@ -24,7 +24,7 @@ TEST(TestMath, TestVec3) {
         (cross(vec3d(axis::x), vec3d(axis::y)) - vec3d(axis::z)).norm_L1(),
         .00001);
     EXPECT_LE(abs(dot(vec3d(axis::x), vec3d(axis::y))), .00001);
-    EXPECT_LE((6. / v - vec3d(2., 3., 6.)).norm_L1(), .00001);
+    EXPECT_LE((vec3(6.) / v - vec3d(2., 3., 6.)).norm_L1(), .00001);
     EXPECT_EQ(vec3d(axis::x).norm_L0(), 1);
     EXPECT_EQ(cos(v), v.transformed(cosl));
 
@@ -39,4 +39,7 @@ TEST(TestMath, TestVec3) {
               1e-10);
     EXPECT_EQ(project(v, vec3d(axis::y)), 2. * vec3d(axis::y));
     EXPECT_EQ(project(v, {vec3d(axis::x), vec3d(axis::z)}), vec3d(3., 0., 1.));
+
+    v.set_zero();
+    EXPECT_EQ(v, project(vec3d(1, 0, 0), vec3d(0, 1, 0)));
 }

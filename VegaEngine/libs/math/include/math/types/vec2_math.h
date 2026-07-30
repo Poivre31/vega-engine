@@ -45,7 +45,7 @@ template <std::floating_point T>
 template <std::floating_point T>
 [[nodiscard]] constexpr vec2<T> project(const vec2<T>& vec,
                                         const vec2<T>& axis) noexcept {
-    double d2 = axis.norm_sqr();
+    T d2 = axis.norm_sqr();
     if (d2 == 0.) {
         return vec2<T>(0.);
     } else {

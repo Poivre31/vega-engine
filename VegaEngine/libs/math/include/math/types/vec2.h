@@ -1,5 +1,4 @@
 #pragma once
-#include <basetsd.h>
 #include <console/console.h>
 
 #include <concepts>
@@ -33,7 +32,7 @@ class vec2 {
 
     template <math::numeric U>
     [[nodiscard]] constexpr explicit operator vec2<U>() const noexcept {
-        return vec2(static_cast<T>(x), static_cast<T>(y));
+        return vec2<U>(static_cast<U>(x), static_cast<U>(y));
     }
 
     constexpr void set_zero() noexcept;
@@ -73,6 +72,21 @@ class vec2 {
         requires std::floating_point<T>;
     [[nodiscard]] vec2 ceiled() const noexcept
         requires std::floating_point<T>;
+
+    /** Checks if x, y and z are in the [ @param lower, @param upper ] range
+     * (bornes included) */
+    [[nodiscard]] constexpr bool is_within(T lower, T upper) noexcept;
+    /** Checks if x, y and z are in the [ @param lower, @param upper ] range
+     * (bornes included) */
+    [[nodiscard]] constexpr bool is_within(vec2 lower, vec2 upper) noexcept;
+
+    /** Checks if x, y and z are in the [ @param lower, @param upper ] range
+     * (bornes excluded) */
+    [[nodiscard]] constexpr bool is_strictly_within(T lower, T upper) noexcept;
+    /** Checks if x, y and z are in the [ @param lower, @param upper ] range
+     * (bornes excluded) */
+    [[nodiscard]] constexpr bool is_strictly_within(vec2 lower,
+                                                    vec2 upper) noexcept;
 
     [[nodiscard]] constexpr T dot(const vec2& u) const noexcept;
 

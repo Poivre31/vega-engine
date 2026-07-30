@@ -8,6 +8,11 @@
 #include <unordered_map>
 
 enum class time_unit : char { second, millisecond, microsecond, nanosecond };
+
+constexpr double delta_time(std::chrono::steady_clock::time_point t1,
+                            std::chrono::steady_clock::time_point t2,
+                            time_unit unit) noexcept;
+
 const time_unit default_time_unit = time_unit::millisecond;
 /** The global timer, starts at program startup and is always avalaible but
  * can't be paused, restarted or reset, always running */

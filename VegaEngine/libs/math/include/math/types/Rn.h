@@ -2,11 +2,9 @@
 #include <console/console.h>
 
 #include <array>
-#include <concepts>
+#include <cmath>
 #include <cstddef>
 #include <functional>
-
-#include "math/types/stable_space.H"
 
 /**
  * @brief A fixed size vector derived from std::array<double> satisfying
@@ -89,7 +87,7 @@ class Rn : public std::array<double, N> {
     [[nodiscard]] constexpr double norm_L1() const noexcept {
         double result = 0.;
         for (size_t i = 0; i < N; i++) {
-            result += abs(this->at(i));
+            result += std::abs(this->at(i));
         }
         return result;
     }
@@ -100,7 +98,7 @@ class Rn : public std::array<double, N> {
         for (size_t i = 0; i < N; i++) {
             result += this->at(i) * this->at(i);
         }
-        return sqrt(result);
+        return std::sqrt(result);
     }
 
     /** Returns the biggest element in magnitude (infinite norm)*/
@@ -122,10 +120,10 @@ class Rn : public std::array<double, N> {
     /** Returns the biggest element in magnitude (equivalent to norm_inf())
      */
     [[nodiscard]] constexpr double max_abs() const noexcept {
-        double _max = abs(this->at(0));
+        double _max = std::abs(this->at(0));
         for (size_t i = 0; i < N; i++) {
-            if (abs(this->at(i)) > _max) {
-                _max = abs(this->at(i));
+            if (std::abs(this->at(i)) > _max) {
+                _max = std::abs(this->at(i));
             }
         }
         return _max;
@@ -144,10 +142,10 @@ class Rn : public std::array<double, N> {
 
     /** Returns the smallest element in magnitude */
     [[nodiscard]] constexpr double min_abs() const noexcept {
-        double _min = abs(this->at(0));
+        double _min = std::abs(this->at(0));
         for (size_t i = 0; i < N; i++) {
-            if (abs(this->at(i)) < _min) {
-                _min = abs(this->at(i));
+            if (std::abs(this->at(i)) < _min) {
+                _min = std::abs(this->at(i));
             }
         }
         return _min;

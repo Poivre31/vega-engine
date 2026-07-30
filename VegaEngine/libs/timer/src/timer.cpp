@@ -44,11 +44,11 @@ constexpr std::string_view time_unit_text(time_unit unit) noexcept {
     std::abort();
 }
 
-constexpr double delta_time(steady_clock::time_point t1,
-                            steady_clock::time_point t2,
+constexpr double delta_time(std::chrono::steady_clock::time_point t1,
+                            std::chrono::steady_clock::time_point t2,
                             time_unit unit) noexcept {
-    auto delta =
-        static_cast<double>(duration_cast<nanoseconds>(t2 - t1).count());
+    auto delta = static_cast<double>(
+        duration_cast<std::chrono::nanoseconds>(t2 - t1).count());
     return delta * time_unit_factor(unit);
 }
 
@@ -180,10 +180,13 @@ double timer::get_elapsed_time(const std::string& name, time_unit unit) {
 
 void timer::stall(double time, time_unit unit) {
     auto t0 = steady_clock::now();
-    auto sleep_margin = duration<double, std::milli>(2);
-    std::this_thread::sleep_for(
-        duration<double, std::nano>(time / time_unit_factor(unit)) -
-        sleep_margin);
+    auto sleep_margin = duration<double, std::milli>(100);
+    auto dt = duration<double, std::nano>(time / time_unit_factor(unit)) -
+              sleep_margin;
+
+    if (dt.count() > 0) {
+        std::this_thread::sleep_for(dt);
+    }
     while (delta_time(t0, steady_clock::now(), unit) < time) {
     }
 }

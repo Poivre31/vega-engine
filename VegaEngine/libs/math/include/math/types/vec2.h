@@ -23,7 +23,7 @@ class vec2 {
 
     constexpr explicit vec2(T a) : x(a), y(a) {}
 
-    constexpr vec2(T x, T y) : x(x), y(y) {}
+    constexpr vec2(const T x_, const T y_) : x(x_), y(y_) {}
 
     constexpr vec2(const vec2& ref) : x(ref.x), y(ref.y) {}
 

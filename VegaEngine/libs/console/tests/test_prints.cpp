@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <numbers>
+#include <stdexcept>
 #include <string>
 
 TEST(TestConsole, TestLogLevels) {
@@ -43,6 +44,6 @@ TEST(TestConsole, TestConsoleAccess) {
                             test_conole->debug("Working 1");
                             test2->debug("Working 2"););
 
-    EXPECT_EQ(console::get("Lame"), nullptr);
-    EXPECT_NO_FATAL_FAILURE(console::create("VegaEngine"));
+    EXPECT_THROW(auto c = console::get("Lame"), std::invalid_argument);
+    EXPECT_THROW(console::create("VegaEngine"), std::invalid_argument);
 }

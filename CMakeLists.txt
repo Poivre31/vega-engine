@@ -4,6 +4,7 @@ project(LibAndProject)
 add_subdirectory(VegaEngine)
 add_subdirectory(apps/OrionTracer)
 add_subdirectory(apps/BasicGUI)
+add_subdirectory(apps/VulkanApp)
 
 # include(CheckIPOSupported)
 # check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)

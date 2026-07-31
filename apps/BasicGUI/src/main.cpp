@@ -3,9 +3,6 @@
 #include <stdio.h>   // printf, fprintf
 #include <stdlib.h>  // abort
 
-#include <chrono>
-#include <thread>
-
 #include "SDL3/SDL_video.h"
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"

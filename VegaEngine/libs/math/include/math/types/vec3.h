@@ -25,7 +25,7 @@ class vec3 {
 
     constexpr explicit vec3(T a) : x(a), y(a), z(a) {}
 
-    constexpr vec3(T x, T y, T z) : x(x), y(y), z(z) {}
+    constexpr vec3(const T x_, const T y_, const T z_) : x(x_), y(y_), z(z_) {}
 
     constexpr vec3(const vec3& ref) : x(ref.x), y(ref.y), z(ref.z) {}
 

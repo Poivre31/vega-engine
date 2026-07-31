@@ -10,6 +10,10 @@
 
 #include "console/format.h"  // IWYU pragma: export
 
+/** Default logging behaviour of console manager: if silence_console_management
+ * is set to false, consoles will print trace messages when created, found...
+ * Setting it to true only shows errors and such */
+
 namespace level {
 
 using spdlog::level::critical;
@@ -37,17 +41,16 @@ class console {
      already exist.
      */
     static std::shared_ptr<spdlog::logger> create(
-        const std::string& name,
-        spdlog::level::level_enum level = level::trace);
+        const std::string& name, spdlog::level::level_enum level = level::trace,
+        bool silence = SILENCE_CONSOLE_MANAGEMENT);
 
     /**
     * @brief Creates a spdlog logger called @param name if it doesn't exist
     yet, otherwise returns existing logger.
     */
     static std::shared_ptr<spdlog::logger> create_or_get(
-        const std::string& name,
-        spdlog::level::level_enum level = level::trace);
-
+        const std::string& name, spdlog::level::level_enum level = level::trace,
+        bool silence = SILENCE_CONSOLE_MANAGEMENT);
     /**
      * @brief Returns existing spdlog logger called @param name, if it doesn't
      exist otherwise prints an error. Use `create_or_get` if the console might
@@ -55,18 +58,20 @@ class console {
      * Default logger is [VegaEngine] which is created at program start.
      */
     [[nodiscard]] static std::shared_ptr<spdlog::logger> get(
-        const std::string& name = "VegaEngine");
+        const std::string& name = "VegaEngine",
+        bool silence = SILENCE_CONSOLE_MANAGEMENT);
 
     /**
      * @brief Returns one of the default spdlog logger such as [VegaEngine] or
      * [VegaMath].
      */
     [[nodiscard]] static std::shared_ptr<spdlog::logger> get(
-        default_consoles default_consoles);
+        default_consoles default_consoles,
+        bool silence = SILENCE_CONSOLE_MANAGEMENT);
 
    private:
-    static inline auto _vega_console = create("VegaEngine", level::trace);
-    static inline auto _math_console = create("VegaMath", level::trace);
-    static inline auto _timer_console = create("VegaTimer", level::trace);
-    static inline auto _test_console = create("VegaTest", level::trace);
+    static inline auto _vega_console = create("VegaEngine", level::trace, true);
+    static inline auto _math_console = create("VegaMath", level::trace, true);
+    static inline auto _timer_console = create("VegaTimer", level::trace, true);
+    static inline auto _test_console = create("VegaTest", level::trace, true);
 };

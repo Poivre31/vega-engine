@@ -35,4 +35,5 @@ inline constexpr double pi_3_by_2 = 4.712388980384689857693965074919254326;
 
 }  // namespace math
 
+/** Cartesian axis x, y and z */
 enum class axis : std::uint8_t { x, y, z };

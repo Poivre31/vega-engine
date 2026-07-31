@@ -3,36 +3,47 @@
 
 #include "math/types/vec2.h"
 
+/** Canonical dot product between @param u and @param v */
 template <math::numeric T>
 [[nodiscard]] constexpr T dot(const vec2<T>& u, const vec2<T>& v) noexcept {
     return u.dot(v);
 }
 
+/** A vec containing the cosine of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec2<T> cos(const vec2<T>& u) noexcept {
     return vec2<T>(std::cos(u.x), std::cos(u.y));
 }
 
+/** A vec containing the sine of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec2<T> sin(const vec2<T>& u) noexcept {
     return vec2<T>(std::sin(u.x), std::sin(u.y));
 }
 
+/** A vec containing the tangent of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec2<T> tan(const vec2<T>& u) noexcept {
     return vec2<T>(std::tan(u.x), std::tan(u.y));
 }
 
+/** A vec containing the exponential of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec2<T> exp(const vec2<T>& u) noexcept {
     return vec2<T>(std::exp(u.x), std::exp(u.y));
 }
 
-/** Rotates vector according to anti-clockwise rotatation */
+/** A vec containing the natural log of the components of @param u */
+template <std::floating_point T>
+[[nodiscard]] inline vec2<T> log(const vec2<T>& u) noexcept {
+    return vec2<T>(std::log(u.x), std::log(u.y));
+}
+
+/** Rotates vector by angle @param theta using anti-clockwise rotatation */
 template <std::floating_point T>
 [[nodiscard]] inline vec2<T> rotate(const vec2<T>& v, const double theta) {
-    const double cos_t = std::cos(theta);
-    const double sin_t = std::sin(theta);
+    const T cos_t = std::cos(theta);
+    const T sin_t = std::sin(theta);
 
     return vec2((cos_t * v.x) - (sin_t * v.y), (sin_t * v.x) + (cos_t * v.y));
 }

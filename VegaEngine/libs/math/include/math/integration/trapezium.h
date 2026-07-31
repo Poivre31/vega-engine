@@ -7,7 +7,7 @@ namespace integration {
  * @brief Integrates function @param f on the interval [ @param a, @param b ]
  * using trapezium method
  *
- * @param n number of function samples
+ * @param n number of function samples. Returns 0 if @param n = 0.
  * @return Integration result
  */
 [[nodiscard]] double trapezium(double a, double b,

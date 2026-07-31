@@ -66,6 +66,7 @@ class Rn : public std::array<double, N> {
         return true;
     }
 
+    /** Returns canonical dot product between this and @param v */
     [[nodiscard]] constexpr double dot(const Rn& v) const noexcept {
         double result = 0.;
         for (size_t i = 0; i < N; i++) {
@@ -162,6 +163,7 @@ class Rn : public std::array<double, N> {
     }
 };
 
+/** Formatter for Rn class, printed as (x[0], x[1], ..., x[N-1]) */
 template <size_t N>
 struct fmt::formatter<Rn<N>> : fmt::formatter<double> {
     auto format(Rn<N> v, format_context& ctx) const -> decltype(ctx.out()) {

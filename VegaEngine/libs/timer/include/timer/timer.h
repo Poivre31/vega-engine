@@ -24,10 +24,13 @@ struct timer_data {
     bool running = true;
 };
 
+/** Checks for the global timer whose access is protected */
 constexpr bool is_timer_protected(const std::string& name) {
     return name == protected_global_timer;
 }
 
+/** Returns the conversion factor from nanosecond to @param unit (eg time_in_ms
+ * = time_unit_factor(time_unit::millisecond) * time_in_ns) */
 constexpr double time_unit_factor(time_unit unit) noexcept {
     switch (unit) {
         case time_unit::second:
@@ -42,6 +45,7 @@ constexpr double time_unit_factor(time_unit unit) noexcept {
     std::abort();
 }
 
+/** Returns the symbol associated with unit @param unit (ms, µs...) */
 constexpr std::string_view time_unit_text(time_unit unit) noexcept {
     switch (unit) {
         case time_unit::second:

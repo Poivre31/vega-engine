@@ -6,7 +6,6 @@
 #include "math/helper.h"
 #include "math/types/vec2.h"
 
-/** Returns (0,0) if axis is axis::z */
 template <math::numeric T>
 constexpr vec2<T>::vec2(axis ax) noexcept
     requires std::floating_point<T>

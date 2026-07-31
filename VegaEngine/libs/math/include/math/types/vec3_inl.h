@@ -4,6 +4,8 @@
 #include "math/helper.h"
 #include "math/types/vec3.h"
 
+/**Constructor for the unit cartesian axis x (1,0,0), y (0,1,0) and z (0,0,1).
+ */
 template <math::numeric T>
 constexpr vec3<T>::vec3(axis ax) noexcept
     requires std::floating_point<T>

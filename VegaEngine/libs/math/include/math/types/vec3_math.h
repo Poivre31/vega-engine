@@ -3,44 +3,56 @@
 
 #include "math/types/vec3.h"
 
+/** Canonical dot product between @param u and @param v */
 template <math::numeric T>
 [[nodiscard]] constexpr T dot(const vec3<T>& u, const vec3<T>& v) noexcept {
     return u.dot(v);
 }
 
+/** Cross product between @param u and @param v */
 template <math::numeric T>
 [[nodiscard]] constexpr vec3<T> cross(const vec3<T>& u,
                                       const vec3<T>& v) noexcept {
     return u.cross(v);
 }
 
+/** A vec containing the cosine of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> cos(const vec3<T>& u) noexcept {
     return vec3<T>(std::cos(u.x), std::cos(u.y), std::cos(u.z));
 }
 
+/** A vec containing the sine of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> sin(const vec3<T>& u) noexcept {
     return vec3<T>(std::sin(u.x), std::sin(u.y), std::sin(u.z));
 }
 
+/** A vec containing the tangent of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> tan(const vec3<T>& u) noexcept {
     return vec3<T>(std::tan(u.x), std::tan(u.y), std::tan(u.z));
 }
 
+/** A vec containing the exponential of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> exp(const vec3<T>& u) noexcept {
     return vec3<T>(std::exp(u.x), std::exp(u.y), std::exp(u.z));
 }
 
-/** Rotates vector around one of the cartesian axis according to right hand rule
- * and anti-clockwise rotatation */
+/** A vec containing the natural log of the components of @param u */
+template <std::floating_point T>
+[[nodiscard]] inline vec3<T> log(const vec3<T>& u) noexcept {
+    return vec3<T>(std::log(u.x), std::log(u.y), std::log(u.z));
+}
+
+/** Rotates vector around one of the cartesian axis @param ax, by angle @param
+ * theta, according to right hand rule and anti-clockwise rotatation */
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> rotate(const vec3<T>& v, const axis ax,
                                     const double theta) {
-    const double cos_t = std::cos(theta);
-    const double sin_t = std::sin(theta);
+    const T cos_t = std::cos(theta);
+    const T sin_t = std::sin(theta);
     switch (ax) {
         case axis::x:
             return vec3(v.x, (cos_t * v.y) - (sin_t * v.z),

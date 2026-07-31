@@ -33,6 +33,7 @@ class base_solver {
    public:
     virtual ~base_solver() = default;
 
+    /** The numerical method's implementation */
     [[nodiscard]] virtual T iteration(
         const T& X, double t, const std::function<T(T X, double t)>& dXdt,
         double dt) const = 0;
@@ -43,6 +44,7 @@ class base_solver {
     constexpr void set_state(const T& state) noexcept { _state = state; }
     [[nodiscard]] constexpr T get_state() const noexcept { return _state; }
 
+    /** Sets solver's time and state at the same time */
     constexpr void set_initial_conditions(const T& state,
                                           const double t0) noexcept {
         _t = t0;
@@ -59,12 +61,19 @@ class base_solver {
     //     return _update_function;
     // }
 
+    /** Runs an iteration of timestep @param dt and updates the solver's state
+     * and time accordingly.
+
+     * @param dXdt defines the derivative used by the solver to update. */
     T iterate(const double dt, const std::function<T(T X, double t)>& dXdt) {
         _state = iteration(_state, _t, dXdt, dt);
         _t += dt;
         return _state;
     }
 
+    /** Runs @param N iterations of the solver's method to solve for the state
+     * at time @param tf
+     * @param dXdt defines the derivative used by the solver to update. */
     T solve(const double tf, const size_t N,
             const std::function<T(T X, double t)>& dXdt) {
         if (!dXdt) {

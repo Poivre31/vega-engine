@@ -25,6 +25,7 @@ namespace solver {
  */
 template <math::stable_space T>
 class euler : public base_solver<T> {
+    /** Uses euler explicit method : X(t+dt) = X(t) + dt * dXdt(t) */
     T iteration(const T& X, const double t,
                 const std::function<T(T X, double t)>& dXdt,
                 const double dt) const final {

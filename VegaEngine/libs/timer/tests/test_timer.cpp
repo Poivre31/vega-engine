@@ -10,12 +10,13 @@ TEST(TestTimer, TestTimerBasics) {
         timer::print_elapsed_time("main", time_unit::second);
         timer::print_elapsed_time("main", time_unit::nanosecond, 8););
 
-    EXPECT_NO_FATAL_FAILURE(
-        console::get()->info("Expecting 9 errors");
-        timer::print_elapsed_time("nope"); timer::get_elapsed_time("nope");
-        timer::pause("nope"); timer::restart("nope"); timer::start("global");
-        timer::pause("global"); timer::restart("global");
-        timer::reset("global"); timer::destroy("global"););
+    EXPECT_NO_FATAL_FAILURE(console::get()->info("Expecting 9 errors");
+                            timer::print_elapsed_time("nope");
+                            double x = timer::get_elapsed_time("nope");
+                            timer::pause("nope"); timer::restart("nope");
+                            timer::start("global"); timer::pause("global");
+                            timer::restart("global"); timer::reset("global");
+                            timer::destroy("global"););
 
     timer::start("start");
     timer::stall(0.05);

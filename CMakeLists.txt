@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.28)
 project(LibAndProject)
 
 add_subdirectory(VegaEngine)
-add_subdirectory(OrionTracer)
+add_subdirectory(apps/OrionTracer)
+add_subdirectory(apps/BasicGUI)
 
 # include(CheckIPOSupported)
 # check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)

@@ -4,7 +4,9 @@
 #include <math/vec.h>
 #include <timer/timer.h>
 
-double f(double x) { return sin(x); }
+#include <cmath>
+
+double f(double x) { return std::sin(x); }
 
 int main() {
     timer::start("halo");

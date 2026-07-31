@@ -7,3 +7,10 @@
 [submodule "VegaEngine/external/spdlog"]
 	path = VegaEngine/external/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "VegaEngine/external/imgui"]
+	path = VegaEngine/external/imgui
+	url = https://github.com/ocornut/imgui
+	branch = docking
+[submodule "VegaEngine/external/sdl"]
+	path = VegaEngine/external/sdl
+	url = https://github.com/libsdl-org/SDL

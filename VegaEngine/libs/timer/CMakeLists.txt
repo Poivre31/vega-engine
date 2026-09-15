@@ -1,4 +1,4 @@
-add_library(Timer
+add_library(Timer STATIC
     "src/timer.cpp"
     "include/timer/timer.hpp"
 )

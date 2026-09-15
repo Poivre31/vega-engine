@@ -5,8 +5,8 @@ add_library(vendor INTERFACE)
 
 # VEGA
 add_subdirectory(spdlog)
-add_subdirectory(vega/console)
-add_subdirectory(vega/timer)
+add_subdirectory(nanobench)
+add_subdirectory(google_test)
 # END VEGA
 
 # VULKAN
@@ -77,7 +77,7 @@ install(PROGRAMS ${SLANG_SHARED_LIB}
 
 # VMA
 add_subdirectory(vma-hpp)
-target_include_directories(vendor INTERFACE vma-hpp/VulkanMemoryAllocator/include)
+target_include_directories(vendor INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/vma-hpp/VulkanMemoryAllocator/include")
 # END VMA
 
 # GLM
@@ -87,18 +87,18 @@ target_compile_definitions(vendor INTERFACE GLM_FORCE_DEPTH_ZERO_TO_ONE GLM_ENAB
 # END GLM
 
 # STB
-target_include_directories(vendor INTERFACE stb-image)
+target_include_directories(vendor INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/stb-image")
 
 target_compile_definitions(vendor INTERFACE STB_IMAGE_IMPLEMENTATION)
 # END STB
 
 # GLTF
-target_include_directories(vendor INTERFACE tinygltf)
+target_include_directories(vendor INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/tinygltf")
 target_compile_definitions(vendor INTERFACE TINYGLTF_IMPLEMENTATION)
 # END GLTF
 
 # OBJ
-target_include_directories(vendor INTERFACE tinyobj)
+target_include_directories(vendor INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/tinyobj")
 
 target_compile_definitions(vendor INTERFACE
     TINYOBJLOADER_IMPLEMENTATION
@@ -132,8 +132,8 @@ if(WIN32)
 elseif(UNIX)
     add_library(sdl STATIC IMPORTED)
     set_target_properties(sdl PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/vendor/SDL3-bin/include"
-        IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/vendor/SDL3-bin/lib/libSDL3.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/SDL3-bin/include"
+        IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/SDL3-bin/lib/libSDL3.a"
     )
 endif()
 # END SDL3

@@ -19,15 +19,11 @@ elseif(CMAKE_SYSTEM MATCHES Linux)
    message(TRACE "Building for Linux")
 endif()
 
-# ------------------
-# ------------------
-include(CTest)
-enable_testing()
 
-add_subdirectory(external)
+add_subdirectory(vendor)
 
 # ------------------
-add_library(VegaEngine)
+add_library(VegaEngine STATIC)
 
 add_subdirectory(libs/math)
 target_link_libraries(VegaEngine PUBLIC Math)

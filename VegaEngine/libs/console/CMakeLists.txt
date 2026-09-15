@@ -1,4 +1,4 @@
-add_library(Console
+add_library(Console STATIC
     "include/console/format.hpp"
 
     "src/console.cpp"

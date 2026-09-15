@@ -1,4 +1,4 @@
-add_library(Math
+add_library(Math STATIC
     "src/integration/trapezium.cpp"
 )
 

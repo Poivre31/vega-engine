@@ -2,19 +2,19 @@
 #include <console/console.hpp>
 
 #include <chrono>
-#include <memory>
 #include <mutex>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 enum class time_unit : char { second, millisecond, microsecond, nanosecond };
 
-const time_unit default_time_unit        = time_unit::millisecond;
 /** The global timer, starts at program startup and is always avalaible but
  * can't be paused, restarted or reset, always running */
 const std::string protected_global_timer = "global";
+
 /** The main timer, starts at program startup and is always avalaible */
-const std::string main_timer             = "main";
+const std::string main_timer = "main";
 
 /** Struct containing the time point of last timer start, an offset counter to
  * enable pausing, and a bool to keep track of paused/running state. */
@@ -25,7 +25,7 @@ struct timer_data {
 };
 
 /** Checks for the global timer whose access is protected */
-constexpr bool is_timer_protected(const std::string& name) {
+constexpr bool is_timer_protected(std::string_view name) noexcept {
   return name == protected_global_timer;
 }
 
@@ -42,11 +42,11 @@ constexpr double time_unit_factor(time_unit unit) noexcept {
     case time_unit::nanosecond:
       return 1e0;
   }
-  std::abort();
+  return 0.;
 }
 
 /** Returns the symbol associated with unit @param unit (ms, µs...) */
-constexpr std::string_view time_unit_text(time_unit unit) noexcept {
+constexpr std::string time_unit_text(time_unit unit) noexcept {
   switch (unit) {
     case time_unit::second:
       return "s";
@@ -57,7 +57,7 @@ constexpr std::string_view time_unit_text(time_unit unit) noexcept {
     case time_unit::nanosecond:
       return "ns";
   }
-  std::abort();
+  return "";
 }
 
 /**
@@ -86,7 +86,7 @@ constexpr std::string_view time_unit_text(time_unit unit) noexcept {
  * You can stall the execution of the program for a given time with `stall`
  *
  *  Status and time is printer using [VegaTimer] console which is
- available with `console::get(consoles::timer)`
+ available with `console::get(vega_consoles::timer)`
  *
  * [global] timer starts at program startup and can't be paused/reset.
  * [main] is available by default and can be manipulated like other timers.
@@ -96,46 +96,90 @@ class timer {
  public:
   timer() = delete;
 
-  /** Creates a timer @param name at this instant */
-  static void start(const std::string& name = main_timer);
+  /** Checks wether a timer named @param name has already been created */
+  [[nodiscard]] static bool exists(const std::string& name) noexcept;
+
+  /** Creates a timer @param name at this instant, does nothing if timer with name @param name
+   * already exists */
+  static void create(const std::string& name) noexcept;
 
   /** Pauses the execution of timer @param name until restart, keeping track
    * of time spent until this instant */
-  static void pause(const std::string& name = main_timer);
+  static void pause(const std::string& name = main_timer) noexcept;
 
-  /** Unpause a paused timer */
-  static void restart(const std::string& name = main_timer);
+  /** Resume the execution a paused timer */
+  static void resume(const std::string& name = main_timer) noexcept;
 
-  /** Same as start() but doesn't create the timer if it doesn't exist, use
-   * this rather than start() when you know the timer has already been
-   * created */
-  static void reset(const std::string& name = main_timer);
+  /** Recreates timer @param name at this instant, does nothing if it doesn't exist*/
+  static void reset(const std::string& name = main_timer) noexcept;
 
   /** Erase a timer from memory */
-  static void destroy(const std::string& name = main_timer);
+  static void destroy(const std::string& name = main_timer) noexcept;
 
-  /** Prints time elapsed since timer creating, excluding time spent paused */
+  /** Prints time elapsed since timer creation, excluding time spent paused */
   static void print_elapsed_time(
       const std::string& name = main_timer,
-      time_unit unit          = default_time_unit,
-      size_t precision        = 4
-  );
+      time_unit unit          = time_unit::second,
+      size_t precision        = 0
+  ) noexcept;
 
-  /** Returns time elapsed since timer creating, excluding time spent paused
-   */
-  [[nodiscard]] static double
-  get_elapsed_time(const std::string& name = main_timer, time_unit unit = default_time_unit);
+  /** Logs "message + time/unit" to given console*/
+  static void log_time_to_console(
+      const std::string& name,
+      const vega_console& console,
+      std::string_view message,
+      time_unit unit   = time_unit::second,
+      size_t precision = 0
+  ) noexcept;
+
+  /** Prints time elapsed since timer creation, excluding time spent paused, for each timer still
+   * existing TO OPTIMIZE*/
+  static void
+  print_all_elapsed_times(time_unit unit = time_unit::second, size_t precision = 0) noexcept;
+
+  /** Returns time elapsed since timer creation, excluding time spent paused */
+  [[nodiscard]] static double get_elapsed_time(
+      const std::string& name = main_timer,
+      time_unit unit          = time_unit::second
+  ) noexcept;
 
   /** Stops the execution of all threads until @param time has passed */
-  static void stall(double time, time_unit unit = time_unit::second);
+  static void stall(double time, time_unit unit = time_unit::second) noexcept;
 
  private:
+  static void handle_exception(std::string_view context) noexcept;
+
   static inline std::mutex _mutex;
 
-  static inline std::shared_ptr<spdlog::logger> _console = console::get(consoles::timer);
+  static inline vega_console _console = console::get(consoles::timer);
 
   static inline std::unordered_map<std::string, timer_data> _watches{
       std::pair(protected_global_timer, timer_data{.t0 = std::chrono::steady_clock::now()}),
       std::pair(main_timer, timer_data{.t0 = std::chrono::steady_clock::now()})
   };
+};
+
+class scoped_timer {
+  // #ifndef NDEBUG
+ public:
+  scoped_timer(std::string_view name) : _name(name) {
+    if (!timer::exists(_name)) {
+      timer::create(_name);
+    } else {
+      timer::resume(_name);
+    }
+  }
+  ~scoped_timer() { timer::pause(_name); }
+
+  scoped_timer(const scoped_timer&)       = delete;
+  scoped_timer(scoped_timer&&)            = delete;
+  scoped_timer& operator=(scoped_timer)   = delete;
+  scoped_timer& operator=(scoped_timer&&) = delete;
+
+ private:
+  std::string _name;
+  // #else
+  //  public:
+  //   scoped_timer(std::string_view) {}
+  // #endif
 };

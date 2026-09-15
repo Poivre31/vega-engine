@@ -2,7 +2,7 @@
 #include <math/integration.h>
 #include <math/numbers.h>
 #include <math/vec.h>
-#include <timer/timer.h>
+#include <timer/timer.hpp>
 
 #include <cmath>
 
@@ -11,7 +11,7 @@ double f(double x) {
 }
 
 int main() {
-  timer::start("halo");
+  timer::create("halo");
   auto orion_console = console::create("Orion");
   orion_console->set_level(level::debug);
   orion_console->info("Hello world !");

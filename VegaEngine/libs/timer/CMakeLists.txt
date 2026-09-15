@@ -1,10 +1,10 @@
 add_library(Timer
     "src/timer.cpp"
-    "include/timer/timer.h"
+    "include/timer/timer.hpp"
 )
 
 target_include_directories(Timer PUBLIC
-    "include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
 
 target_link_libraries(Timer PUBLIC Console)

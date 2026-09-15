@@ -1,19 +1,19 @@
 [submodule "vendor/GLM"]
-	path = vendor/GLM
+	path = vulkan/vendor/GLM
 	url = https://github.com/g-truc/glm
 [submodule "vendor/stb-image"]
-	path = vendor/stb-image
+	path = vulkan/vendor/stb-image
 	url = https://github.com/nothings/stb
 [submodule "vendor/spdlog"]
-	path = vendor/spdlog
+	path = vulkan/vendor/spdlog
 	url = https://github.com/gabime/spdlog
 [submodule "vendor/vma-hpp"]
-	path = vendor/vma-hpp
+	path = vulkan/vendor/vma-hpp
 	url = https://github.com/YaaZ/VulkanMemoryAllocator-Hpp
 [submodule "vendor/tinyobj"]
-	path = vendor/tinyobj
+	path = vulkan/vendor/tinyobj
 	url = https://github.com/tinyobjloader/tinyobjloader
 [submodule "vendor/imgui"]
-	path = vendor/imgui
+	path = vulkan/vendor/imgui
 	url = https://github.com/ocornut/imgui
 	branch = docking

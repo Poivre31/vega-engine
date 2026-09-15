@@ -37,6 +37,9 @@ add_subdirectory(libs/timer)
 target_link_libraries(VegaEngine PUBLIC Timer)
 add_subdirectory(libs/timer/tests)
 
+add_subdirectory(libs/graphics)
+target_link_libraries(VegaEngine PUBLIC Graphics)
+
 target_sources(VegaEngine PRIVATE src/src.cpp)
 
 # ------------------

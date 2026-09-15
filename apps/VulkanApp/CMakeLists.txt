@@ -16,3 +16,20 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # ------------------
 add_executable(VulkanApp src/main.cpp)
 target_link_libraries(VulkanApp VegaEngine)
+
+add_custom_target(CopyShaders
+    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/resources" "${CMAKE_CURRENT_BINARY_DIR}/resources"
+    COMMENT "Copying resources: ${CMAKE_CURRENT_SOURCE_DIR}/resources to ${CMAKE_CURRENT_BINARY_DIR}/resources"
+)
+add_dependencies(VulkanApp CopyShaders)
+
+add_custom_command(TARGET VulkanApp POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_RUNTIME_DLLS:VulkanApp>
+        "${CMAKE_CURRENT_BINARY_DIR}"
+    COMMAND_EXPAND_LISTS
+)
+
+install(DIRECTORY resources DESTINATION .)
+install(TARGETS VulkanApp DESTINATION .)
+

@@ -1,6 +1,7 @@
 #include <console/console.hpp>
+#include <application/application.hpp>
 
 int main() {
-  auto console = console::create("Vulkan");
-  console->info("Launched Vulkan app");
+  application app("My vulkan app");
+  app.run();
 }

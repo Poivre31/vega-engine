@@ -19,15 +19,11 @@ elseif(CMAKE_SYSTEM MATCHES Linux)
    message(TRACE "Building for Linux")
 endif()
 
-# ------------------
-# ------------------
-include(CTest)
-enable_testing()
 
-add_subdirectory(external)
+add_subdirectory(vendor)
 
 # ------------------
-add_library(VegaEngine)
+add_library(VegaEngine STATIC)
 
 add_subdirectory(libs/math)
 target_link_libraries(VegaEngine PUBLIC Math)
@@ -41,6 +37,9 @@ add_subdirectory(libs/timer)
 target_link_libraries(VegaEngine PUBLIC Timer)
 add_subdirectory(libs/timer/tests)
 
+add_subdirectory(libs/application)
+target_link_libraries(VegaEngine PUBLIC Application)
+
 target_sources(VegaEngine PRIVATE src/src.cpp)
 
 # ------------------
@@ -50,3 +49,4 @@ if(MSVC)
 else()
    target_compile_options(VegaEngine PRIVATE -Wall -Wextra -Wpedantic -Wshadow -Wconversion)
 endif()
+target_compile_options(VegaEngine PRIVATE -march=x86-64 -mtune=generic)

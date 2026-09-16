@@ -1,12 +1,12 @@
 #pragma once
-#include <console/console.h>
+#include <console/console.hpp>
 
 #include <functional>
 #include <stdexcept>
 
 #include "math/types/stable_space.h"
 
-namespace solver {
+namespace vega::solver {
 
 /**
  * @brief The base class to solve ODEs. You can create a solver by publicaly
@@ -30,71 +30,68 @@ namespace solver {
  */
 template <math::stable_space T>
 class base_solver {
-   public:
-    virtual ~base_solver() = default;
+ public:
+  virtual ~base_solver() = default;
 
-    /** The numerical method's implementation */
-    [[nodiscard]] virtual T iteration(
-        const T& X, double t, const std::function<T(T X, double t)>& dXdt,
-        double dt) const = 0;
+  /** The numerical method's implementation */
+  [[nodiscard]] virtual T
+  iteration(const T& X, double t, const std::function<T(T X, double t)>& dXdt, double dt) const = 0;
 
-    constexpr void set_time(const double t) noexcept { _t = t; }
-    [[nodiscard]] constexpr double get_time() const noexcept { return _t; }
+  constexpr void set_time(const double t) noexcept { _t = t; }
+  [[nodiscard]] constexpr double get_time() const noexcept { return _t; }
 
-    constexpr void set_state(const T& state) noexcept { _state = state; }
-    [[nodiscard]] constexpr T get_state() const noexcept { return _state; }
+  constexpr void set_state(const T& state) noexcept { _state = state; }
+  [[nodiscard]] constexpr T get_state() const noexcept { return _state; }
 
-    /** Sets solver's time and state at the same time */
-    constexpr void set_initial_conditions(const T& state,
-                                          const double t0) noexcept {
-        _t = t0;
-        _state = state;
+  /** Sets solver's time and state at the same time */
+  constexpr void set_initial_conditions(const T& state, const double t0) noexcept {
+    _t     = t0;
+    _state = state;
+  }
+
+  // void set_update_function(
+  //     const std::function<T(T X, double t)> update_function) {
+  //     _update_function = update_function;
+  // }
+  // [[nodiscard]] const std::function<T(T X, double t)>&
+  // get_update_function()
+  //     const {
+  //     return _update_function;
+  // }
+
+  /** Runs an iteration of timestep @param dt and updates the solver's state
+   * and time accordingly.
+
+   * @param dXdt defines the derivative used by the solver to update. */
+  T iterate(const double dt, const std::function<T(T X, double t)>& dXdt) {
+    _state  = iteration(_state, _t, dXdt, dt);
+    _t     += dt;
+    return _state;
+  }
+
+  /** Runs @param N iterations of the solver's method to solve for the state
+   * at time @param tf
+   * @param dXdt defines the derivative used by the solver to update. */
+  T solve(const double tf, const size_t N, const std::function<T(T X, double t)>& dXdt) {
+    if (!dXdt) {
+      throw std::invalid_argument("Function dXdt is null");
+    }
+    if (N == 0) {
+      return _state;
     }
 
-    // void set_update_function(
-    //     const std::function<T(T X, double t)> update_function) {
-    //     _update_function = update_function;
-    // }
-    // [[nodiscard]] const std::function<T(T X, double t)>&
-    // get_update_function()
-    //     const {
-    //     return _update_function;
-    // }
-
-    /** Runs an iteration of timestep @param dt and updates the solver's state
-     * and time accordingly.
-
-     * @param dXdt defines the derivative used by the solver to update. */
-    T iterate(const double dt, const std::function<T(T X, double t)>& dXdt) {
-        _state = iteration(_state, _t, dXdt, dt);
-        _t += dt;
-        return _state;
+    const double t0 = _t;
+    const double dt = (tf - t0) / static_cast<double>(N);
+    for (size_t i = 0; i < N; i++) {
+      _state  = iteration(_state, _t, dXdt, dt);
+      _t     += dt;
     }
+    return _state;
+  }
 
-    /** Runs @param N iterations of the solver's method to solve for the state
-     * at time @param tf
-     * @param dXdt defines the derivative used by the solver to update. */
-    T solve(const double tf, const size_t N,
-            const std::function<T(T X, double t)>& dXdt) {
-        if (!dXdt) {
-            throw std::invalid_argument("Function dXdt is null");
-        }
-        if (N == 0) {
-            return _state;
-        }
-
-        const double t0 = _t;
-        const double dt = (tf - t0) / static_cast<double>(N);
-        for (size_t i = 0; i < N; i++) {
-            _state = iteration(_state, _t, dXdt, dt);
-            _t += dt;
-        }
-        return _state;
-    }
-
-   private:
-    double _t = 0;
-    T _state{};
+ private:
+  double _t = 0;
+  T _state{};
 };
 
-}  // namespace solver
+}  // namespace vega::solver

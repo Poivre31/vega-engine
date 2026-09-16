@@ -3,68 +3,65 @@
 
 #include "math/types/vec3.h"
 
+namespace vega {
+
 /** Canonical dot product between @param u and @param v */
 template <math::numeric T>
 [[nodiscard]] constexpr T dot(const vec3<T>& u, const vec3<T>& v) noexcept {
-    return u.dot(v);
+  return u.dot(v);
 }
 
 /** Cross product between @param u and @param v */
 template <math::numeric T>
-[[nodiscard]] constexpr vec3<T> cross(const vec3<T>& u,
-                                      const vec3<T>& v) noexcept {
-    return u.cross(v);
+[[nodiscard]] constexpr vec3<T> cross(const vec3<T>& u, const vec3<T>& v) noexcept {
+  return u.cross(v);
 }
 
 /** A vec containing the cosine of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> cos(const vec3<T>& u) noexcept {
-    return vec3<T>(std::cos(u.x), std::cos(u.y), std::cos(u.z));
+  return vec3<T>(std::cos(u.x), std::cos(u.y), std::cos(u.z));
 }
 
 /** A vec containing the sine of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> sin(const vec3<T>& u) noexcept {
-    return vec3<T>(std::sin(u.x), std::sin(u.y), std::sin(u.z));
+  return vec3<T>(std::sin(u.x), std::sin(u.y), std::sin(u.z));
 }
 
 /** A vec containing the tangent of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> tan(const vec3<T>& u) noexcept {
-    return vec3<T>(std::tan(u.x), std::tan(u.y), std::tan(u.z));
+  return vec3<T>(std::tan(u.x), std::tan(u.y), std::tan(u.z));
 }
 
 /** A vec containing the exponential of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> exp(const vec3<T>& u) noexcept {
-    return vec3<T>(std::exp(u.x), std::exp(u.y), std::exp(u.z));
+  return vec3<T>(std::exp(u.x), std::exp(u.y), std::exp(u.z));
 }
 
 /** A vec containing the natural log of the components of @param u */
 template <std::floating_point T>
 [[nodiscard]] inline vec3<T> log(const vec3<T>& u) noexcept {
-    return vec3<T>(std::log(u.x), std::log(u.y), std::log(u.z));
+  return vec3<T>(std::log(u.x), std::log(u.y), std::log(u.z));
 }
 
 /** Rotates vector around one of the cartesian axis @param ax, by angle @param
  * theta, according to right hand rule and anti-clockwise rotatation */
 template <std::floating_point T>
-[[nodiscard]] inline vec3<T> rotate(const vec3<T>& v, const axis ax,
-                                    const double theta) {
-    const T cos_t = std::cos(theta);
-    const T sin_t = std::sin(theta);
-    switch (ax) {
-        case axis::x:
-            return vec3(v.x, (cos_t * v.y) - (sin_t * v.z),
-                        (sin_t * v.y) + (cos_t * v.z));
-        case axis::y:
-            return vec3((cos_t * v.x) + (sin_t * v.z), v.y,
-                        (-sin_t * v.x) + (cos_t * v.z));
-        case axis::z:
-            return vec3((cos_t * v.x) - (sin_t * v.y),
-                        (sin_t * v.x) + (cos_t * v.y), v.z);
-    }
-    std::abort();
+[[nodiscard]] inline vec3<T> rotate(const vec3<T>& v, const axis ax, const double theta) {
+  const T cos_t = std::cos(theta);
+  const T sin_t = std::sin(theta);
+  switch (ax) {
+    case axis::x:
+      return vec3(v.x, (cos_t * v.y) - (sin_t * v.z), (sin_t * v.y) + (cos_t * v.z));
+    case axis::y:
+      return vec3((cos_t * v.x) + (sin_t * v.z), v.y, (-sin_t * v.x) + (cos_t * v.z));
+    case axis::z:
+      return vec3((cos_t * v.x) - (sin_t * v.y), (sin_t * v.x) + (cos_t * v.y), v.z);
+  }
+  std::abort();
 }
 
 /**
@@ -73,14 +70,13 @@ template <std::floating_point T>
  * normalized.
  */
 template <std::floating_point T>
-[[nodiscard]] constexpr vec3<T> project(const vec3<T>& vec,
-                                        const vec3<T>& axis) noexcept {
-    double d2 = axis.norm_sqr();
-    if (d2 == 0.) {
-        return vec3<T>(0.);
-    } else {
-        return dot(vec, axis) / d2 * axis;
-    }
+[[nodiscard]] constexpr vec3<T> project(const vec3<T>& vec, const vec3<T>& axis) noexcept {
+  double d2 = axis.norm_sqr();
+  if (d2 == 0.) {
+    return vec3<T>(0.);
+  } else {
+    return dot(vec, axis) / d2 * axis;
+  }
 }
 
 /**
@@ -91,20 +87,20 @@ template <std::floating_point T>
  * Returns zero if the two vectors don't define a plane (ie if they are zero or
  * colinear) */
 template <std::floating_point T>
-[[nodiscard]] constexpr vec3<T> project(
-    const vec3<T>& vec, const std::pair<vec3<T>, vec3<T>>& plane) noexcept {
-    auto u = cross(plane.first, plane.second);
-    T d2 = u.norm_sqr();
-    if (d2 == 0.) {
-        // console::get(default_consoles::math)
-        //     ->warn(
-        //         "The two given vectors ({} and {}) do not define a plane,
-        //         they " "must be non zero and non colinear", plane.first,
-        //         plane.second);
-        return vec3<T>(0.);
-    } else {
-        return vec - (dot(vec, u) / d2 * u);
-    }
+[[nodiscard]] constexpr vec3<T>
+project(const vec3<T>& vec, const std::pair<vec3<T>, vec3<T>>& plane) noexcept {
+  auto u = cross(plane.first, plane.second);
+  T d2   = u.norm_sqr();
+  if (d2 == 0.) {
+    // console::get(consoles::math)
+    //     ->warn(
+    //         "The two given vectors ({} and {}) do not define a plane,
+    //         they " "must be non zero and non colinear", plane.first,
+    //         plane.second);
+    return vec3<T>(0.);
+  } else {
+    return vec - (dot(vec, u) / d2 * u);
+  }
 }
 
 // template <std::floating_point T>
@@ -112,3 +108,5 @@ template <std::floating_point T>
 //     axis.normalize();
 //     double x = ((axis.x * axis.x * (1 - cos(theta))) + cos(theta)) * v.x;
 // }
+
+}  // namespace vega

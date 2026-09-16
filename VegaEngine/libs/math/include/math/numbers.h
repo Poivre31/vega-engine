@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <numbers>
 
+namespace vega {
+
 namespace math {
 
 /**Signed integers or floating point numbers */
@@ -25,11 +27,11 @@ using std::numbers::sqrt2;
 using std::numbers::sqrt3;
 
 /** 2 * pi */
-inline constexpr double tau = 6.283185307179586476925286766559005768;
+inline constexpr double tau       = 6.283185307179586476925286766559005768;
 /** sqrt(pi) */
-inline constexpr double sqrtpi = 1.772453850905516027298167483341145182;
+inline constexpr double sqrtpi    = 1.772453850905516027298167483341145182;
 /** pi / 2 */
-inline constexpr double pi_by_2 = 1.570796326794896619231321691639751442;
+inline constexpr double pi_by_2   = 1.570796326794896619231321691639751442;
 /** 3 * pi /2 */
 inline constexpr double pi_3_by_2 = 4.712388980384689857693965074919254326;
 
@@ -37,3 +39,5 @@ inline constexpr double pi_3_by_2 = 4.712388980384689857693965074919254326;
 
 /** Cartesian axis x, y and z */
 enum class axis : std::uint8_t { x, y, z };
+
+}  // namespace vega

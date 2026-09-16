@@ -58,6 +58,7 @@ void imgui_init(SDL_Window* window, vulkan_context& vk_context) {
   ImGuiIO& io     = ImGui::GetIO();
   io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
   io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+  io.IniFilename  = "resources/imgui.ini";
 
   imgui_init_vulkan_impl_(window, vk_context);
 }

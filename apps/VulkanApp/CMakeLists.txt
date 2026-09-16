@@ -23,12 +23,21 @@ add_custom_target(CopyShaders
 )
 add_dependencies(VulkanApp CopyShaders)
 
-add_custom_command(TARGET VulkanApp POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_RUNTIME_DLLS:VulkanApp>
-        "${CMAKE_CURRENT_BINARY_DIR}"
-    COMMAND_EXPAND_LISTS
-)
+if(WIN32)
+    add_custom_command(TARGET VulkanApp POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_RUNTIME_DLLS:VulkanApp>
+            "${CMAKE_CURRENT_BINARY_DIR}"
+        COMMAND_EXPAND_LISTS
+    )
+elseif(UNIX)
+    set_target_properties(VulkanApp PROPERTIES
+        BUILD_RPATH "${CMAKE_CURRENT_BINARY_DIR}"
+        INSTALL_RPATH "$ORIGIN"
+        BUILD_RPATH_USE_ORIGIN TRUE
+    )
+endif()
+
 
 install(DIRECTORY resources DESTINATION .)
 install(TARGETS VulkanApp DESTINATION .)

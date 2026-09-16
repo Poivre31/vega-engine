@@ -1,28 +1,25 @@
-[submodule "external/google_test"]
+[submodule "google_test"]
 	path = VegaEngine/vendor/google_test
 	url = https://github.com/google/googletest.git
-[submodule "external/nanobench"]
+[submodule "nanobench"]
 	path = VegaEngine/vendor/nanobench
 	url = https://github.com/martinus/nanobench.git
-[submodule "VegaEngine/external/spdlog"]
+[submodule "spdlog"]
 	path = VegaEngine/vendor/spdlog
 	url = https://github.com/gabime/spdlog.git
-[submodule "vendor/GLM"]
+[submodule "GLM"]
 	path = VegaEngine/vendor/GLM
 	url = https://github.com/g-truc/glm
-[submodule "vendor/stb-image"]
+[submodule "stb-image"]
 	path = VegaEngine/vendor/stb-image
 	url = https://github.com/nothings/stb
-[submodule "vendor/spdlog"]
-	path = vulkan/vendor/spdlog
-	url = https://github.com/gabime/spdlog
-[submodule "vendor/vma-hpp"]
+[submodule "vma-hpp"]
 	path = VegaEngine/vendor/vma-hpp
 	url = https://github.com/YaaZ/VulkanMemoryAllocator-Hpp
-[submodule "vendor/tinyobj"]
+[submodule "tinyobj"]
 	path = VegaEngine/vendor/tinyobj
 	url = https://github.com/tinyobjloader/tinyobjloader
-[submodule "vendor/imgui"]
+[submodule " imgui"]
 	path = VegaEngine/vendor/imgui
 	url = https://github.com/ocornut/imgui
 	branch = docking

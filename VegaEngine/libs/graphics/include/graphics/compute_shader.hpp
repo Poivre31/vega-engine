@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include <console/console.hpp>
 
 #include "context.hpp"
@@ -32,7 +34,7 @@ struct PC_post_processing_data {
 template <typename push_constants>
 class compute_shader {
  public:
-  compute_shader(nullptr_t) {}
+  compute_shader(std::nullptr_t) {}
   compute_shader(
       vk::raii::Device& device,
       const std::vector<char>& shader_code,

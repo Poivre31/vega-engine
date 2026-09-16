@@ -78,9 +78,9 @@ target_sources(Graphics PRIVATE
 
 target_include_directories(Graphics PUBLIC "${CMAKE_SOURCE_DIR}/VegaEngine/vendor/imgui" "${CMAKE_SOURCE_DIR}/VegaEngine/vendor/imgui/backends")
 
-set_target_properties(Graphics PROPERTIES
-    BUILD_RPATH "$ORIGIN"
-    INSTALL_RPATH "$ORIGIN"
-    BUILD_RPATH_USE_ORIGIN TRUE
-)
+# set_target_properties(Graphics PROPERTIES
+#     BUILD_RPATH "$ORIGIN"
+#     INSTALL_RPATH "$ORIGIN"
+#     BUILD_RPATH_USE_ORIGIN TRUE
+# )
 

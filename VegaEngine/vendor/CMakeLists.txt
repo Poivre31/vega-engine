@@ -6,7 +6,7 @@ add_library(vendor INTERFACE)
 # VEGA
 add_subdirectory(spdlog)
 add_subdirectory(nanobench)
-add_subdirectory(google_test)
+add_subdirectory(google_test EXCLUDE_FROM_ALL)
 # END VEGA
 
 # VULKAN
@@ -63,11 +63,6 @@ set_target_properties(slang PROPERTIES
 if(WIN32)
     set_target_properties(slang PROPERTIES IMPORTED_IMPLIB "${SLANG_IMPORT_LIB}")
 endif()
-
-add_custom_target(CopySlangLib
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SLANG_SHARED_LIB} ${CMAKE_BINARY_DIR}
-)
-add_dependencies(vendor CopySlangLib)
 
 
 install(PROGRAMS ${SLANG_SHARED_LIB}

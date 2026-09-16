@@ -14,9 +14,9 @@ class assets_layer final : public Ilayer {
   using Ilayer::Ilayer;
   bool init() noexcept final {
     try {
-      vulkan_context vk_context = get_app_context()->vulkan;
-      auto& scene               = get_app_context()->active_scene;
-      auto& resources           = *scene.resources();
+      const vulkan_context& vk_context = get_app_context()->vulkan;
+      auto& scene                      = get_app_context()->active_scene;
+      auto& resources                  = *scene.resources();
 
       scene.init(vk_context);
 

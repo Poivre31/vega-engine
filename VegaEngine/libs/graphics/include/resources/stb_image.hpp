@@ -2,12 +2,14 @@
 
 #include <stb_image.h>
 #include <cstdint>
-#include <cstdint>
 #include <filesystem>
 #include <memory>
+
 #include <console/console.hpp>
 #include <timer/timer.hpp>
+
 #include "resources/texture_imports.hpp"
+#include "glm.hpp"
 
 using stb_image_ptr = std::unique_ptr<stbi_uc, decltype(&stbi_image_free)>;
 
@@ -38,16 +40,10 @@ class stb_image {
   stb_image(const texture_info& info, bool silence = true) {
     load(info.texture_path, info.target_channels, silence);
   }
-  stb_image(glm::vec4 color, uint32_t width, uint32_t height) {
-    _data = stb_image_ptr(
-        new stbi_uc[4](
-            stbi_uc(color.r * 255),
-            stbi_uc(color.g * 255),
-            stbi_uc(color.b * 255),
-            stbi_uc(color.a * 255)
-        ),
-        &stbi_image_free
-    );
+  stb_image(glm::vec4 color) {
+    auto* image_data = reinterpret_cast<stbi_uc*>(malloc(4 * sizeof(stbi_uc)));  // NOLINT
+
+    _data = stb_image_ptr(image_data, &stbi_image_free);
     if (!_data) {
       console::get(consoles::assets)
           ->error("Single color texture creation failed, loading fallback texture");
@@ -60,6 +56,14 @@ class stb_image {
     _image_loaded = true;
     _use_fallback = false;
   }
+
+  stb_image(const stb_image&)            = delete;
+  stb_image& operator=(const stb_image&) = delete;
+
+  stb_image(stb_image&&)            = default;
+  stb_image& operator=(stb_image&&) = default;
+
+  ~stb_image() = default;
 
   /**
    * @brief Tries to load image using stb image loader. Loads a fallback texture on failure.
@@ -117,11 +121,7 @@ class stb_image {
       }
 
       auto* image_data = stbi_load(
-          path.string().data(),
-          &_tex_width,
-          &_tex_height,
-          &_channels,
-          static_cast<int>(target_channels)
+          path.c_str(), &_tex_width, &_tex_height, &_channels, static_cast<int>(target_channels)
       );
       if (!image_data) {
         console::get(consoles::assets)
@@ -131,7 +131,7 @@ class stb_image {
         _use_fallback = true;
         return;
       }
-      _data         = stb_image_ptr(image_data, stbi_image_free);
+      _data         = stb_image_ptr(image_data, &stbi_image_free);
       _image_loaded = true;
       _image_loaded = true;
       _channels     = static_cast<int>(target_channels);

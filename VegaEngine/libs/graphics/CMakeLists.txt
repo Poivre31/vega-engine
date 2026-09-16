@@ -5,17 +5,11 @@ project(Graphics)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_FLAGS_DEBUG "-O1 -g")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g")
 
 add_library(Graphics STATIC)
 
-# target_compile_options(Graphics PRIVATE -fsanitize=address)
-# target_link_options(Graphics PRIVATE -fsanitize=address)
-
 target_sources(Graphics PRIVATE
     "src/vma.cpp"
-    # "src/main.cpp"
 
     "include/glm.hpp"
     "include/io.hpp"
@@ -56,9 +50,10 @@ target_sources(Graphics PRIVATE
 )
 target_include_directories(Graphics PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-# target_compile_options(Graphics PRIVATE -march=x86-64 -mtune=generic)
-
-# target_precompile_headers(Graphics PRIVATE "include/glm.hpp" "include/graphics/graphics.hpp")
+target_precompile_headers(Graphics PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/glm.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/graphics/graphics.hpp"
+)
 
 target_link_libraries(Graphics PUBLIC vendor)
 

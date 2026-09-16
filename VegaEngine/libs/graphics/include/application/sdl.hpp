@@ -28,7 +28,7 @@ class sdl_layer final : public Ilayer {
     }
 
     get_app_context()->window = SDL_CreateWindow(
-        config::window_name.data(),
+        config::window_name.c_str(),
         get_app_context()->width,
         get_app_context()->height,
         SDL_WINDOW_RESIZABLE | SDL_WINDOW_VULKAN
@@ -94,7 +94,7 @@ class sdl_layer final : public Ilayer {
         get_app_context()->window,
         (config::window_name
          + "    FPS: " + std::to_string(uint32_t(round(1. / get_app_context()->avg_dt))))
-            .data()
+            .c_str()
     );
   }
 

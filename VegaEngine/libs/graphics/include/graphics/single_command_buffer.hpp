@@ -21,7 +21,7 @@ begin_transient_command_buffer(vk::raii::CommandPool& command_pool, vk::raii::De
   return std::move(command_buffer);
 }
 
-vk::raii::CommandBuffer begin_transient_command_buffer(vulkan_context context) {
+vk::raii::CommandBuffer begin_transient_command_buffer(const vulkan_context& context) {
   return begin_transient_command_buffer(*context.command_pool, *context.device);
 }
 
@@ -36,7 +36,7 @@ void submit_transient_command_buffer(
 }
 
 void submit_transient_command_buffer(
-    vulkan_context context,
+    const vulkan_context& context,
     vk::raii::CommandBuffer&& command_buffer  // NOLINT
 ) {
   submit_transient_command_buffer(*context.graphics_queue, std::move(command_buffer));

@@ -49,7 +49,7 @@ class scene {
   scene& operator=(const scene&) = delete;
   scene& operator=(scene&&)      = delete;
 
-  void init(vulkan_context& vk_context) {
+  void init(const vulkan_context& vk_context) {
     _resources.nearest_sampler = simple_sampler(
         vk_context, false, vk::SamplerAddressMode::eRepeat, 0.F
     );
@@ -70,7 +70,7 @@ class scene {
   [[nodiscard]] auto* materials() { return &_resources.materials; }
   [[nodiscard]] auto* textures() { return &_resources.textures; }
 
-  handle<gpu_image> load_texture(vulkan_context& vk_context, const texture_info& info) {
+  handle<gpu_image> load_texture(const vulkan_context& vk_context, const texture_info& info) {
     stb_image cpu_texture(info);
     return _resources.textures.push(
         std::move(load_texture_to_gpu(
@@ -82,7 +82,7 @@ class scene {
   }
 
   /** Should be followed by a call to 'update_texture_descriptor(app_context*)' */
-  handle<mesh_3D> load_mesh_from_obj_mtl(vulkan_context vk_context, const model_info& info) {
+  handle<mesh_3D> load_mesh_from_obj_mtl(const vulkan_context& vk_context, const model_info& info) {
     check_init();
 
     if (!info.mesh.valid) {
@@ -126,8 +126,11 @@ class scene {
     return info.mesh;
   }
 
-  handle<mesh_3D>
-  load_mesh_from_obj(vulkan_context vk_context, const model_info& info, handle<material> material) {
+  handle<mesh_3D> load_mesh_from_obj(
+      const vulkan_context& vk_context,
+      const model_info& info,
+      handle<material> material
+  ) {
     check_init();
 
     if (!material.valid) {
@@ -167,7 +170,7 @@ class scene {
     return _resources.meshes.push(vertices);
   }
 
-  void upload_material_buffer(vulkan_context vk_context) {
+  void upload_material_buffer(const vulkan_context& vk_context) {
     check_init();
 
     auto size = _resources.materials.size() * sizeof(gpu_material);
@@ -205,7 +208,7 @@ class scene {
     // _resources.material_buffer.getAllocation().copyFromMemory(g_materials.data(), 0, size);
   }
 
-  void update_texture_descriptor(vulkan_context vk_context) {
+  void update_texture_descriptor(const vulkan_context& vk_context) {
     check_init();
 
     console::get(consoles::assets)
@@ -237,7 +240,7 @@ class scene {
     }
   }
 
-  void clear(vulkan_context& vk_context) {
+  void clear(const vulkan_context& vk_context) {
     vk_context.device->waitIdle();
     _resources.meshes.clear();
     _resources.materials.clear();

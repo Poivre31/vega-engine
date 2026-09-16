@@ -12,7 +12,7 @@ class simple_sampler {
  public:
   simple_sampler(std::nullptr_t) {}
   simple_sampler(
-      vulkan_context& vk_context,
+      const vulkan_context& vk_context,
       bool linear_filtering,
       vk::SamplerAddressMode adress_mode,
       float mip_lod_bias
@@ -50,7 +50,7 @@ class simple_sampler {
 };
 
 void generate_mip_maps(
-    vulkan_context& vk_context,
+    const vulkan_context& vk_context,
     vk::raii::CommandBuffer& cmd,
     gpu_image& texture
 ) {
@@ -168,8 +168,11 @@ gpu_image create_image(
   };
 }
 
-gpu_image
-load_texture_to_gpu(vulkan_context& vk_context, stb_image&& cpu_texture, simple_sampler& sampler) {
+gpu_image load_texture_to_gpu(
+    const vulkan_context& vk_context,
+    stb_image&& cpu_texture,
+    simple_sampler& sampler
+) {
   bool mip_maps = sampler.is_using_linear_filtering();
 
   stb_image texture = std::move(cpu_texture);

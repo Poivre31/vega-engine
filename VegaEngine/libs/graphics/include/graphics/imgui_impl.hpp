@@ -20,7 +20,7 @@ static void check_vk_result(VkResult err) {
   }
 }
 
-void imgui_init_vulkan_impl_(SDL_Window* window, vulkan_context& vk_context) {
+void imgui_init_vulkan_impl_(SDL_Window* window, const vulkan_context& vk_context) {
   ImGui_ImplSDL3_InitForVulkan(window);
   auto format = VkFormat(vk_context.config.present_color_format);
   ImGui_ImplVulkan_InitInfo init_info{
@@ -52,7 +52,7 @@ void imgui_init_vulkan_impl_(SDL_Window* window, vulkan_context& vk_context) {
   }
 }
 
-void imgui_init(SDL_Window* window, vulkan_context& vk_context) {
+void imgui_init(SDL_Window* window, const vulkan_context& vk_context) {
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO& io     = ImGui::GetIO();

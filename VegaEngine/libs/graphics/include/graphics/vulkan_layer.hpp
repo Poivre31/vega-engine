@@ -142,11 +142,11 @@ class vulkan_layer final : public Ilayer {
 
     ImGui::Text("MSAA sample count :");
     if (ImGui::BeginCombo(
-            "##msaa count", vk::to_string(_vk_context->config.msaa_sample_count).data()
+            "##msaa count", vk::to_string(_vk_context->config.msaa_sample_count).c_str()
         )) {
       for (auto& count : _vk_context->config.available_msaa_sample_counts) {
         bool is_selected = (_vk_context->config.msaa_sample_count == count);
-        if (ImGui::Selectable(vk::to_string(count).data(), is_selected)) {
+        if (ImGui::Selectable(vk::to_string(count).c_str(), is_selected)) {
           _vk_context->config.msaa_sample_count   = count;
           _vk_context->recreate_swapchain         = true;
           _vk_context->recreate_graphics_pipeline = true;
@@ -265,20 +265,36 @@ class vulkan_layer final : public Ilayer {
     if (_imgui_initialised) {
       imgui_cleanup();
     }
-    _swapchain = nullptr;
+
+    _rect = {};
+    _draw_fences.clear();
+    _presentation_semaphores.clear();
+    _frame_index = 0;
+    _command_buffers.clear();
+    _imgui_descriptor_pool = nullptr;
+    _pp_compute_shader     = nullptr;
+    _descriptor_sets       = nullptr;
+    _descriptor_pool       = nullptr;
+    _descriptor_set_layout = nullptr;
+    _command_pool          = nullptr;
+    _graphics_pipeline     = nullptr;
+    _pipeline_layout       = nullptr;
+    _pp_back_image         = {};
+    _pp_front_image        = {};
+    _depth_buffer          = {};
+    _depth_image           = {};
+    _color_image           = {};
     _swapchain_semaphores.clear();
     _swapchain_views.clear();
     _swapchain_images.clear();
-    _color_image.image    = nullptr;
-    _color_image.view     = nullptr;
-    _depth_image.image    = nullptr;
-    _depth_image.view     = nullptr;
-    _pp_front_image.image = nullptr;
-    _pp_front_image.view  = nullptr;
-    _pp_back_image.image  = nullptr;
-    _pp_back_image.view   = nullptr;
-
-    *this = vulkan_layer(get_app_context());
+    _swapchain       = nullptr;
+    _allocator       = nullptr;
+    _device          = nullptr;
+    _graphics_queue  = nullptr;
+    _physical_device = nullptr;
+    _surface         = nullptr;
+    _debug_messenger = nullptr;
+    _instance        = nullptr;
 
     console::get(consoles::graphics)->info("Cleaned-up Vulkan");
   }

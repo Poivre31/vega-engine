@@ -54,7 +54,7 @@ class mesh_3D {
   void load_vertices(const std::vector<vertex_3D>& vertices) { _vertices = vertices; }
   [[nodiscard]] std::vector<vertex_3D> get_vertices() const noexcept { return _vertices; }
 
-  void create_vertex_buffer(vulkan_context& context) {
+  void create_vertex_buffer(const vulkan_context& context) {
     if (_vertices.empty()) {
       console::get(consoles::assets)
           ->warn("No vertex buffer created because mesh doesn't have any vertices loaded");

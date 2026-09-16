@@ -11,7 +11,7 @@ class host_buffer {
  public:
   host_buffer(std::nullptr_t) {};
   host_buffer(
-      vulkan_context vk_context,
+      const vulkan_context& vk_context,
       size_t number_of_elements,
       bool permanent,
       bool buffer_device_adress = true
@@ -61,7 +61,7 @@ class host_buffer {
     }
   }
 
-  void upload_data(vulkan_context vk_context, const std::vector<T>& data) {
+  void upload_data(const vulkan_context& vk_context, const std::vector<T>& data) {
     if (!data.data()) {
       throw std::runtime_error("Uploading invalid data (nullptr) to buffer");
     }
@@ -99,7 +99,7 @@ class host_buffer {
 
   [[nodiscard]] vma::raii::Buffer& get() { return _buffer; }
 
-  [[nodiscard]] vk::DeviceAddress get_adress(vulkan_context& vk_context) {
+  [[nodiscard]] vk::DeviceAddress get_adress(const vulkan_context& vk_context) {
     if (!_bda) {
       throw std::runtime_error(
           "Trying to get the adress of a buffer that doesn't use buffer device adress"
@@ -119,7 +119,7 @@ class host_buffer {
   }
 
  private:
-  void _create_staging_buffer(vulkan_context& vk_context) {
+  void _create_staging_buffer(const vulkan_context& vk_context) {
     if (*_staging_buffer) {
       return;
     }

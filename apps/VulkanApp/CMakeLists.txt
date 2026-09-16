@@ -11,6 +11,8 @@ project(VulkanApp
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_FLAGS_DEBUG "-O1 -g")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g")
 
 # ------------------
 # ------------------
@@ -42,3 +44,5 @@ endif()
 install(DIRECTORY resources DESTINATION .)
 install(TARGETS VulkanApp DESTINATION .)
 
+# target_compile_options(VulkanApp PRIVATE -O0 -g -fsanitize=address -fno-omit-frame-pointer)
+# target_link_options(VulkanApp PRIVATE -O0 -g -fsanitize=address -fno-omit-frame-pointer)

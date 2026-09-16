@@ -3,6 +3,8 @@
 
 #include "math/types/vec3.h"
 
+namespace vega {
+
 /** Canonical dot product between @param u and @param v */
 template <math::numeric T>
 [[nodiscard]] constexpr T dot(const vec3<T>& u, const vec3<T>& v) noexcept {
@@ -106,3 +108,5 @@ project(const vec3<T>& vec, const std::pair<vec3<T>, vec3<T>>& plane) noexcept {
 //     axis.normalize();
 //     double x = ((axis.x * axis.x * (1 - cos(theta))) + cos(theta)) * v.x;
 // }
+
+}  // namespace vega

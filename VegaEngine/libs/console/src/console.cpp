@@ -4,6 +4,8 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/common.h>
 
+namespace vega {
+
 bool console::exists(const std::string& name) noexcept {
   return spdlog::get(name) != nullptr;
 }
@@ -103,3 +105,5 @@ vega_console console::handle_exception(std::string_view context) noexcept {
     return _sink_console;
   }
 }
+
+}  // namespace vega

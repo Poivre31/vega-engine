@@ -3,6 +3,8 @@
 
 #include "timer/timer.hpp"
 
+using namespace vega;
+
 TEST(TestTimer, TestTimerBasics) {
   EXPECT_NO_FATAL_FAILURE(
       console::get()->info("Expecting 0.05s wait time"); timer::reset(); timer::stall(0.05);

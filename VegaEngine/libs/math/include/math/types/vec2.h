@@ -8,6 +8,8 @@
 
 #include "math/numbers.h"
 
+namespace vega {
+
 template <math::numeric T>
 class vec2 {
  public:
@@ -270,10 +272,12 @@ using vec2d = vec2<double>;
 using vec2i = vec2<int32_t>;
 using vec2l = vec2<int64_t>;
 
+}  // namespace vega
+
 /** Formatter for vec2 class, printed as (x, y) */
-template <math::numeric T>
-struct fmt::formatter<vec2<T>> : fmt::formatter<T> {
-  auto format(vec2<T> v, format_context& ctx) const -> decltype(ctx.out()) {
+template <vega::math::numeric T>
+struct fmt::formatter<vega::vec2<T>> : fmt::formatter<T> {
+  auto format(vega::vec2<T> v, format_context& ctx) const -> decltype(ctx.out()) {
     auto out = fmt::format_to(ctx.out(), "(");
 
     ctx.advance_to(out);

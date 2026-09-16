@@ -3,7 +3,7 @@
 
 #include <concepts>
 
-namespace math {
+namespace vega::math {
 
 /**
  * @brief Class that supports default initialisation, scalar multiplication and
@@ -21,4 +21,4 @@ concept stable_space = requires(T x, T y, double a) {
   { -x } -> std::same_as<T>;
 };
 
-}  // namespace math
+}  // namespace vega::math

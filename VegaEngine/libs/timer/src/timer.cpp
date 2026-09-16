@@ -6,6 +6,8 @@
 #include <mutex>
 #include <string>
 
+namespace vega {
+
 using std::chrono::duration;
 using std::chrono::nanoseconds;
 using std::chrono::steady_clock;
@@ -213,3 +215,5 @@ void timer::handle_exception(std::string_view context) noexcept {
     _console->error("[{}] : timer unknown error", context);
   }
 }
+
+}  // namespace vega

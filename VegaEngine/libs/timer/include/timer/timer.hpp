@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <utility>
 
+namespace vega {
+
 enum class time_unit : char { second, millisecond, microsecond, nanosecond };
 
 /** The global timer, starts at program startup and is always avalaible but
@@ -183,3 +185,5 @@ class scoped_timer {
   //   scoped_timer(std::string_view) {}
   // #endif
 };
+
+}  // namespace vega

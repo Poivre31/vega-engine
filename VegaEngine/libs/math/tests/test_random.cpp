@@ -7,6 +7,8 @@
 #include "math/random.h"
 #include "math/vec.h"
 
+using namespace vega;
+
 TEST(TestMath, TestRandom) {
   auto console = console::create("Random");
   EXPECT_NO_FATAL_FAILURE(std::vector<double> v; v.reserve(10); for (size_t i = 0; i < 10; i++) {

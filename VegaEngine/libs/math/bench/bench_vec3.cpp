@@ -4,6 +4,8 @@
 #include "math/random.h"
 #include "math/vec.h"
 
+using namespace vega;
+
 int main() {
   ankerl::nanobench::Bench bench;
   bench.warmup(1000).minEpochIterations(1000000);

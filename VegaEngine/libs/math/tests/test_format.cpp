@@ -3,6 +3,8 @@
 
 #include "math/vec.h"
 
+using namespace vega;
+
 TEST(TestConsole, TestPrintMath) {
   auto test_console = console::create("OrionConsole");
   vec3d a(3, 2, 1);

@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <functional>
 
+namespace vega {
+
 /**
  * @brief A fixed size vector derived from std::array<double> satisfying
  * stable_space requirements (mainly a vector addition law and a scalar
@@ -153,10 +155,12 @@ class Rn : public std::array<double, N> {
   }
 };
 
+}  // namespace vega
+
 /** Formatter for Rn class, printed as (x[0], x[1], ..., x[N-1]) */
 template <size_t N>
-struct fmt::formatter<Rn<N>> : fmt::formatter<double> {
-  auto format(Rn<N> v, format_context& ctx) const -> decltype(ctx.out()) {
+struct fmt::formatter<vega::Rn<N>> : fmt::formatter<double> {
+  auto format(vega::Rn<N> v, format_context& ctx) const -> decltype(ctx.out()) {
     auto out = fmt::format_to(ctx.out(), "(");
 
     ctx.advance_to(out);

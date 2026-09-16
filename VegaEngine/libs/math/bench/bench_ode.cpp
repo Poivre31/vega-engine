@@ -8,6 +8,8 @@
 #include "math/ode_solver.h"
 #include "math/types.h"
 
+using namespace vega;
+
 // template <size_t N>
 // symplectic_view<Rn<N>> g(symplectic_view<Rn<N>> X, double t) {
 //     auto dXdt(X);

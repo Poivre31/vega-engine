@@ -11,6 +11,8 @@
 
 #include "console/format.hpp"  // IWYU pragma: export
 
+namespace vega {
+
 namespace level {
 
 using spdlog::level::trace;
@@ -135,3 +137,5 @@ class console {
 //   }
 //   assert(expression);
 // }
+
+}  // namespace vega

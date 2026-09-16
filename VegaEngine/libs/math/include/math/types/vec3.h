@@ -9,6 +9,8 @@
 
 #include "math/numbers.h"
 
+namespace vega {
+
 template <math::numeric T>
 class vec3 {
  public:
@@ -287,10 +289,12 @@ using vec3d = vec3<double>;
 using vec3i = vec3<int32_t>;
 using vec3l = vec3<int64_t>;
 
+}  // namespace vega
+
 /** Formatter for vec3 class, printed as (x, y, z) */
-template <math::numeric T>
-struct fmt::formatter<vec3<T>> : fmt::formatter<T> {
-  auto format(vec3<T> v, format_context& ctx) const -> decltype(ctx.out()) {
+template <vega::math::numeric T>
+struct fmt::formatter<vega::vec3<T>> : fmt::formatter<T> {
+  auto format(vega::vec3<T> v, format_context& ctx) const -> decltype(ctx.out()) {
     auto out = fmt::format_to(ctx.out(), "(");
 
     ctx.advance_to(out);

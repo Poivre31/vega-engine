@@ -8,6 +8,8 @@
 #include "math/numbers.h"
 #include "math/types.h"
 
+namespace vega {
+
 /** A static class to generate random variables using Mersenne Twister 64
  * engine*/
 class random {
@@ -69,3 +71,5 @@ class random {
                                        // reproductability, will change in the future
   static thread_local inline std::default_random_engine _engine{_seed};
 };
+
+}  // namespace vega

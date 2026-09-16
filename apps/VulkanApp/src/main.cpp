@@ -2,6 +2,6 @@
 #include <application/application.hpp>
 
 int main() {
-  application app("My vulkan app");
+  vega::application app("My vulkan app");
   app.run();
 }

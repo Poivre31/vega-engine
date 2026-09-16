@@ -3,8 +3,9 @@
 
 #include <iostream>
 #include <numbers>
-#include <stdexcept>
 #include <string>
+
+using namespace vega;
 
 TEST(TestConsole, TestLogLevels) {
   EXPECT_NO_FATAL_FAILURE(

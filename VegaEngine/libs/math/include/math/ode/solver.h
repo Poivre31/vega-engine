@@ -6,7 +6,7 @@
 
 #include "math/types/stable_space.h"
 
-namespace solver {
+namespace vega::solver {
 
 /**
  * @brief The base class to solve ODEs. You can create a solver by publicaly
@@ -94,4 +94,4 @@ class base_solver {
   T _state{};
 };
 
-}  // namespace solver
+}  // namespace vega::solver

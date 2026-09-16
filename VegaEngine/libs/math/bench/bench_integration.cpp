@@ -6,14 +6,15 @@
 
 #include "math/integration.h"
 
+using namespace vega;
+
 int main() {
-    ankerl::nanobench::Bench bench;
-    bench.warmup(1);
-    for (size_t n = 10; n <= static_cast<size_t>(1e6); n *= 10) {
-        bench.complexityN(n).run("Integrate exp(-x) with trapezium", [&] {
-            double x = integration::trapezium(
-                0, 1, [](double x) { return exp(-x); }, n);
-        });
-    }
-    std::cout << bench.complexityBigO() << "\n";
+  ankerl::nanobench::Bench bench;
+  bench.warmup(1);
+  for (size_t n = 10; n <= static_cast<size_t>(1e6); n *= 10) {
+    bench.complexityN(n).run("Integrate exp(-x) with trapezium", [&] {
+      double x = integration::trapezium(0, 1, [](double x) { return exp(-x); }, n);
+    });
+  }
+  std::cout << bench.complexityBigO() << "\n";
 }

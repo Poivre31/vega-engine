@@ -9,6 +9,8 @@
 #include "math/ode_solver.h"
 #include "math/types.h"
 
+using namespace vega;
+
 double f1(double x, double t) {
   return x * cos(t);
 }

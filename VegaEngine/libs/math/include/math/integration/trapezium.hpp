@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 
-namespace vega::integration {
+namespace vega::math::integration {
 
 /**
  * @brief Integrates function @param f on the interval [ @param a, @param b ]
@@ -13,4 +13,4 @@ namespace vega::integration {
 [[nodiscard]] double
 trapezium(double a, double b, const std::function<double(double)>& f, size_t n);
 
-}  // namespace vega::integration
+}  // namespace vega::math::integration

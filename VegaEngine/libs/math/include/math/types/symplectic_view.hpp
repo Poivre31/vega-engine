@@ -1,9 +1,9 @@
 #pragma once
 #include <utility>
 
-#include "math/types/stable_space.h"
+#include "math/types/stable_space.hpp"
 
-namespace vega {
+namespace vega::math {
 
 /**
  * @brief Provides the stable_space requirements to a (position,velocity) pair.
@@ -38,4 +38,4 @@ class symplectic_view {
   T velocity{};
 };
 
-}  // namespace vega
+}  // namespace vega::math

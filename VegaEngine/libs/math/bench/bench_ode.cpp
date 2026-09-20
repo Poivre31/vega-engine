@@ -5,13 +5,14 @@
 #include <iostream>
 
 #include "console/console.hpp"
-#include "math/ode_solver.h"
-#include "math/types.h"
+#include "math/ode_solver.hpp"
+#include "math/types.hpp"
 
+using namespace vega::math;
 using namespace vega;
 
 // template <size_t N>
-// symplectic_view<Rn<N>> g(symplectic_view<Rn<N>> X, double t) {
+// symplectic_view<rn<N>> g(symplectic_view<rn<N>> X, double t) {
 //     auto dXdt(X);
 //     for (size_t i = 0; i < N; i++) {
 //         dXdt.position.at(i) = X.velocity.at(i);
@@ -32,8 +33,8 @@ using namespace vega;
 // }
 
 // template <size_t N>
-// Rn<N> g2(Rn<N> positions, Rn<N> velocities, double t) {
-//     Rn<N> acceleration;
+// rn<N> g2(rn<N> positions, rn<N> velocities, double t) {
+//     rn<N> acceleration;
 //     for (size_t i = 0; i < N; i++) {
 //         double a_i = 0;
 //         for (size_t j = 0; j < N; j++) {
@@ -50,10 +51,10 @@ using namespace vega;
 // }
 
 const size_t N = 10;
-const Rn<N> x0{1., 2., 3., 4., 5., 6., 7., 8., 9., 10.};
+const rn<N> x0{1., 2., 3., 4., 5., 6., 7., 8., 9., 10.};
 
-Rn<N> unabstracted(double t0, double tf, size_t n) {
-  Rn<N> x(x0);
+rn<N> unabstracted(double t0, double tf, size_t n) {
+  rn<N> x(x0);
   double dt = (tf - t0) / double(n);
   for (size_t i = 0; i < n; i++) {
     x = x - 0.3 * x * dt;
@@ -65,15 +66,15 @@ int main() {
   ankerl::nanobench::Bench bench;
   console::get()->set_level(level::info);
   console::get(consoles::math)->set_level(level::info);
-  Rn<N> result{};
+  rn<N> result{};
 
-  solver::euler<Rn<N>> _solver;
-  // _solver.set_update_function([](Rn<N> x, double t) { return -0.3 * x; });
+  solver::euler<rn<N>> _solver;
+  // _solver.set_update_function([](rn<N> x, double t) { return -0.3 * x; });
   bench.warmup(1);
   for (size_t n = 10; n <= static_cast<size_t>(1e5); n *= 10) {
     bench.complexityN(n).run("Solved f'(x)=a*f(x) with euler (sovler class)", [&] {
       _solver.set_initial_conditions(x0, 0);
-      result = _solver.solve(3, n, [](Rn<N> x, double t) { return -0.3 * x; });
+      result = _solver.solve(3, n, [](rn<N> x, double t) { return -0.3 * x; });
     });
   }
   console::get()->info("Method 1 (class) result : {:.10g}, {:.10g}", result[0], result[9]);
@@ -90,9 +91,9 @@ int main() {
 
   // bench = ankerl::nanobench::Bench();
 
-  // solver_euler<symplectic_view<Rn<50>>> _solver2;
+  // solver_euler<symplectic_view<rn<50>>> _solver2;
 
-  // symplectic_view<Rn<50>> X0;
+  // symplectic_view<rn<50>> X0;
   // for (auto& x : X0.position) {
   //     x = ((double(rand()) / RAND_MAX) - 0.5) * 20;
   // }
@@ -107,14 +108,14 @@ int main() {
   // }
   // std::cout << bench.complexityBigO() << "\n";
 
-  // solver_euler_II<Rn<50>> _solver3;
+  // solver_euler_II<rn<50>> _solver3;
   // _solver3.set_acceleration_function(g2<50>);
 
-  // Rn<50> pos0;
+  // rn<50> pos0;
   // for (size_t i = 0; i < 50; i++) {
   //     pos0.at(i) = X0.position.at(i);
   // }
-  // Rn<50> vel0{};
+  // rn<50> vel0{};
 
   // for (size_t n = 10; n <= static_cast<size_t>(1e4); n *= 10) {
   //     bench.complexityN(n).run(

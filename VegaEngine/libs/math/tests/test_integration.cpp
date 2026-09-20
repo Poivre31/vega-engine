@@ -3,9 +3,9 @@
 #include <cmath>
 #include <functional>
 
-#include "math/integration.h"
+#include "math/integration.hpp"
 
-using namespace vega;
+using namespace vega::math;
 
 TEST(TestMath, TestIntegrate) {
   double a = -.5;

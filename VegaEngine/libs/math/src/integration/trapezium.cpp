@@ -1,6 +1,6 @@
-#include "math/integration/trapezium.h"
+#include "math/integration/trapezium.hpp"
 
-namespace vega::integration {
+namespace vega::math::integration {
 
 double
 trapezium(const double a, const double b, const std::function<double(double)>& f, const size_t n) {
@@ -17,4 +17,4 @@ trapezium(const double a, const double b, const std::function<double(double)>& f
   return sum * dx;
 }
 
-}  // namespace vega::integration
+}  // namespace vega::math::integration

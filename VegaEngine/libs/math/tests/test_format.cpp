@@ -1,9 +1,11 @@
 #include <console/console.hpp>
 #include <gtest/gtest.h>
 
-#include "math/vec.h"
+#include "math/vec.hpp"
 
 using namespace vega;
+
+using namespace vega::math;
 
 TEST(TestConsole, TestPrintMath) {
   auto test_console = console::create("OrionConsole");

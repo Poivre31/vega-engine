@@ -1,10 +1,10 @@
 #pragma once
 #include <cstdlib>
 
-#include "math/helper.h"
-#include "math/types/vec3.h"
+#include "math/helper.hpp"
+#include "math/types/vec3.hpp"
 
-namespace vega {
+namespace vega::math {
 
 /**Constructor for the unit cartesian axis x (1,0,0), y (0,1,0) and z (0,0,1).
  */
@@ -225,4 +225,4 @@ vec3<T> vec3<T>::transformed(const std::function<T(T)>& func) const {
   return vec3(func(x), func(y), func(z));
 }
 
-}  // namespace vega
+}  // namespace vega::math

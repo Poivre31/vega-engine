@@ -1,9 +1,9 @@
 #pragma once
 #include <concepts>
 
-#include "math/types/vec2.h"
+#include "math/types/vec2.hpp"
 
-namespace vega {
+namespace vega::math {
 
 /** Canonical dot product between @param u and @param v */
 template <math::numeric T>
@@ -65,4 +65,4 @@ template <std::floating_point T>
   }
 }
 
-}  // namespace vega
+}  // namespace vega::math

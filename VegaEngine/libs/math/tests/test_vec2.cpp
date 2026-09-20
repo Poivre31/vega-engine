@@ -2,10 +2,10 @@
 
 #include <cmath>
 
-#include "math/numbers.h"
-#include "math/vec.h"
+#include "math/numbers.hpp"
+#include "math/vec.hpp"
 
-using namespace vega;
+using namespace vega::math;
 
 void print(const vec2d& v) {
   v.print();
@@ -26,7 +26,7 @@ TEST(TestMath, TestVec2) {
   EXPECT_EQ(vec2d(axis::x).norm_L0(), 1);
   EXPECT_EQ(cos(v), v.transformed(cosl));
 
-  EXPECT_LE((rotate(vec2d(1, 1), math::pi_by_2) - vec2d(-1, 1)).norm_inf(), 1e-10);
+  EXPECT_LE((rotate(vec2d(1, 1), constants::pi_by_2) - vec2d(-1, 1)).norm_inf(), 1e-10);
   EXPECT_EQ(project(v, vec2d(axis::y)), 2. * vec2d(axis::y));
 
   v.set_zero();

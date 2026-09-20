@@ -4,9 +4,9 @@
 #include <functional>
 #include <stdexcept>
 
-#include "math/types/stable_space.h"
+#include "math/types/stable_space.hpp"
 
-namespace vega::solver {
+namespace vega::math::solver {
 
 /**
  * @brief The base class to solve ODEs. You can create a solver by publicaly
@@ -94,4 +94,4 @@ class base_solver {
   T _state{};
 };
 
-}  // namespace vega::solver
+}  // namespace vega::math::solver

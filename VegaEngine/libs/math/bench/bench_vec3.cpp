@@ -1,10 +1,10 @@
 #include <nanobench.h>
 
 #include "console/console.hpp"
-#include "math/random.h"
-#include "math/vec.h"
+#include "math/random.hpp"
+#include "math/vec.hpp"
 
-using namespace vega;
+using namespace vega::math;
 
 int main() {
   ankerl::nanobench::Bench bench;
@@ -17,7 +17,9 @@ int main() {
   double x = 1;
   bench.run("Vec3 ops", [&] { ankerl::nanobench::doNotOptimizeAway(x += (v / (x * a)).norm()); });
   bench.minEpochIterations(0);
-  console::get(consoles::math)->set_level(level::critical);  // Silences the console to
-                                                             // benchmark v.print() overhead
+  vega::console::get(vega::consoles::math)->set_level(vega::level::critical);  // Silences the
+                                                                               // console to
+                                                                               // benchmark
+                                                                               // v.print() overhead
   bench.run("Vec3 print", [&] { v.print(); });
 }

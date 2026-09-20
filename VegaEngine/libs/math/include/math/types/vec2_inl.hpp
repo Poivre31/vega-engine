@@ -3,10 +3,10 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "math/helper.h"
-#include "math/types/vec2.h"
+#include "math/helper.hpp"
+#include "math/types/vec2.hpp"
 
-namespace vega {
+namespace vega::math {
 
 template <math::numeric T>
 constexpr vec2<T>::vec2(axis ax) noexcept
@@ -210,4 +210,4 @@ vec2<T> vec2<T>::transformed(const std::function<T(T)>& func) const {
   return vec2(func(x), func(y));
 }
 
-}  // namespace vega
+}  // namespace vega::math

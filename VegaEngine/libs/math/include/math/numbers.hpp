@@ -4,13 +4,13 @@
 #include <cstdint>
 #include <numbers>
 
-namespace vega {
-
-namespace math {
+namespace vega::math {
 
 /**Signed integers or floating point numbers */
 template <typename T>
 concept numeric = std::signed_integral<T> || std::floating_point<T>;
+
+namespace constants {
 
 using std::numbers::e;
 using std::numbers::egamma;
@@ -35,9 +35,9 @@ inline constexpr double pi_by_2   = 1.570796326794896619231321691639751442;
 /** 3 * pi /2 */
 inline constexpr double pi_3_by_2 = 4.712388980384689857693965074919254326;
 
-}  // namespace math
+}  // namespace constants
 
 /** Cartesian axis x, y and z */
 enum class axis : std::uint8_t { x, y, z };
 
-}  // namespace vega
+}  // namespace vega::math

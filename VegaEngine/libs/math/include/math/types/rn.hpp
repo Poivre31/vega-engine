@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <functional>
 
-namespace vega {
+namespace vega::math {
 
 /**
  * @brief A fixed size vector derived from std::array<double> satisfying
@@ -17,42 +17,42 @@ namespace vega {
  * @tparam N
  */
 template <size_t N>
-class Rn : public std::array<double, N> {
+class rn : public std::array<double, N> {
  public:
-  [[nodiscard]] constexpr friend Rn operator*(double a, const Rn& X) noexcept {
-    Rn Y;
+  [[nodiscard]] constexpr friend rn operator*(double a, const rn& X) noexcept {
+    rn Y;
     for (size_t i = 0; i < N; i++) {
       Y[i] = X[i] * a;
     }
     return Y;
   }
-  [[nodiscard]] constexpr friend Rn operator*(const Rn& X, double a) noexcept { return a * X; }
+  [[nodiscard]] constexpr friend rn operator*(const rn& X, double a) noexcept { return a * X; }
 
-  [[nodiscard]] constexpr friend Rn operator+(const Rn& X, const Rn& Y) noexcept {
-    Rn Z;
+  [[nodiscard]] constexpr friend rn operator+(const rn& X, const rn& Y) noexcept {
+    rn Z;
     for (size_t i = 0; i < N; i++) {
       Z[i] = X[i] + Y[i];
     }
     return Z;
   }
 
-  [[nodiscard]] constexpr friend Rn operator-(const Rn& X, const Rn& Y) noexcept {
-    Rn Z;
+  [[nodiscard]] constexpr friend rn operator-(const rn& X, const rn& Y) noexcept {
+    rn Z;
     for (size_t i = 0; i < N; i++) {
       Z[i] = X[i] - Y[i];
     }
     return Z;
   }
 
-  [[nodiscard]] constexpr Rn operator-() const noexcept {
-    Rn Y;
+  [[nodiscard]] constexpr rn operator-() const noexcept {
+    rn Y;
     for (size_t i = 0; i < N; i++) {
       Y[i] = -this->at(i);
     }
     return Y;
   }
 
-  [[nodiscard]] friend constexpr bool operator==(const Rn& X, const Rn& Y) noexcept {
+  [[nodiscard]] friend constexpr bool operator==(const rn& X, const rn& Y) noexcept {
     for (size_t i = 0; i < N; i++) {
       if (X[i] != Y[i]) {
         return false;
@@ -62,7 +62,7 @@ class Rn : public std::array<double, N> {
   }
 
   /** Returns canonical dot product between this and @param v */
-  [[nodiscard]] constexpr double dot(const Rn& v) const noexcept {
+  [[nodiscard]] constexpr double dot(const rn& v) const noexcept {
     double result = 0.;
     for (size_t i = 0; i < N; i++) {
       result += this->at(i) * v[i];
@@ -146,8 +146,8 @@ class Rn : public std::array<double, N> {
   }
 
   /** Applies a function @param f to every element of the vector */
-  [[nodiscard]] Rn transform(const std::function<double(double)>& f) const noexcept {
-    Rn Y;
+  [[nodiscard]] rn transform(const std::function<double(double)>& f) const noexcept {
+    rn Y;
     for (size_t i = 0; i < N; i++) {
       Y[i] = f(this->at(i));
     }
@@ -155,12 +155,12 @@ class Rn : public std::array<double, N> {
   }
 };
 
-}  // namespace vega
+}  // namespace vega::math
 
 /** Formatter for Rn class, printed as (x[0], x[1], ..., x[N-1]) */
 template <size_t N>
-struct fmt::formatter<vega::Rn<N>> : fmt::formatter<double> {
-  auto format(vega::Rn<N> v, format_context& ctx) const -> decltype(ctx.out()) {
+struct fmt::formatter<vega::math::rn<N>> : fmt::formatter<double> {
+  auto format(vega::math::rn<N> v, format_context& ctx) const -> decltype(ctx.out()) {
     auto out = fmt::format_to(ctx.out(), "(");
 
     ctx.advance_to(out);

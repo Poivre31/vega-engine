@@ -4,9 +4,9 @@
 #include <cstddef>
 #include <iostream>
 
-#include "math/integration.h"
+#include "math/integration.hpp"
 
-using namespace vega;
+using namespace vega::math;
 
 int main() {
   ankerl::nanobench::Bench bench;

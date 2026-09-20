@@ -7,9 +7,9 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include "math/numbers.h"
+#include "math/numbers.hpp"
 
-namespace vega {
+namespace vega::math {
 
 template <math::numeric T>
 class vec3 {
@@ -289,12 +289,12 @@ using vec3d = vec3<double>;
 using vec3i = vec3<int32_t>;
 using vec3l = vec3<int64_t>;
 
-}  // namespace vega
+}  // namespace vega::math
 
 /** Formatter for vec3 class, printed as (x, y, z) */
 template <vega::math::numeric T>
-struct fmt::formatter<vega::vec3<T>> : fmt::formatter<T> {
-  auto format(vega::vec3<T> v, format_context& ctx) const -> decltype(ctx.out()) {
+struct fmt::formatter<vega::math::vec3<T>> : fmt::formatter<T> {
+  auto format(vega::math::vec3<T> v, format_context& ctx) const -> decltype(ctx.out()) {
     auto out = fmt::format_to(ctx.out(), "(");
 
     ctx.advance_to(out);

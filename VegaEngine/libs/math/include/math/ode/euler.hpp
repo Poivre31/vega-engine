@@ -3,9 +3,9 @@
 
 #include <functional>
 
-#include "math/ode/solver.h"
+#include "math/ode/solver.hpp"
 
-namespace vega::solver {
+namespace vega::math::solver {
 
 /**
  * @brief The first order explicit euler method to solve ODEs.
@@ -36,4 +36,4 @@ class euler : public base_solver<T> {
   }
 };
 
-}  // namespace vega::solver
+}  // namespace vega::math::solver

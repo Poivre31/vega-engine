@@ -1,9 +1,9 @@
 #pragma once
 #include <concepts>
 
-#include "math/types/vec3.h"
+#include "math/types/vec3.hpp"
 
-namespace vega {
+namespace vega::math {
 
 /** Canonical dot product between @param u and @param v */
 template <math::numeric T>
@@ -109,4 +109,4 @@ project(const vec3<T>& vec, const std::pair<vec3<T>, vec3<T>>& plane) noexcept {
 //     double x = ((axis.x * axis.x * (1 - cos(theta))) + cos(theta)) * v.x;
 // }
 
-}  // namespace vega
+}  // namespace vega::math

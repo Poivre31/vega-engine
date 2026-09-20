@@ -4,13 +4,13 @@
 #include <vector>
 
 #include "console/console.hpp"
-#include "math/random.h"
-#include "math/vec.h"
+#include "math/random.hpp"
+#include "math/vec.hpp"
 
-using namespace vega;
+using namespace vega::math;
 
 TEST(TestMath, TestRandom) {
-  auto console = console::create("Random");
+  auto console = vega::console::create("Random");
   EXPECT_NO_FATAL_FAILURE(std::vector<double> v; v.reserve(10); for (size_t i = 0; i < 10; i++) {
     v.push_back(random::uniform(0., 2.));
   } console->info("({:.4g})", fmt::join(v, ", ")););

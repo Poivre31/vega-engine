@@ -5,10 +5,10 @@
 #include <concepts>
 #include <random>
 
-#include "math/numbers.h"
-#include "math/types.h"
+#include "math/numbers.hpp"
+#include "math/types.hpp"
 
-namespace vega {
+namespace vega::math {
 
 /** A static class to generate random variables using Mersenne Twister 64
  * engine*/
@@ -57,8 +57,8 @@ class random {
   /** Array of @tparam N uniformly distributed doubles in [ @param lower,
    * @param upper [ */
   template <size_t N>
-  static Rn<N> uniform_Rn(const double lower, const double upper) {
-    Rn<N> X;
+  static rn<N> uniform_Rn(const double lower, const double upper) {
+    rn<N> X;
     for (auto& x : X) {
       x = uniform(lower, upper);
     }
@@ -68,8 +68,8 @@ class random {
   /** Array of @tparam N uniformly distributed doubles in [ @param lower[i],
    * @param upper[i] [ */
   template <size_t N>
-  static Rn<N> uniform_Rn(const Rn<N>& lower, const Rn<N>& upper) {
-    Rn<N> X;
+  static rn<N> uniform_Rn(const rn<N>& lower, const rn<N>& upper) {
+    rn<N> X;
     for (size_t i = 0; i < N; i++) {
       X[i] = uniform(lower[i], upper[i]);
     }
@@ -82,4 +82,4 @@ class random {
   static thread_local inline std::default_random_engine _engine{_seed};
 };
 
-}  // namespace vega
+}  // namespace vega::math

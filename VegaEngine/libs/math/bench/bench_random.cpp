@@ -4,9 +4,9 @@
 #include <iostream>
 #include <vector>
 
-#include "math/random.h"
+#include "math/random.hpp"
 
-using namespace vega;
+using namespace vega::math;
 
 class generator {
  public:

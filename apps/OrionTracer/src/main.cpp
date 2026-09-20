@@ -1,7 +1,7 @@
 #include <console/console.hpp>
-#include <math/integration.h>
-#include <math/numbers.h>
-#include <math/vec.h>
+#include <math/integration.hpp>
+#include <math/numbers.hpp>
+#include <math/vec.hpp>
 #include <timer/timer.hpp>
 
 #include <cmath>

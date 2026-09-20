@@ -72,10 +72,3 @@ target_sources(Application PRIVATE
 )
 
 target_include_directories(Application PUBLIC "${CMAKE_SOURCE_DIR}/VegaEngine/vendor/imgui" "${CMAKE_SOURCE_DIR}/VegaEngine/vendor/imgui/backends")
-
-# set_target_properties(Application PROPERTIES
-#     BUILD_RPATH "$ORIGIN"
-#     INSTALL_RPATH "$ORIGIN"
-#     BUILD_RPATH_USE_ORIGIN TRUE
-# )
-

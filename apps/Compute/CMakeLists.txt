@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.28)
 
 # ------------------
 # ------------------
-project(BasicGUI
+project(Compute
    VERSION 0.0.1
-   DESCRIPTION "A basic GUI built on Vega Engine"
+   DESCRIPTION "An app for scientific computing"
    LANGUAGES CXX
 )
 
@@ -14,13 +14,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 # ------------------
 # ------------------
-add_executable(BasicGUI src/main.cpp)
-target_link_libraries(BasicGUI VegaEngine)
+add_executable(Compute src/main.cpp)
+target_link_libraries(Compute VegaEngine)
 
 # ------------------
 # ------------------
 if(MSVC)
-   target_compile_options(BasicGUI PRIVATE -Wall -W4)
+   target_compile_options(Compute PRIVATE -Wall -W4)
 else()
-   target_compile_options(BasicGUI PRIVATE -Wall -Wextra -Wpedantic -Wshadow -Wconversion)
+   target_compile_options(Compute PRIVATE -Wall -Wextra -Wpedantic -Wshadow -Wconversion)
 endif()

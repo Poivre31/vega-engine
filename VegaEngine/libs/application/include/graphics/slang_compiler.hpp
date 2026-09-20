@@ -18,10 +18,10 @@
 
 namespace vega {
 
-class slang_layer final : public Ilayer {
+class slang_layer final : public ilayer {
  public:
-  using Ilayer::Ilayer;
-  slang_layer(application_context* context) : Ilayer(context) {
+  using ilayer::ilayer;
+  slang_layer(application_context* context) : ilayer(context) {
     // CREATE SESSION
     slang::createGlobalSession(_global_session.writeRef());
   }

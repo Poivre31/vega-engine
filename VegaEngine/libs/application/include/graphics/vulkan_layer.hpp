@@ -20,6 +20,7 @@
 #include "image_layout.hpp"
 #include "single_command_buffer.hpp"
 #include "compute_shader.hpp"
+#include "vulkan/vulkan.hpp"
 
 namespace vega {
 
@@ -30,9 +31,9 @@ struct PC_graphics_properties {
   float time{};
 };
 
-class vulkan_layer final : public Ilayer {
+class vulkan_layer final : public ilayer {
  public:
-  using Ilayer::Ilayer;
+  using ilayer::ilayer;
 
   bool init() noexcept final {
     if (_instance_running) {
@@ -268,7 +269,7 @@ class vulkan_layer final : public Ilayer {
       imgui_cleanup();
     }
 
-    _rect = {};
+    _rect = vk::Rect2D{};
     _draw_fences.clear();
     _presentation_semaphores.clear();
     _frame_index = 0;

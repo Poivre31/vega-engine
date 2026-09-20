@@ -16,6 +16,16 @@ class random {
  public:
   random() = delete;
 
+  /** Returns true with probability @param success_probability and false with probability @param 1 -
+   * success_probability.
+   * If @param success_probability < 0, always returns false and if @param success_probability > 1
+   * always returns true.
+   */
+  template <std::floating_point T>
+  static bool boolean(T success_probability) {
+    return uniform(T(0.), T(1.)) <= success_probability;
+  }
+
   /** Uniformly distributed random real in [ @param lower, @param upper [ */
   template <std::floating_point T>
   static T uniform(const T lower, const T upper) {

@@ -8,9 +8,9 @@
 
 namespace vega {
 
-class camera_layer final : public Ilayer {
+class camera_layer final : public ilayer {
  public:
-  using Ilayer::Ilayer;
+  using ilayer::ilayer;
 
   bool init() noexcept final {
     _cameras.emplace_back(45.F, glm::vec3{0.F, 0.F, 0.F}, glm::vec3{1.F, 0.F, 0.F});

@@ -11,9 +11,9 @@
 
 namespace vega {
 
-class assets_layer final : public Ilayer {
+class assets_layer final : public ilayer {
  public:
-  using Ilayer::Ilayer;
+  using ilayer::ilayer;
   bool init() noexcept final {
     try {
       const vulkan_context& vk_context = get_app_context()->vulkan;

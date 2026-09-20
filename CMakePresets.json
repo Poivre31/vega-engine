@@ -75,7 +75,7 @@
         },
         {
             "name": "gcc-release-minsize",
-            "description": "Using GCC compiler and release build",
+            "description": "Using GCC compiler and minsize release build",
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {

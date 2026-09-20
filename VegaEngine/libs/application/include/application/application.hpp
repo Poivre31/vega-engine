@@ -18,7 +18,7 @@
 namespace vega {
 
 template <class T>
-concept application_layer = std::derived_from<T, Ilayer> && std::is_final_v<T>;
+concept application_layer = std::derived_from<T, ilayer> && std::is_final_v<T>;
 
 namespace application_config {
 
@@ -160,7 +160,7 @@ class application {
     _layers.push_back(std::make_unique<T>(&_context));
   }
 
-  std::vector<std::unique_ptr<Ilayer>> _layers;
+  std::vector<std::unique_ptr<ilayer>> _layers;
   std::string _name;
   vega_console _console;
   application_context _context;

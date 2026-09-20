@@ -17,8 +17,8 @@ struct sdl_exception : public std::runtime_error {
   using std::runtime_error::runtime_error;
 };
 
-class sdl_layer final : public Ilayer {
-  using Ilayer::Ilayer;
+class sdl_layer final : public ilayer {
+  using ilayer::ilayer;
 
   bool init() noexcept final {
     bool success = SDL_Init(SDL_INIT_VIDEO);

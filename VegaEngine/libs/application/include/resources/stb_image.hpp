@@ -25,8 +25,8 @@ constexpr std::array<stbi_uc, fallback_image_channels> fallback_image_color_2 =
     {0x4F, 0, 0x4F, 0xFF};
 
 /**
- * @brief A wrapped class around stbi_uc* to help load 8B color images using stb image loader. Owns
- * the memory and free it at destruction/new image load
+ * @brief A wrapped class around stbi_uc* to help load 8B color images using stb image loader.
+ * Owns the memory and free it at destruction/new image load
  *
  */
 class stb_image {
@@ -123,7 +123,11 @@ class stb_image {
       }
 
       auto* image_data = stbi_load(
-          path.c_str(), &_tex_width, &_tex_height, &_channels, static_cast<int>(target_channels)
+          path.string().data(),
+          &_tex_width,
+          &_tex_height,
+          &_channels,
+          static_cast<int>(target_channels)
       );
       if (!image_data) {
         console::get(consoles::assets)
@@ -168,8 +172,8 @@ class stb_image {
     }
   }
 
-  /** @brief Get the image memory pointer after image has been loaded, returns nullptr if it hasn't
-   * been loaded */
+  /** @brief Get the image memory pointer after image has been loaded, returns nullptr if it
+   * hasn't been loaded */
   [[nodiscard]] stbi_uc* data() const noexcept {
     if (_use_fallback) {
       return _fallback_image.data()->data();

@@ -4,9 +4,9 @@
 
 #include "imgui.h"
 
-class fps_layer final : public Ilayer {
+class fps_layer final : public ilayer {
  public:
-  using Ilayer::Ilayer;
+  using ilayer::ilayer;
   void fixed_update(double dt) noexcept final {
     _console->info(
         "Physics at {:.2f}fps, rendering at avg {:.2f}fps", 1. / dt, 1. / get_app_context()->avg_dt
@@ -17,9 +17,9 @@ class fps_layer final : public Ilayer {
   vega_console _console = console::create("FPS");
 };
 
-class ui_layer final : public Ilayer {
+class ui_layer final : public ilayer {
  public:
-  using Ilayer::Ilayer;
+  using ilayer::ilayer;
   void gui_update() noexcept final {
     // ImGui::Begin("About");
     // ImGui::Text("I have to say smth ? Hm idk what to say");

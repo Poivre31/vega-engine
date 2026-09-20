@@ -11,16 +11,16 @@ bool is_context_valid(application_context& context) {
          && context.vulkan.graphics_queue;
 }
 
-class Ilayer {
+class ilayer {
  public:
-  Ilayer(application_context* context) : _context(context) {
+  ilayer(application_context* context) : _context(context) {
     assert(context != nullptr && "A valid application context should always be passed");
   }
-  virtual ~Ilayer()                = default;
-  Ilayer(const Ilayer&)            = default;
-  Ilayer(Ilayer&&)                 = default;
-  Ilayer& operator=(const Ilayer&) = default;
-  Ilayer& operator=(Ilayer&&)      = default;
+  virtual ~ilayer()                = default;
+  ilayer(const ilayer&)            = default;
+  ilayer(ilayer&&)                 = default;
+  ilayer& operator=(const ilayer&) = default;
+  ilayer& operator=(ilayer&&)      = default;
 
   virtual bool init() noexcept { return true; };
   virtual void gui_update() noexcept {};

@@ -40,7 +40,7 @@ add_subdirectory(libs/timer/tests)
 add_subdirectory(libs/application)
 target_link_libraries(VegaEngine PUBLIC Application)
 
-target_sources(VegaEngine PRIVATE src/src.cpp)
+target_sources(VegaEngine PRIVATE src/implementations.cpp)
 
 # ------------------
 # ------------------

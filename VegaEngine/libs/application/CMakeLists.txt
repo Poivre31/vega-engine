@@ -9,7 +9,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_library(Application STATIC)
 
 target_sources(Application PRIVATE
-    "src/vma.cpp"
 
     "include/glm.hpp"
     "include/io.hpp"
@@ -71,4 +70,7 @@ target_sources(Application PRIVATE
     "${CMAKE_SOURCE_DIR}/VegaEngine/vendor/imgui/misc/cpp/imgui_stdlib.cpp"
 )
 
-target_include_directories(Application PUBLIC "${CMAKE_SOURCE_DIR}/VegaEngine/vendor/imgui" "${CMAKE_SOURCE_DIR}/VegaEngine/vendor/imgui/backends")
+target_include_directories(Application PUBLIC
+    "${CMAKE_SOURCE_DIR}/VegaEngine/vendor/imgui"
+    "${CMAKE_SOURCE_DIR}/VegaEngine/vendor/imgui/backends"
+)

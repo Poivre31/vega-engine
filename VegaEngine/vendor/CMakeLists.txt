@@ -5,7 +5,10 @@ add_library(vendor INTERFACE)
 
 # VEGA
 add_subdirectory(spdlog)
+set(was_cmake_warn_deprecated_on ${CMAKE_WARN_DEPRECATED})
+set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 add_subdirectory(nanobench)
+set(CMAKE_WARN_DEPRECATED ${was_cmake_warn_deprecated_on} CACHE BOOL "" FORCE)
 add_subdirectory(google_test EXCLUDE_FROM_ALL)
 # END VEGA
 
@@ -72,7 +75,7 @@ install(PROGRAMS ${SLANG_SHARED_LIB}
 
 # VMA
 add_subdirectory(vma-hpp)
-target_include_directories(vendor INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/vma-hpp/VulkanMemoryAllocator/include")
+target_include_directories(vendor SYSTEM INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/vma-hpp/VulkanMemoryAllocator/include")
 # END VMA
 
 # GLM
@@ -83,26 +86,17 @@ target_compile_definitions(vendor INTERFACE GLM_FORCE_DEPTH_ZERO_TO_ONE GLM_ENAB
 
 # STB
 target_include_directories(vendor INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/stb-image")
-
-target_compile_definitions(vendor INTERFACE STB_IMAGE_IMPLEMENTATION)
 # END STB
-
-# GLTF
-target_include_directories(vendor INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/tinygltf")
-target_compile_definitions(vendor INTERFACE TINYGLTF_IMPLEMENTATION)
-# END GLTF
 
 # OBJ
 target_include_directories(vendor INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/tinyobj")
 
 target_compile_definitions(vendor INTERFACE
-    TINYOBJLOADER_IMPLEMENTATION
     TINYOBJLOADER_USE_MAPBOX_EARCUT
     TINYOBJLOADER_STREAM_READER_MAX_BYTES=-1
     TINYOBJLOADER_USE_MULTITHREADING
     TINYOBJLOADER_USE_SIMD
 )
-
 # END OBJ
 
 # SDL3

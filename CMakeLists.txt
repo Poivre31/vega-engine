@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(LibAndProject)
+project(samples)
 
 # ------------------
 # ------------------
 include(CTest)
 enable_testing()
 
-add_subdirectory(VegaEngine)
-add_subdirectory(apps/OrionTracer)
-add_subdirectory(apps/Compute)
-add_subdirectory(apps/VulkanApp)
+add_subdirectory(vega-engine)
+add_subdirectory(apps/orion-tracer)
+add_subdirectory(apps/compute)
+add_subdirectory(apps/vulkan-renderer)
 

@@ -74,11 +74,11 @@ Started as a summer ray-tracing programming project after my freshman year in 20
 ## Getting Started
 
 ### Using CMake
-Add the vega-engine repository as a subdirectory, then link your project against "VegaEngine":
+Add the vega-engine repository as a subdirectory, then link your project against "vega-engine":
 
 ```
 add_subdirectory(path-to-vega-engine)
-target_link_libraries(YourTarget VegaEngine)
+target_link_libraries(YourTarget vega-engine)
 ```
 
 

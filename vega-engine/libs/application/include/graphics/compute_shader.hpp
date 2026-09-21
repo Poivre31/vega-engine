@@ -257,7 +257,7 @@ class compute_shader {
         );
       }
       buffer_descriptors[binding] = vk::DescriptorBufferInfo{
-          .buffer = *buffer, .offset = 0, .range = 1
+          .buffer = *buffer, .offset = 0, .range = vk::WholeSize
       };
       write_descriptor_sets.emplace_back(
           vk::WriteDescriptorSet{

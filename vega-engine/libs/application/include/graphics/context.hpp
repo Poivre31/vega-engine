@@ -23,10 +23,12 @@ struct vulkan_context {
 
   dynamic_config config{};
 
-  bool recreate_swapchain         = false;
-  bool recreate_graphics_pipeline = false;
-  bool update_imgui               = false;
-  bool recompile_shaders          = false;
+  struct {
+    bool swapchain         = false;
+    bool graphics_pipeline = false;
+    bool imgui             = false;
+    bool shaders           = false;
+  } pending_updates;
 };
 
 }  // namespace vega

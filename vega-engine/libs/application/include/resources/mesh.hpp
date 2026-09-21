@@ -54,7 +54,7 @@ class mesh_3D {
   explicit mesh_3D(const std::vector<vertex_3D>& vertices) : _vertices(vertices) {}
 
   void load_vertices(const std::vector<vertex_3D>& vertices) { _vertices = vertices; }
-  [[nodiscard]] std::vector<vertex_3D> get_vertices() const noexcept { return _vertices; }
+  [[nodiscard]] const std::vector<vertex_3D> get_vertices() const noexcept { return _vertices; }
 
   void create_vertex_buffer(const vulkan_context& context) {
     if (_vertices.empty()) {

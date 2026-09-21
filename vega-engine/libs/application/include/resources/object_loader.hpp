@@ -21,17 +21,17 @@ std::pair<std::vector<vertex_3D>, std::vector<tinyobj::material_t>> load_object(
   try {
     auto path = std::filesystem::path(model_path);
     if (!std::filesystem::exists(path)) {
-      path = std::filesystem::path("resources/models/").append(model_path);
-      if (!std::filesystem::exists(path)) {
-        console::get(consoles::assets)
-            ->error(
-                "Model '{}' doesn't exist in directory '{}' or '{}', loading default cube",
-                model_path,
-                std::filesystem::current_path().string(),
-                std::filesystem::absolute("resources/models/").string()
-            );
-        return {create_cube({0.F, 0.F, 0.F}, 1.F), {}};
-      }
+      // path = std::filesystem::path("resources/models/").append(model_path);
+      // if (!std::filesystem::exists(path)) {
+      //   console::get(consoles::assets)
+      //       ->error(
+      //           "Model '{}' doesn't exist in directory '{}' or '{}', loading default cube",
+      //           model_path,
+      //           std::filesystem::current_path().string(),
+      //           std::filesystem::absolute("resources/models/").string()
+      //       );
+      // }
+      return {create_cube({0.F, 0.F, 0.F}, 1.F), {}};
     }
     if (!silence) {
       console::get(consoles::assets)->trace("Loading model: found model at '{:s}'", path.string());
@@ -47,7 +47,7 @@ std::pair<std::vector<vertex_3D>, std::vector<tinyobj::material_t>> load_object(
     config.num_threads = -1;
 
     bool ok = tinyobj::LoadObjOpt(
-        &attrib, &shapes, &materials, &warn, &err, model_path.data(), nullptr, config
+        &attrib, &shapes, &materials, &warn, &err, path.string().data(), nullptr, config
     );
     if (!warn.empty()) {
       console::get(consoles::assets)->warn("Tinyobj loader warning : {}", warn);

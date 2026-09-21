@@ -95,13 +95,13 @@ class vulkan_layer final : public ilayer {
     ImGui::Text("Rendering settings");
     ImGui::Separator();
     if (ImGui::Checkbox("VSync", &_vk_context->config.vsync)) {
-      _vk_context->recreate_swapchain     = true;
-      get_app_context()->reset_dt_history = true;
+      _vk_context->pending_updates.swapchain = true;
+      get_app_context()->reset_dt_history    = true;
     }
     if (ImGui::Checkbox("Post processing", &_vk_context->config.enable_post_processing)) {
-      _vk_context->recreate_swapchain         = true;
-      _vk_context->recreate_graphics_pipeline = true;
-      _vk_context->update_imgui               = true;
+      _vk_context->pending_updates.swapchain         = true;
+      _vk_context->pending_updates.graphics_pipeline = true;
+      _vk_context->pending_updates.imgui             = true;
     }
 
     static std::unordered_map<vk::Format, const char*> format_names{
@@ -118,10 +118,10 @@ class vulkan_layer final : public ilayer {
       for (auto& format : _vk_context->config.available_raster_format) {
         bool is_selected = (_vk_context->config.raster_color_format == format);
         if (ImGui::Selectable(format_names.at(format), is_selected)) {
-          _vk_context->config.raster_color_format = format;
-          _vk_context->recreate_swapchain         = true;
-          _vk_context->recreate_graphics_pipeline = true;
-          _vk_context->update_imgui               = true;
+          _vk_context->config.raster_color_format        = format;
+          _vk_context->pending_updates.swapchain         = true;
+          _vk_context->pending_updates.graphics_pipeline = true;
+          _vk_context->pending_updates.imgui             = true;
         }
         if (is_selected) {
           ImGui::SetItemDefaultFocus();
@@ -139,8 +139,8 @@ class vulkan_layer final : public ilayer {
             int(_vk_context->config.max_swapchain_image_count)
         )) {
       _vk_context->config.swapchain_image_count = swapchain_size;
-      _vk_context->recreate_swapchain           = true;
-      _vk_context->update_imgui                 = true;
+      _vk_context->pending_updates.swapchain    = true;
+      _vk_context->pending_updates.imgui        = true;
     }
 
     ImGui::Text("MSAA sample count :");
@@ -150,10 +150,10 @@ class vulkan_layer final : public ilayer {
       for (auto& count : _vk_context->config.available_msaa_sample_counts) {
         bool is_selected = (_vk_context->config.msaa_sample_count == count);
         if (ImGui::Selectable(vk::to_string(count).c_str(), is_selected)) {
-          _vk_context->config.msaa_sample_count   = count;
-          _vk_context->recreate_swapchain         = true;
-          _vk_context->recreate_graphics_pipeline = true;
-          _vk_context->update_imgui               = true;
+          _vk_context->config.msaa_sample_count          = count;
+          _vk_context->pending_updates.swapchain         = true;
+          _vk_context->pending_updates.graphics_pipeline = true;
+          _vk_context->pending_updates.imgui             = true;
         }
         if (is_selected) {
           ImGui::SetItemDefaultFocus();
@@ -164,7 +164,7 @@ class vulkan_layer final : public ilayer {
 
     ImGui::Text("MSAA shading rate :");
     if (ImGui::SliderFloat("##msaa rate", &_vk_context->config.msaa_shading_rate, 0.F, 1.F)) {
-      _vk_context->recreate_graphics_pipeline = true;
+      _vk_context->pending_updates.graphics_pipeline = true;
     }
 
     ImGui::Text("Clear color :");
@@ -224,13 +224,13 @@ class vulkan_layer final : public ilayer {
     ImGui::End();
     ImGui::PopStyleVar(2);
 
-    if (_vk_context->recreate_swapchain) {
+    if (_vk_context->pending_updates.swapchain) {
       recreate_swapchain();
     }
-    if (_vk_context->recreate_graphics_pipeline) {
+    if (_vk_context->pending_updates.graphics_pipeline) {
       recreate_graphics_pipeline();
     }
-    if (_vk_context->update_imgui) {
+    if (_vk_context->pending_updates.imgui) {
       imgui_update_vulkan(get_app_context()->window, *_vk_context);
     }
   }
@@ -525,7 +525,7 @@ class vulkan_layer final : public ilayer {
 
     auto layer_properties = _context.enumerateInstanceLayerProperties();
     size_t enabled_layers = layers.size();
-    for (int i = 0; i < enabled_layers;) {
+    for (size_t i = 0; i < enabled_layers;) {
       const auto* layer = layers[i];
       if (std::ranges::none_of(layer_properties, [layer](vk::LayerProperties layer_property) {
             return std::strcmp(layer_property.layerName, layer) == 0;
@@ -871,7 +871,7 @@ class vulkan_layer final : public ilayer {
           _device, {&_depth_buffer}, {&_pp_front_image, &_pp_back_image}, {}
       );
 
-      _vk_context->recreate_swapchain = false;
+      _vk_context->pending_updates.swapchain = false;
     } catch (...) {
       handle_exception("swapchain recreation");
       cleanup();
@@ -1076,7 +1076,7 @@ class vulkan_layer final : public ilayer {
       _device.waitIdle();
       _graphics_pipeline = nullptr;
       create_graphics_pipeline();
-      _vk_context->recreate_graphics_pipeline = false;
+      _vk_context->pending_updates.graphics_pipeline = false;
     } catch (...) {
       handle_exception("graphics pipeline recreation");
       cleanup();
@@ -1573,7 +1573,7 @@ class vulkan_layer final : public ilayer {
     result = _graphics_queue.presentKHR(presentInfo);
 
     if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR
-        || _vk_context->recreate_swapchain) {
+        || _vk_context->pending_updates.swapchain) {
       recreate_swapchain();
     } else if (result != vk::Result::eSuccess) {
       throw std::runtime_error("Graphics queue presentation failed: " + vk::to_string(result));

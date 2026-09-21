@@ -29,15 +29,15 @@ class slang_layer final : public ilayer {
   void update(double dt) noexcept final {
     const bool* key_states = SDL_GetKeyboardState(nullptr);
 
-    if (get_app_context()->vulkan.recompile_shaders) {
+    if (get_app_context()->vulkan.pending_updates.shaders) {
       _console->info("Recompiling shaders...");
       if (!load_shaders()) {
         _console->error("Shader recompilation failed, keeping old pipeline");
-        get_app_context()->vulkan.recreate_graphics_pipeline = false;
+        get_app_context()->vulkan.pending_updates.graphics_pipeline = false;
       } else {
-        get_app_context()->vulkan.recreate_graphics_pipeline = true;
+        get_app_context()->vulkan.pending_updates.graphics_pipeline = true;
       }
-      get_app_context()->vulkan.recompile_shaders = false;
+      get_app_context()->vulkan.pending_updates.shaders = false;
     }
   }
   void cleanup() noexcept final {}

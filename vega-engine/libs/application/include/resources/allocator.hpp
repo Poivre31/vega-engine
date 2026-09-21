@@ -88,9 +88,8 @@ class allocator {
     static uint16_t allocator_id = 0;
     static std::mutex allocator_id_mutex;
 
-    _id = allocator_id;
-
     std::lock_guard<std::mutex> lock(allocator_id_mutex);
+    _id = allocator_id;
     allocator_id++;
   }
 
@@ -109,10 +108,10 @@ class allocator {
     }
 
     return {
-        .index       = index,
-        .allocatorId = _id,
-        .generation  = _objects.at(index).generation(),
-        .valid       = true
+        .index        = index,
+        .allocator_id = _id,
+        .generation   = _objects.at(index).generation(),
+        .valid        = true
     };
   }
 
@@ -155,7 +154,7 @@ class allocator {
       throw std::invalid_argument(
           "Handle index is bigger than the number of stored objects, something is wrong"
       );
-    } else if (!_objects.at(handle.index).checkGeneration(handle)) {
+    } else if (!_objects.at(handle.index).check_generation(handle)) {
       throw std::invalid_argument(
           "Handle and accessed element generation do not match, the slot have been reusued by "
           "another object"
@@ -176,9 +175,8 @@ class static_allocator {
     static uint16_t allocator_id = 0;
     static std::mutex allocator_id_mutex;
 
-    _id = allocator_id;
-
     std::lock_guard<std::mutex> lock(allocator_id_mutex);
+    _id = allocator_id;
     allocator_id++;
   }
 

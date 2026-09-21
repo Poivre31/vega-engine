@@ -73,6 +73,8 @@ class host_buffer {
     if (!*_buffer) {
       throw std::runtime_error("Uploading data before buffer creation");
     }
+
+    uint64_t copy_size = data.size() * sizeof(T);
     if (_staged) {
       if (!*_staging_buffer) {
         _create_staging_buffer(vk_context);
@@ -83,9 +85,9 @@ class host_buffer {
                 "the buffer"
             );
       }
-      _staging_buffer.getAllocation().copyFromMemory(data.data(), 0, _size);
+      _staging_buffer.getAllocation().copyFromMemory(data.data(), 0, copy_size);
       auto cmd = begin_transient_command_buffer(vk_context);
-      vk::BufferCopy2 region{.srcOffset = 0, .dstOffset = 0, .size = _size};
+      vk::BufferCopy2 region{.srcOffset = 0, .dstOffset = 0, .size = copy_size};
       vk::CopyBufferInfo2 copy_info{
           .srcBuffer = _staging_buffer, .dstBuffer = _buffer, .regionCount = 1, .pRegions = &region
       };
@@ -95,7 +97,7 @@ class host_buffer {
         _staging_buffer = nullptr;
       }
     } else {
-      _buffer.getAllocation().copyFromMemory(data.data(), 0, _size);
+      _buffer.getAllocation().copyFromMemory(data.data(), 0, copy_size);
     }
   }
 

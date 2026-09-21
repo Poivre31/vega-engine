@@ -61,7 +61,7 @@ class sdl_layer final : public ilayer {
           if (event.key.scancode == SDL_SCANCODE_ESCAPE) {
             get_app_context()->running = false;
           } else if (event.key.scancode == SDL_SCANCODE_R && !event.key.repeat) {
-            get_app_context()->vulkan.recompile_shaders = true;
+            get_app_context()->vulkan.pending_updates.shaders = true;
           }
           break;
 
@@ -79,7 +79,7 @@ class sdl_layer final : public ilayer {
           get_app_context()->width  = event.window.data1;
           get_app_context()->height = event.window.data2;
 
-          get_app_context()->vulkan.recreate_swapchain = true;
+          get_app_context()->vulkan.pending_updates.swapchain = true;
           break;
 
         default:

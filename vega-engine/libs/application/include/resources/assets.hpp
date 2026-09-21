@@ -53,7 +53,7 @@ class assets_layer final : public ilayer {
       console::get(consoles::assets)->error("Exception during assets initialisation: {}", e.what());
       return false;
     } catch (...) {
-      console::get(consoles::assets)->error("Unknown error during assets initialisation {}");
+      console::get(consoles::assets)->error("Unknown error during assets initialisation");
       return false;
     }
 

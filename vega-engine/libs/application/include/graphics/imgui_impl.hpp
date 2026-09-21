@@ -103,7 +103,7 @@ void imgui_update_vulkan(SDL_Window* window, vulkan_context& vk_context) {
 
   imgui_init_vulkan_impl_(window, vk_context);
 
-  vk_context.update_imgui = false;
+  vk_context.pending_updates.imgui = false;
 }
 
 }  // namespace vega

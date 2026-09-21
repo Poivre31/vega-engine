@@ -238,16 +238,9 @@ gpu_image load_texture_to_gpu(
   );
   if (mip_maps) {
     generate_mip_maps(vk_context, cmd, image);
+  } else {
+    transition_image_global_layout(image, cmd, layout_transition::dst_to_shader_sample_read);
   }
-  //   transition_image_global_layout(
-  //       image,
-  //       cmd,
-  //       vk::ImageLayout::eTransferDstOptimal,
-  //       {},
-  //       vk::AccessFlagBits2::eTransferRead,
-  //       vk::PipelineStageFlagBits2::eTopOfPipe,
-  //       vk::PipelineStageFlagBits2::eTransfer
-  //   );
   submit_transient_command_buffer(vk_context, std::move(cmd));
   image.sampler = &sampler.get();
   return std::move(image);

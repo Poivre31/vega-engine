@@ -80,17 +80,17 @@ target_include_directories(vendor SYSTEM INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/
 # END VMA
 
 # GLM
-add_subdirectory(GLM)
+add_subdirectory(glm)
 
 target_compile_definitions(vendor INTERFACE GLM_FORCE_DEPTH_ZERO_TO_ONE GLM_ENABLE_EXPERIMENTAL)
 # END GLM
 
 # STB
-target_include_directories(vendor INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/stb-image")
+target_include_directories(vendor SYSTEM INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/stb-image")
 # END STB
 
 # OBJ
-target_include_directories(vendor INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/tinyobj")
+target_include_directories(vendor SYSTEM INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/tinyobj")
 
 target_compile_definitions(vendor INTERFACE
     TINYOBJLOADER_USE_MAPBOX_EARCUT

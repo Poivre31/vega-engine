@@ -11,6 +11,32 @@ bool is_context_valid(application_context& context) {
          && context.vulkan.graphics_queue;
 }
 
+/**
+ * @brief An abstraction for the different steps at which code is executed during application
+ * execution. Create a class marked as final that publically inherits from ilayer and uses its
+ * default constructors, then overload the steps you want:
+ *
+ * class your_layer final : public ilayer {
+ *  public:
+ *    using ilayer::ilayer; // TODO : CHANGE THIS TO CLEANER SOLUTION
+ *
+ *    // AT CONSTRUCTION: return false if error makes it impossible to continue execution
+ *    bool init() noexpect final {return true;}
+ *
+ *    // AT DESTRUCTION: only function called in reverse order (layer2 then layer1...)
+ *    void cleanup() noexpect final {}
+ *
+ *    // BEFORE RENDERING: within an ImGui DrawFrame block, to handle UI logic
+ *    void gui_update() noexpect final {}
+ *
+ *    // AT RENDERING: right before vulkan pipeline execution, for per frame logic
+ *    void update(double delta_time) noexpect final {}
+ *
+ *    // AT FIXED INTERVAL: for logic that requires stability/lower fps (physics, gpu transfers...)
+ *    void fixed_update(double fixed_step) noexpect final {}
+ * };
+ *
+ */
 class ilayer {
  public:
   ilayer(application_context* context) : _context(context) {

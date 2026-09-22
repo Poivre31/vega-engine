@@ -54,7 +54,7 @@ target_precompile_headers(Application PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/include/graphics/graphics.hpp"
 )
 
-target_link_libraries(Application PUBLIC vendor)
+target_link_libraries(Application PUBLIC vendor console timer)
 
 target_sources(Application PRIVATE
     "${CMAKE_SOURCE_DIR}/vega-engine/vendor/imgui/imgui.cpp"

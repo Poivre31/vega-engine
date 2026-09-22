@@ -23,14 +23,13 @@ std::pair<std::vector<vertex_3D>, std::vector<tinyobj::material_t>> load_object(
     if (!std::filesystem::exists(path)) {
       // path = std::filesystem::path("resources/models/").append(model_path);
       // if (!std::filesystem::exists(path)) {
-      //   console::get(consoles::assets)
-      //       ->error(
-      //           "Model '{}' doesn't exist in directory '{}' or '{}', loading default cube",
-      //           model_path,
-      //           std::filesystem::current_path().string(),
-      //           std::filesystem::absolute("resources/models/").string()
-      //       );
       // }
+      console::get(consoles::assets)
+          ->error(
+              "Model '{}' doesn't exist in directory '{}', loading default cube",
+              model_path,
+              std::filesystem::current_path().string()
+          );
       return {create_cube({0.F, 0.F, 0.F}, 1.F), {}};
     }
     if (!silence) {

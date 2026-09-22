@@ -28,6 +28,20 @@ constexpr double fixed_time_step = 1. / 60;
 
 };  // namespace application_config
 
+/**
+ * @brief The class that manages your code execution. Create an application instance using the
+ * layers you want to execute, in order, as template arguments. You can then execute the code by
+ * calling app.run()
+ *
+ * @tparam layers: a pack of classes inhereting from ilayer. They must be marked as final and use
+ * ilayer's default constructor:
+ *
+ * class layer final : public ilayer {
+ * public:
+ * using ilayer::ilayer; // TODO : CHANGE THIS TO CLEANER SOLUTION
+ *    // your overloads...
+ * };
+ */
 template <application_layer... layers>
 class application {
  public:

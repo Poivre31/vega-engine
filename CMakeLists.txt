@@ -1,36 +1,14 @@
 cmake_minimum_required(VERSION 3.28)
-project(LibAndProject)
 
-add_compile_definitions("DEBUG=$<CONFIG:Debug>")
-add_compile_definitions("RELEASE=$<CONFIG:Release>")
+project(samples)
 
-add_subdirectory(VegaEngine)
-add_subdirectory(OrionTracer)
+# ------------------
+# ------------------
+include(CTest)
+enable_testing()
 
-# include(CheckIPOSupported)
-# check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
-# if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-#     find_program(LLVM_AR_PATH NAMES llvm-ar llvm-ar-22)
-#     find_program(LLVM_RANLIB_PATH NAMES llvm-ranlib llvm-ranlib-22)
-#     if(LLVM_AR_PATH AND LLVM_RANLIB_PATH)
-#         set(CMAKE_AR "${LLVM_AR_PATH}")
-#         set(CMAKE_RANLIB "${LLVM_RANLIB_PATH}")
-#     endif()
+add_subdirectory(vega-engine)
+add_subdirectory(apps/orion-tracer)
+add_subdirectory(apps/compute)
+add_subdirectory(apps/vulkan-renderer)
 
-#     find_program(LLD_PATH NAMES ld.lld ld.lld-22)
-#     if(LLD_PATH)
-#         add_link_options(-fuse-ld=lld)
-#     endif()
-# endif()
-
-# if(ipo_supported AND CMAKE_BUILD_TYPE STREQUAL "Release")
-#     set_property(TARGET VegaEngine PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-#     set_property(TARGET Math PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-#     set_property(TARGET Console PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-#     set_property(TARGET Timer PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-#     set_property(TARGET OrionTracer PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-# endif()
-
-# if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-#     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
-# endif()

@@ -15,11 +15,17 @@ Checks: >
   -readability-magic-numbers,
   -readability-identifier-length,
   -readability-else-after-return,
+  -readability-implicit-bool-conversion,
+  -readability-isolate-declaration,
+  -readability-math-missing-parentheses,
 
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   -cppcoreguidelines-non-private-member-variables-in-classes,
-
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-pro-type-union-access,
+  -cppcoreguidelines-pro-type-vararg,
+  
   -altera-*,
   -android-*,
   -abseil-*,
@@ -33,4 +39,4 @@ Checks: >
   -objc-*,
   -zircon-*,
 
-HeaderFilterRegex: '.*/(VegaEngine|OrionTracer)/(?!external/).*'
+HeaderFilterRegex: '.*/(include|src)'

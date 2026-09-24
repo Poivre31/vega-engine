@@ -1,5 +1,11 @@
 build/*
-
-.vscode/*
-
+install/*
+.idea/*
 .cache/*
+visual_studio_2022/*
+visual_studio_2026/*
+old/*
+
+**/*.spv
+
+compile_commands.json

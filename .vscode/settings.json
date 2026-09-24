@@ -1,6 +1,6 @@
 {
     "cmake.useCMakePresets": "always",
-    "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+    "cmake.copyCompileCommands": "${workspaceFolder}/build/compile_commands.json",
     "markdown.preview.scrollPreviewWithEditor": false,
     "markdown.preview.scrollEditorWithPreview": false,
 }

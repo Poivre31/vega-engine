@@ -13,14 +13,12 @@
 #include "application/sdl.hpp"
 
 #include "gpu_objects.hpp"
-#include "image.hpp"
 #include "graphics.hpp"
 #include "context.hpp"
 #include "config.hpp"
 #include "image_layout.hpp"
 #include "single_command_buffer.hpp"
 #include "compute_shader.hpp"
-#include "vulkan/vulkan.hpp"
 
 namespace vega {
 
@@ -349,7 +347,7 @@ class vulkan_layer final : public ilayer {
           available_queue_families.begin(),
           available_queue_families.end(),
           [](auto const& queue_properties) {
-            return queue_properties.queueFlags & (vk::QueueFlagBits::eGraphics|vk::QueueFlagBits::eCompute) ;
+            return (queue_properties.queueFlags & vk::QueueFlagBits::eGraphics)&&(queue_properties.queueFlags & vk::QueueFlagBits::eCompute) ;
           }
       )) {
       return false;
@@ -531,7 +529,7 @@ class vulkan_layer final : public ilayer {
             return std::strcmp(layer_property.layerName, layer) == 0;
           })) {
         _console->error("Requested layer '{}' is not supported, disabling it", layer);
-        layers.erase(layers.begin() + i);
+        layers.erase(layers.begin() + int64_t(i));
         enabled_layers--;
       } else {
         i++;

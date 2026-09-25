@@ -15,13 +15,8 @@ struct texture_info {
 
 namespace textures {
 
-const texture_info beer{
-    .texture_path   = "resources/textures/beer.png",
-    .enable_mipmaps = false,
-};
-
-const texture_info viking{
-    .texture_path   = "resources/textures/viking_room.png",
+const texture_info m57{
+    .texture_path   = "resources/textures/m57.jpg",
     .enable_mipmaps = true,
 };
 

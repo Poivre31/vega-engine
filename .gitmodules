@@ -23,3 +23,6 @@
 	path = vega-engine/vendor/imgui
 	url = https://github.com/ocornut/imgui
 	branch = docking
+[submodule "vega-engine/vendor/entt"]
+	path = vega-engine/vendor/entt
+	url = https://github.com/skypjack/entt

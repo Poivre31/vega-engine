@@ -13,6 +13,11 @@ add_subdirectory(nanobench)
 add_subdirectory(google_test EXCLUDE_FROM_ALL)
 # END VEGA
 
+# ENTT
+add_subdirectory(entt)
+target_link_libraries(vendor INTERFACE EnTT::EnTT)
+# END ENTT
+
 # VULKAN
 # FOR LINUX : install libvulkan-dev vulkan-validationlayers mesa-vulkan-drivers vulkan-tools
 if(UNIX)

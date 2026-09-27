@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <stdexcept>
 
+#include <entt/entt.hpp>
+
 #include "resources/allocator.hpp"
 #include "resources/mesh.hpp"
 #include "resources/handle.hpp"
@@ -71,6 +73,7 @@ class scene {
   [[nodiscard]] auto* meshes() { return &_resources.meshes; }
   [[nodiscard]] auto* materials() { return &_resources.materials; }
   [[nodiscard]] auto* textures() { return &_resources.textures; }
+  [[nodiscard]] auto* registry() { return &_registry; }
 
   handle<gpu_image> load_texture(const vulkan_context& vk_context, const texture_info& info) {
     stb_image cpu_texture(info);
@@ -251,6 +254,8 @@ class scene {
     _resources.linear_sampler  = nullptr;
     _resources.material_buffer = nullptr;
 
+    _registry = entt::registry();
+
     _initialised = false;
   }
 
@@ -265,6 +270,7 @@ class scene {
   }
   bool _initialised = false;
   scene_resources _resources;
+  entt::registry _registry;
 };
 
 }  // namespace vega

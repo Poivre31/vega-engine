@@ -49,6 +49,7 @@ class ilayer {
   ilayer& operator=(ilayer&&)      = default;
 
   virtual bool init() noexcept { return true; };
+  virtual void assets_init() noexcept {};
   virtual void gui_update() noexcept {};
   virtual void update(double dt) noexcept {};
   virtual void fixed_update(double time_step) noexcept {};

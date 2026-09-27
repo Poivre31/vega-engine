@@ -17,35 +17,35 @@ struct model_info {
 
 namespace meshes {
 
-const model_info viking{
-    .object_folder      = "resources/models/",
-    .mesh_name          = "viking_room.obj",
-    .scale              = 1.F,
-    .z_is_up            = true,
-    .reverse_front_face = true,
-};
+// const model_info viking{
+//     .object_folder      = "resources/models/",
+//     .mesh_name          = "viking_room.obj",
+//     .scale              = 1.F,
+//     .z_is_up            = true,
+//     .reverse_front_face = true,
+// };
 
-const model_info tank{
-    .object_folder      = "resources/models/t34/",
-    .mesh_name          = "t34.obj",
-    .scale              = 2.F,
-    .z_is_up            = false,
-    .reverse_front_face = false,
-};
+// const model_info tank{
+//     .object_folder      = "resources/models/t34/",
+//     .mesh_name          = "t34.obj",
+//     .scale              = 2.F,
+//     .z_is_up            = false,
+//     .reverse_front_face = false,
+// };
 
-const model_info sponza{
+model_info sponza{
     .object_folder = "resources/models/sponza/",
     .mesh_name     = "sponza.obj",
     .scale         = 1.F / 200,
     .z_is_up       = false,
 };
 
-const model_info tyra{
-    .object_folder = "resources/models/",
-    .mesh_name     = "tyra.obj",
-    .scale         = 1.F,
-    .z_is_up       = false,
-};
+// const model_info tyra{
+//     .object_folder = "resources/models/",
+//     .mesh_name     = "tyra.obj",
+//     .scale         = 1.F,
+//     .z_is_up       = false,
+// };
 
 }  // namespace meshes
 }  // namespace vega

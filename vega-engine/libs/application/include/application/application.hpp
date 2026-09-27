@@ -98,6 +98,10 @@ class application {
       _context.running = false;
     }
 
+    for (auto& layer : _layers) {
+      layer->assets_init();
+    }
+
     timer::create("frame-time");
     _frame_times.push(_context.time);
     double delta_time = 0.;

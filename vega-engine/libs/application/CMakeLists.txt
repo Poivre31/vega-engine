@@ -9,7 +9,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_library(Application STATIC "src/src.cpp")
 
 target_sources(Application PRIVATE
-
     "include/glm.hpp"
     "include/io.hpp"
 
@@ -36,6 +35,8 @@ target_sources(Application PRIVATE
     "include/player/camera.hpp"
     "include/player/camera_layer.hpp"
 
+    "include/entities/rigid_body.hpp"
+
     "include/resources/allocator.hpp"
     "include/resources/assets.hpp"
     "include/resources/handle.hpp"
@@ -47,6 +48,7 @@ target_sources(Application PRIVATE
     "include/resources/stb_image.hpp"
     "include/resources/texture_imports.hpp"
 )
+
 target_include_directories(Application PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 target_precompile_headers(Application PRIVATE
@@ -54,7 +56,7 @@ target_precompile_headers(Application PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/include/graphics/graphics.hpp"
 )
 
-target_link_libraries(Application PUBLIC vendor console timer)
+target_link_libraries(Application PUBLIC vendor console timer math)
 
 target_sources(Application PRIVATE
     "${CMAKE_SOURCE_DIR}/vega-engine/vendor/imgui/imgui.cpp"

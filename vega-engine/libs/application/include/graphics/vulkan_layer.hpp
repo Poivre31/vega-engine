@@ -11,6 +11,8 @@
 
 #include "application/layer.hpp"
 #include "application/sdl.hpp"
+#include "entities/renderer_3d.hpp"
+#include "entities/rigid_body.hpp"
 
 #include "gpu_objects.hpp"
 #include "graphics.hpp"
@@ -239,11 +241,10 @@ class vulkan_layer final : public ilayer {
     }
     try {
       if (get_app_context()->active_camera) {
-        _push_constants.view_projection_matrix =
-            get_app_context()->active_camera->get_view_projection_matrix();
+        _view_transform = get_app_context()->active_camera->get_view_projection_matrix();
       } else {
         throw std::runtime_error("No active camera set");
-        _push_constants.view_projection_matrix = glm::mat4x4{1.F};
+        _view_transform = glm::mat4x4{1.F};
       }
 
       _push_constants.material_buffer =
@@ -1357,15 +1358,19 @@ class vulkan_layer final : public ilayer {
         nullptr
     );
 
-    command_buffer.pushConstants<PC_graphics_properties>(
-        _pipeline_layout,
-        vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
-        0,
-        _push_constants
-    );
+    auto registry_view =
+        get_app_context()->active_scene.registry()->view<renderer_3d, rigid_body>();
+    for (auto [entity, renderer, rigid_body] : registry_view.each()) {
+      _push_constants.view_projection_matrix = _view_transform * rigid_body.local_transform();
+      command_buffer.pushConstants<PC_graphics_properties>(
+          _pipeline_layout,
+          vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
+          0,
+          _push_constants
+      );
 
-    for (const auto& mesh : *get_app_context()->active_scene.meshes()) {
-      mesh.render(command_buffer);
+      auto* mesh = renderer.get_mesh(*get_app_context());
+      mesh->render(command_buffer);
     }
 
     command_buffer.endRendering();
@@ -1630,6 +1635,8 @@ class vulkan_layer final : public ilayer {
   uint32_t _frame_index = 0;
   std::vector<vk::raii::Semaphore> _presentation_semaphores;
   std::vector<vk::raii::Fence> _draw_fences;
+
+  glm::mat4x4 _view_transform{1.F};
 
   vk::Rect2D _rect{};
 };

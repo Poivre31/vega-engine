@@ -191,7 +191,7 @@ class static_allocator {
     return {.index = index, .allocator_id = _id, .generation = _generation, .valid = true};
   }
 
-  [[nodiscard]] T* get(handle<T> handle) { return _objects.at(get_index(handle)).get(); }
+  [[nodiscard]] T* get(handle<T> handle) { return &_objects.at(get_index(handle)); }
   [[nodiscard]] T* at_index(uint32_t index) { return &_objects.at(index); }
   [[nodiscard]] uint32_t get_index(handle<T> handle) const {
     if (!handle.valid) {

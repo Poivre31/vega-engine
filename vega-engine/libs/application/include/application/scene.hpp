@@ -53,7 +53,9 @@ class scene {
   scene& operator=(const scene&) = delete;
   scene& operator=(scene&&)      = delete;
 
-  void init(const vulkan_context& vk_context) {
+  void init(vulkan_context& vk_context) {
+    _vk_context = &vk_context;
+
     _resources.nearest_sampler = simple_sampler(
         vk_context, false, vk::SamplerAddressMode::eRepeat, 0.F
     );
@@ -75,11 +77,11 @@ class scene {
   [[nodiscard]] auto* textures() { return &_resources.textures; }
   [[nodiscard]] auto* registry() { return &_registry; }
 
-  handle<gpu_image> load_texture(const vulkan_context& vk_context, const texture_info& info) {
+  handle<gpu_image> load_texture(const texture_info& info) {
     stb_image cpu_texture(info);
     return _resources.textures.push(
         std::move(load_texture_to_gpu(
-            vk_context,
+            *_vk_context,
             std::move(cpu_texture),
             info.enable_mipmaps ? _resources.linear_sampler : _resources.nearest_sampler
         ))
@@ -87,7 +89,7 @@ class scene {
   }
 
   /** Should be followed by a call to 'update_texture_descriptor(app_context*)' */
-  handle<mesh_3D> load_mesh_from_obj_mtl(const vulkan_context& vk_context, const model_info& info) {
+  handle<mesh_3D> load_mesh_from_obj_mtl(const model_info& info) {
     check_init();
 
     if (!info.mesh.valid) {
@@ -107,7 +109,7 @@ class scene {
 
             auto texture_handle = _resources.textures.push(
                 std::move(
-                    load_texture_to_gpu(vk_context, std::move(texture), _resources.linear_sampler)
+                    load_texture_to_gpu(*_vk_context, std::move(texture), _resources.linear_sampler)
                 )
             );
 
@@ -131,11 +133,7 @@ class scene {
     return info.mesh;
   }
 
-  handle<mesh_3D> load_mesh_from_obj(
-      const vulkan_context& vk_context,
-      const model_info& info,
-      handle<material> material
-  ) {
+  handle<mesh_3D> load_mesh_from_obj(const model_info& info, handle<material> material) {
     check_init();
 
     if (!material.valid) {
@@ -175,7 +173,7 @@ class scene {
     return _resources.meshes.push(vertices);
   }
 
-  void upload_material_buffer(const vulkan_context& vk_context) {
+  void upload_material_buffer() {
     check_init();
 
     auto size = _resources.materials.size() * sizeof(gpu_material);
@@ -207,13 +205,13 @@ class scene {
       g_materials.emplace_back(color, texture_index);
     }
     _resources.material_buffer = host_buffer<gpu_material>(
-        vk_context, g_materials.size(), false, true
+        *_vk_context, g_materials.size(), false, true
     );
-    _resources.material_buffer.upload_data(vk_context, g_materials);
+    _resources.material_buffer.upload_data(*_vk_context, g_materials);
     // _resources.material_buffer.getAllocation().copyFromMemory(g_materials.data(), 0, size);
   }
 
-  void update_texture_descriptor(const vulkan_context& vk_context) {
+  void update_texture_descriptor() {
     check_init();
 
     console::get(consoles::assets)
@@ -234,19 +232,19 @@ class scene {
 
     for (uint32_t i = 0; i < vulkan_config::frames_in_flight; i++) {
       vk::WriteDescriptorSet write_descriptor_set{
-          .dstSet          = vk_context.descriptor_sets->at(i),
+          .dstSet          = _vk_context->descriptor_sets->at(i),
           .dstBinding      = 0,
           .dstArrayElement = 0,
           .descriptorCount = static_cast<uint32_t>(image_descriptors.size()),
           .descriptorType  = vk::DescriptorType::eCombinedImageSampler,
           .pImageInfo      = image_descriptors.data()
       };
-      vk_context.device->updateDescriptorSets(write_descriptor_set, {});
+      _vk_context->device->updateDescriptorSets(write_descriptor_set, {});
     }
   }
 
-  void clear(const vulkan_context& vk_context) {
-    vk_context.device->waitIdle();
+  void clear() {
+    _vk_context->device->waitIdle();
     _resources.meshes.clear();
     _resources.materials.clear();
     _resources.textures.clear();
@@ -254,7 +252,8 @@ class scene {
     _resources.linear_sampler  = nullptr;
     _resources.material_buffer = nullptr;
 
-    _registry = entt::registry();
+    _registry   = entt::registry();
+    _vk_context = nullptr;
 
     _initialised = false;
   }
@@ -271,6 +270,7 @@ class scene {
   bool _initialised = false;
   scene_resources _resources;
   entt::registry _registry;
+  vulkan_context* _vk_context = nullptr;
 };
 
 }  // namespace vega

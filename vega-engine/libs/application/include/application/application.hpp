@@ -166,7 +166,7 @@ class application {
     timer::destroy("frame-time");
     timer::destroy("runtime");
 
-    _context.active_scene.clear(_context.vulkan);
+    _context.active_scene.clear();
     for (auto& layer : _layers) {
       layer->cleanup();
     }

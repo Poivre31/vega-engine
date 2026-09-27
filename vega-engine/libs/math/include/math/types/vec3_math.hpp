@@ -47,6 +47,31 @@ template <std::floating_point T>
   return vec3<T>(std::log(u.x), std::log(u.y), std::log(u.z));
 }
 
+/** Converts a set of spherical coordinates (r, theta, phi) to cartesian coordinates (x, y, z).
+ * @param r = vector magnitude
+ * @param theta = colatitude in radians
+ * @param phi = longitude
+ */
+template <std::floating_point T>
+[[nodiscard]] inline vec3<T> spherical_to_cartesian(const vec3<T>& sph) noexcept {
+  return sph.x
+         * vec3<T>(
+             std::sin(sph.y) * std::cos(sph.z), std::sin(sph.y) * std::sin(sph.z), std::cos(sph.y)
+         );
+}
+
+/** Converts a cartesian coordinates (x, y, z) to as set of spherical coordinates (r, theta, phi).
+ * @return r = vector magnitude
+ * @return theta = colatitude in radians
+ * @return phi = longitude
+ */
+template <std::floating_point T>
+[[nodiscard]] inline vec3<T> cartesian_to_spherical(const vec3<T>& cart) noexcept {
+  T r = cart.norm();
+  return r == 0 ? vec3<T>(0, 0, std::atan2(cart.y, cart.z))
+                : vec3<T>(r, std::acos(cart.z / r), std::atan2(cart.y, cart.z));
+}
+
 /** Rotates vector around one of the cartesian axis @param ax, by angle @param
  * theta, according to right hand rule and anti-clockwise rotatation */
 template <std::floating_point T>

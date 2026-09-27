@@ -54,6 +54,38 @@ class random {
     return vec3<T>(uniform(lower.x, upper.x), uniform(lower.y, upper.y), uniform(lower.z, upper.z));
   }
 
+  /** Uniformly distributed vec3 of reals on the surface of the sphere of radius @param r */
+  template <std::floating_point T>
+  static vec3<T> on_sphere(T r) {
+    return spherical_to_cartesian(
+        vec3<T>{r, std::acos(uniform(T(-1), T(1))), uniform(T(0), T(2 * constants::pi))}
+    );
+  }
+
+  /** Uniformly distributed vec3 of reals in the ball of radius @param r */
+  template <std::floating_point T>
+  static vec3<T> in_ball(T r) {
+    return spherical_to_cartesian(
+        vec3<T>{
+            r * std::sqrt(uniform(T(0), T(1))),
+            std::acos(uniform(T(-1), T(1))),
+            uniform(T(0), T(2 * constants::pi))
+        }
+    );
+  }
+
+  /** Uniformly distributed vec3 of reals on the surface of the unit sphere */
+  template <std::floating_point T>
+  static vec3<T> on_unit_sphere() {
+    return on_sphere(T(1));
+  }
+
+  /** Uniformly distributed vec3 of reals in the unit ball */
+  template <std::floating_point T>
+  static vec3<T> in_unit_ball() {
+    return in_ball(T(1));
+  }
+
   /** Array of @tparam N uniformly distributed doubles in [ @param lower,
    * @param upper [ */
   template <size_t N>

@@ -19,13 +19,13 @@ class entity_layer final : public vega::ilayer {
     entt::registry* registry = scene.registry();
     auto m57_tex             = scene.load_texture(get_app_context()->vulkan, vega::textures::m57);
     auto m57_mat             = scene.resources()->materials.push(m57_tex);
-    auto cube = scene.load_vertex_array(vega::create_cube({2.F, 0.F, 0.F}, 0.2F), m57_mat);
+    auto cube = scene.load_vertex_array(vega::create_cube({2.F, 0.F, 0.F}, 0.1F), m57_mat);
 
     for (size_t i = 0; i < _count; i++) {
       const auto entity = registry->create();
       registry->emplace<vega::renderer_3d>(entity, cube);
       registry->emplace<vega::rigid_body>(
-          entity, vega::rigid_body(1.F, {0., 0., 0.}, random::uniform_vec3(-.3, .3))
+          entity, vega::rigid_body(1.F, {0., 0., 0.}, random::in_ball(.5))
       );
     }
     scene.resources()->meshes.get(cube)->create_vertex_buffer(get_app_context()->vulkan);
@@ -44,7 +44,7 @@ class entity_layer final : public vega::ilayer {
     auto view = registry->view<vega::rigid_body>();
 
     for (auto [entity, rigid_body] : view.each()) {
-      rigid_body.add_force(-0.3 * rigid_body.velocity());
+      rigid_body.add_force(-0.2 * rigid_body.velocity());
       rigid_body.iterate_euler(fixed_step);
     }
   }

@@ -24,8 +24,6 @@ struct scene_resources {
   static_allocator<mesh_3D> meshes;
   static_allocator<material> materials;
   static_allocator<gpu_image> textures;
-  // vk::raii::Sampler sampler_nearest = nullptr;
-  // vk::raii::Sampler sampler_linear  = nullptr;
   simple_sampler nearest_sampler = nullptr;
   simple_sampler linear_sampler  = nullptr;
 
@@ -78,21 +76,25 @@ class scene {
   [[nodiscard]] auto* registry() { return &_registry; }
 
   handle<gpu_image> load_texture(const texture_info& info) {
-    stb_image cpu_texture(info);
-    return _resources.textures.push(
-        std::move(load_texture_to_gpu(
-            *_vk_context,
-            std::move(cpu_texture),
-            info.enable_mipmaps ? _resources.linear_sampler : _resources.nearest_sampler
-        ))
-    );
+    if (!info.handle.valid) {
+      stb_image cpu_texture(info);
+      info.handle = _resources.textures.push(
+          std::move(load_texture_to_gpu(
+              *_vk_context,
+              std::move(cpu_texture),
+              info.enable_mipmaps ? _resources.linear_sampler : _resources.nearest_sampler
+          ))
+      );
+    }
+
+    return info.handle;
   }
 
   /** Should be followed by a call to 'update_texture_descriptor(app_context*)' */
   handle<mesh_3D> load_mesh_from_obj_mtl(const model_info& info) {
     check_init();
 
-    if (!info.mesh.valid) {
+    if (!info.handle.valid) {
       auto [vertices, obj_materials] = load_object(
           info.object_folder + info.mesh_name, info.scale, info.z_is_up, info.reverse_front_face
       );
@@ -128,9 +130,10 @@ class scene {
           vertex.material_id = _resources.materials.get_index(_resources.default_mat);
         }
       }
-      info.mesh = _resources.meshes.push(vertices);
+      info.handle = _resources.meshes.push(vertices);
+      _resources.meshes.get(info.handle)->create_vertex_buffer(*_vk_context);
     }
-    return info.mesh;
+    return info.handle;
   }
 
   handle<mesh_3D> load_mesh_from_obj(const model_info& info, handle<material> material) {
@@ -145,7 +148,7 @@ class scene {
       material = _resources.default_mat;
     }
 
-    if (!info.mesh.valid) {
+    if (!info.handle.valid) {
       auto [vertices, _] = load_object(
           info.object_folder + info.mesh_name, info.scale, info.z_is_up, info.reverse_front_face
       );
@@ -154,9 +157,10 @@ class scene {
         vertex.material_id = _resources.materials.get_index(material);
       }
 
-      info.mesh = _resources.meshes.push(vertices);
+      info.handle = _resources.meshes.push(vertices);
+      _resources.meshes.get(info.handle)->create_vertex_buffer(*_vk_context);
     }
-    return info.mesh;
+    return info.handle;
   }
 
   handle<mesh_3D>
@@ -170,7 +174,10 @@ class scene {
     for (auto& vertex : vertices) {
       vertex.material_id = material_id;
     }
-    return _resources.meshes.push(vertices);
+
+    auto mesh = _resources.meshes.push(vertices);
+    _resources.meshes.get(mesh)->create_vertex_buffer(*_vk_context);
+    return mesh;
   }
 
   void upload_material_buffer() {

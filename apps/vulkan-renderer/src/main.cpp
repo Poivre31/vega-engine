@@ -5,6 +5,7 @@
 #include <entities/renderer_3d.hpp>
 #include <entities/rigid_body.hpp>
 #include <entt/entt.hpp>
+#include <entities/scene_manager.hpp>
 
 using namespace vega::math;
 using vega::console;
@@ -14,25 +15,20 @@ class entity_layer final : public vega::ilayer {
   using vega::ilayer::ilayer;
 
   void assets_init() noexcept final {
-    _count                   = 1000;
-    auto& scene              = get_app_context()->active_scene;
-    entt::registry* registry = scene.registry();
-    auto m57_tex             = scene.load_texture(vega::textures::m57);
-    auto m57_mat             = scene.resources()->materials.push(m57_tex);
-    auto cube = scene.load_vertex_array(vega::create_cube({2.F, 0.F, 0.F}, 0.1F), m57_mat);
+    _count      = 1000;
+    auto& scene = get_app_context()->active_scene;
 
     for (size_t i = 0; i < _count; i++) {
-      const auto entity = registry->create();
-      registry->emplace<vega::renderer_3d>(entity, cube);
-      registry->emplace<vega::rigid_body>(
-          entity, vega::rigid_body(1.F, {0., 0., 0.}, random::in_ball(.5))
+      vega::add_game_object_3d(
+          scene,
+          vega::rigid_body{1.F, {0., 0., 0.}, random::in_ball(.5)},
+          vega::meshes::primitives::cube,
+          vega::textures::m57
       );
     }
-    scene.resources()->meshes.get(cube)->create_vertex_buffer(get_app_context()->vulkan);
-
-    const auto entity = registry->create();
-    registry->emplace<vega::renderer_3d>(entity, vega::meshes::sponza);
-    registry->emplace<vega::rigid_body>(entity, vega::rigid_body(1.F));
+    vega::add_game_object_3d(
+        scene, vega::rigid_body{1.F, {0., 0., 0.}, {0., 0., 0.}}, vega::meshes::sponza
+    );
 
     scene.update_texture_descriptor();
     scene.upload_material_buffer();

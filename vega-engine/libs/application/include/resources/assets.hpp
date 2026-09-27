@@ -21,20 +21,20 @@ class assets_layer final : public ilayer {
 
       scene.init(get_app_context()->vulkan);
 
-      // TEXTURES
-      auto m57_tex = scene.load_texture(textures::m57);
-      auto m57_mat = resources.materials.push(m57_tex);
+      // // TEXTURES
+      // auto m57_tex = scene.load_texture(textures::m57);
+      // auto m57_mat = resources.materials.push(m57_tex);
 
-      // MODELS
-      scene.load_mesh_from_obj_mtl(meshes::sponza);
-      scene.load_vertex_array(create_cube({1.F, 0.F, 0.F}, 0.5F), m57_mat);
+      // // MODELS
+      // // scene.load_mesh_from_obj_mtl(meshes::sponza);
+      // // scene.load_vertex_array(create_cube({1.F, 0.F, 0.F}, 0.5F), m57_mat);
 
-      for (auto& mesh : resources.meshes) {
-        mesh.create_vertex_buffer(get_app_context()->vulkan);
-      }
+      // for (auto& mesh : resources.meshes) {
+      //   mesh.create_vertex_buffer(get_app_context()->vulkan);
+      // }
 
-      scene.update_texture_descriptor();
-      scene.upload_material_buffer();
+      // scene.update_texture_descriptor();
+      // scene.upload_material_buffer();
 
     } catch (const std::exception& e) {
       console::get(consoles::assets)->error("Exception during assets initialisation: {}", e.what());

@@ -1,8 +1,9 @@
 #pragma once
 
 #include "mesh.hpp"
+#include "mesh_imports.hpp"
 
-namespace vega {
+namespace vega::meshes {
 
 template <typename T>
 constexpr std::vector<T> combine(const std::vector<T>& v1, const std::vector<T>& v2) {
@@ -74,4 +75,17 @@ std::vector<vertex_3D> create_cube(glm::vec3 position, float size) {
   return combine(face1, combine(face2, combine(face3, combine(face4, combine(face5, face6)))));
 }
 
-}  // namespace vega
+const std::unordered_map<primitives, std::vector<vertex_3D>> primitive_meshes{
+    {primitives::cube, create_cube({}, 0.1F)}
+};
+
+std::vector<vertex_3D> create_primitive(primitives primitive) {
+  auto p = primitive_meshes.find(primitive);
+  if (p == primitive_meshes.end()) {
+    throw std::runtime_error("Unimplemented primitive mesh creation");
+  } else {
+    return p->second;
+  }
+}
+
+}  // namespace vega::meshes

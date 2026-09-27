@@ -30,7 +30,7 @@ std::pair<std::vector<vertex_3D>, std::vector<tinyobj::material_t>> load_object(
               model_path,
               std::filesystem::current_path().string()
           );
-      return {create_cube({0.F, 0.F, 0.F}, 1.F), {}};
+      return {meshes::create_primitive(meshes::primitives::cube), {}};
     }
     if (!silence) {
       console::get(consoles::assets)->trace("Loading model: found model at '{:s}'", path.string());
@@ -53,7 +53,7 @@ std::pair<std::vector<vertex_3D>, std::vector<tinyobj::material_t>> load_object(
     }
     if (!ok) {
       console::get(consoles::assets)->warn("Tinyobj loader error, loading default cube : {}", err);
-      return {create_cube({0.F, 0.F, 0.F}, 1.F), {}};
+      return {meshes::create_primitive(meshes::primitives::cube), {}};
     }
 
     std::vector<vertex_3D> vertices;
@@ -130,7 +130,7 @@ std::pair<std::vector<vertex_3D>, std::vector<tinyobj::material_t>> load_object(
             "Unexpected error loading model, loading default cube '{}': {}", model_path, e.what()
         );
   }
-  return {create_cube({0.F, 0.F, 0.F}, 1.F), {}};
+  return {meshes::create_primitive(meshes::primitives::cube), {}};
 }
 
 }  // namespace vega

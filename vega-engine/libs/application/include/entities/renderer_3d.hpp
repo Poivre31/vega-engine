@@ -9,9 +9,9 @@ namespace vega {
 class renderer_3d {
  public:
   renderer_3d(model_info& info) {
-    if (!info.mesh.valid) {
+    if (!info.handle.valid) {
     }
-    _mesh = info.mesh;
+    _mesh = info.handle;
   }
   renderer_3d(handle<mesh_3D> mesh) : _mesh(mesh) {}
 

@@ -12,10 +12,12 @@ struct model_info {
   float scale             = 1.F;
   bool z_is_up            = true;
   bool reverse_front_face = false;
-  mutable handle<mesh_3D> mesh{};
+  mutable handle<mesh_3D> handle{};
 };
 
 namespace meshes {
+
+enum class primitives : uint8_t { cube };
 
 // const model_info viking{
 //     .object_folder      = "resources/models/",

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include "graphics/gpu_objects.hpp"
+#include "resources/handle.hpp"
 
 namespace vega {
 
@@ -11,6 +13,7 @@ struct texture_info {
   bool enable_mipmaps      = true;
   bool is_srgb             = true;
   channels target_channels = channels::RGBA;
+  mutable handle<gpu_image> handle{};
 };
 
 namespace textures {

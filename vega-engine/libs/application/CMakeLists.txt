@@ -35,8 +35,6 @@ target_sources(Application PRIVATE
     "include/player/camera.hpp"
     "include/player/camera_layer.hpp"
 
-    "include/entities/rigid_body.hpp"
-
     "include/resources/allocator.hpp"
     "include/resources/assets.hpp"
     "include/resources/handle.hpp"

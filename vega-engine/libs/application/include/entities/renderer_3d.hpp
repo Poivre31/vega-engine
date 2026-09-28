@@ -4,7 +4,7 @@
 #include <resources/mesh_imports.hpp>
 #include <resources/handle.hpp>
 
-namespace vega {
+namespace vega::components {
 
 class renderer_3d {
  public:
@@ -23,4 +23,4 @@ class renderer_3d {
   handle<mesh_3D> _mesh;
 };
 
-}  // namespace vega
+}  // namespace vega::components

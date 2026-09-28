@@ -2,8 +2,7 @@
 #include <application/application.hpp>
 #include <math/types.hpp>
 #include <math/random.hpp>
-#include <entities/renderer_3d.hpp>
-#include <entities/rigid_body.hpp>
+#include <entities/components.hpp>
 #include <entt/entt.hpp>
 #include <entities/scene_manager.hpp>
 
@@ -21,13 +20,16 @@ class entity_layer final : public vega::ilayer {
     for (size_t i = 0; i < _count; i++) {
       vega::add_game_object_3d(
           scene,
-          vega::rigid_body{1.F, {0., 0., 0.}, random::in_ball(.5)},
+          {.position = vec3d(2., 0., 0.), .scale = vec3d(0.15)},
+          {.velocity = random::in_ball(0.5)},
+          vega::components::physics(10.),
           vega::meshes::primitives::cube,
           vega::textures::m57
       );
     }
-    vega::add_game_object_3d(
-        scene, vega::rigid_body{1.F, {0., 0., 0.}, {0., 0., 0.}}, vega::meshes::sponza
+
+    vega::add_static_object_3d(
+        scene, {.position = vec3d(0.F), .scale = vec3d(1.F)}, vega::meshes::sponza
     );
 
     scene.update_texture_descriptor();
@@ -37,11 +39,14 @@ class entity_layer final : public vega::ilayer {
   void fixed_update(double fixed_step) noexcept final {
     entt::registry* registry = get_app_context()->active_scene.registry();
 
-    auto view = registry->view<vega::rigid_body>();
+    auto view = registry->view<
+        vega::components::transform,
+        vega::components::velocity,
+        vega::components::physics>();
 
-    for (auto [entity, rigid_body] : view.each()) {
-      rigid_body.add_force(-0.2 * rigid_body.velocity());
-      rigid_body.iterate_euler(fixed_step);
+    for (auto [entity, transform, velocity, physics] : view.each()) {
+      physics.add_force(-0.2 * velocity.velocity);
+      physics.iterate_euler(fixed_step, transform, velocity);
     }
   }
 

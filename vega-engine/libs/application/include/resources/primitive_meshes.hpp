@@ -76,7 +76,7 @@ std::vector<vertex_3D> create_cube(glm::vec3 position, float size) {
 }
 
 const std::unordered_map<primitives, std::vector<vertex_3D>> primitive_meshes{
-    {primitives::cube, create_cube({}, 0.1F)}
+    {primitives::cube, create_cube({}, 1.F)}
 };
 
 std::vector<vertex_3D> create_primitive(primitives primitive) {

@@ -11,8 +11,7 @@
 
 #include "application/layer.hpp"
 #include "application/sdl.hpp"
-#include "entities/renderer_3d.hpp"
-#include "entities/rigid_body.hpp"
+#include "entities/components.hpp"
 
 #include "gpu_objects.hpp"
 #include "graphics.hpp"
@@ -1358,10 +1357,11 @@ class vulkan_layer final : public ilayer {
         nullptr
     );
 
-    auto registry_view =
-        get_app_context()->active_scene.registry()->view<renderer_3d, rigid_body>();
-    for (auto [entity, renderer, rigid_body] : registry_view.each()) {
-      _push_constants.view_projection_matrix = _view_transform * rigid_body.local_transform();
+    auto registry_view = get_app_context()
+                             ->active_scene.registry()
+                             ->view<components::renderer_3d, components::transform>();
+    for (auto [entity, renderer, transform] : registry_view.each()) {
+      _push_constants.view_projection_matrix = _view_transform * transform.world_transform();
       command_buffer.pushConstants<PC_graphics_properties>(
           _pipeline_layout,
           vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,

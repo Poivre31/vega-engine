@@ -1,4 +1,5 @@
 Texture2D<float> depth;
+Texture2D<uint2> index;
 RWTexture2D<float3> source;
 RWTexture2D<float3> destination;
 
@@ -22,6 +23,9 @@ struct post_processing_data {
   uint32_t enable_fog;
   float3 fog_color;
   float fog_falloff;
+
+  float debug_overlay_strength;
+  uint overlay_type;
 }
 
 [vk::push_constant]
@@ -50,7 +54,17 @@ uint randIntU(uint* seed) {
   return *seed;
 }
 
+uint randIntU(uint seed) {
+  return seed * 747796405u + 2891336453u;
+}
+
 float randFloat(float a, float b, uint* seed) {
+  uint randI = randIntU(seed);
+  float x    = float(randI) / (-1U);
+  return a + (b - a) * x;
+}
+
+float randFloat(float a, float b, uint seed) {
   uint randI = randIntU(seed);
   float x    = float(randI) / (-1U);
   return a + (b - a) * x;
@@ -58,6 +72,11 @@ float randFloat(float a, float b, uint* seed) {
 
 float3 randFloat3(float a, float b, uint* seed) {
   return float3(randFloat(a, b, seed), randFloat(a, b, seed), randFloat(a, b, seed));
+}
+
+float3 randFloat3(float a, float b, uint seed) {
+  uint seed2 = randIntU(seed);
+  return float3(randFloat(a, b, seed), randFloat(a, b, seed2), randFloat(a, b, randIntU(seed2)));
 }
 
 float3 linear_to_srgb(float3 x) {
@@ -120,7 +139,22 @@ void computeMain(uint3 threadId: SV_DispatchThreadID) {
   uint seed  = seed2Dto1D(threadId.xy) + 1375423u * pp.frame;
   color     += 0.02 * pp.dithering_stength * randFloat3(-1, 1, &seed);
 
-  destination[threadId.xy] = color;
+  if (pp.overlay_type == 0) {
+    destination[threadId.xy] = color;
+  } else {
+    uint id = -1U;
+    switch (pp.overlay_type) {
+      case 1:
+        id = index[threadId.xy].x;
+        break;
+      case 2:
+        id = index[threadId.xy].y;
+        break;
+    };
+    float3 overlay_color = select(id != -1U, randFloat3(.2, .8, id), float3(1));
+    destination[threadId.xy] =
+        ((1 - pp.debug_overlay_strength) * color + pp.debug_overlay_strength * overlay_color);
+  }
 
   //   float4 fog = 0.9*float4(0.2,0.4,1.,1);
   // float3 dir = normalize(inVert.world_position-push_constants.camera_position);

@@ -2,6 +2,7 @@
 struct PushConstants {
   //   float4x4 object_matrix;
   float4x4 view_projection_matrix;
+  uint entity_index;
   Material* materials;
   uint32_t material_count;
   float time;
@@ -88,8 +89,13 @@ VertexOutput vertMain(VSInput vertex) {
   return output;
 }
 
+struct FragOutput {
+  float4 color;
+  uint2 index;
+};
+
 [shader("fragment")]
-float4 fragMain(VertexOutput inVert) : SV_Target {
+FragOutput fragMain(VertexOutput inVert, uint primitive_id: SV_PrimitiveID) : SV_Target {
   // return float4(float3(inVert.position.z/inVert.position.w),1);
 
   float intensity = clamp(dot(inVert.normal, -light_dir) / length(light_dir), 0, 1);
@@ -97,7 +103,7 @@ float4 fragMain(VertexOutput inVert) : SV_Target {
 
   if (inVert.material.texture_id >= push_constants.material_count
       && inVert.material.texture_id != -1U) {
-    return float4(0, 1, 0, 1);
+    return { float4(0, 1, 0, 1), uint2(-1U, -1U) };
   }
 
   float4 albedo = inVert.material.albedo;
@@ -107,5 +113,11 @@ float4 fragMain(VertexOutput inVert) : SV_Target {
     );
   }
   albedo.a = 1;
-  return albedo * float4(light, 1);
+
+  FragOutput output;
+  output.color = albedo * float4(light, 1);
+  output.index = uint2(
+      push_constants.entity_index, primitive_id + push_constants.entity_index * 1254451U
+  );
+  return output;
 }

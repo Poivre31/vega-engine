@@ -22,7 +22,7 @@ class entity_layer final : public vega::ilayer {
           scene,
           {.position = vec3d(2., 0., 0.), .scale = vec3d(0.15)},
           {.velocity = random::in_ball(0.5)},
-          vega::components::physics(10.),
+          vega::components::physics(1.),
           vega::meshes::primitives::cube,
           vega::textures::m57
       );
@@ -37,12 +37,12 @@ class entity_layer final : public vega::ilayer {
   }
 
   void fixed_update(double fixed_step) noexcept final {
-    entt::registry* registry = get_app_context()->active_scene.registry();
-
-    auto view = registry->view<
-        vega::components::transform,
-        vega::components::velocity,
-        vega::components::physics>();
+    auto view = get_app_context()
+                    ->active_scene.registry()
+                    ->view<
+                        vega::components::transform,
+                        vega::components::velocity,
+                        vega::components::physics>();
 
     for (auto [entity, transform, velocity, physics] : view.each()) {
       physics.add_force(-0.2 * velocity.velocity);

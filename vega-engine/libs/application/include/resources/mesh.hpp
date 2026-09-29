@@ -102,13 +102,13 @@ class mesh_3D {
           ->warn("Skipped rendering mesh because its vertex buffer hasn't been created yet");
       return;
     }
+
     command_buffer.bindVertexBuffers(0, *_buffer, {0});
     command_buffer.draw(_vertices.size(), 1, 0, 0);
   }
 
  private:
   std::vector<vertex_3D> _vertices;
-  //   std::vector<handle<gpu_image>> _texture_handles;
   vma::raii::Buffer _buffer = nullptr;
 };
 

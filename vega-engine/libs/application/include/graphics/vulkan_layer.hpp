@@ -23,8 +23,9 @@
 
 namespace vega {
 
-struct PC_graphics_properties {
+struct push_graphics_properties {
   glm::mat4x4 view_projection_matrix{};
+  uint32_t entity_index{};
   vk::DeviceAddress material_buffer{};
   uint32_t material_count{};
   float time{};
@@ -55,7 +56,7 @@ class vulkan_layer final : public ilayer {
       create_graphics_pipeline();
       create_post_processing_shader();
       create_command_pool();
-      create_depth_resources();
+      create_image_resources();
       create_post_processing_resources();
       create_descriptor_pools();
       create_descriptor_sets();
@@ -197,6 +198,26 @@ class vulkan_layer final : public ilayer {
         "Fog falloff", &pp->fog_falloff, 10.F, 10000.F, nullptr, ImGuiSliderFlags_Logarithmic
     );
 
+    ImGui::Separator();
+    ImGui::Text("Debug settings");
+    ImGui::Checkbox("Enable overlay", &pp->overlay_enabled);
+
+    std::vector overlay_names{"None", "Object index", "Primitive index"};
+    ImGui::Text("Overlay type: ");
+    if (ImGui::BeginCombo("##overlay type", overlay_names.at(pp->overlay_type))) {
+      for (size_t i = 0; i < overlay_names.size(); i++) {
+        bool is_selected = (i == pp->overlay_type);
+        if (ImGui::Selectable(overlay_names.at(i), is_selected)) {
+          pp->overlay_type = uint32_t(i);
+        }
+        if (is_selected) {
+          ImGui::SetItemDefaultFocus();
+        }
+      }
+      ImGui::EndCombo();
+    }
+    ImGui::SliderFloat("Overlay strength", &pp->debug_overlay_strength, 0, 1);
+
     ImGui::End();
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0F, 0.0F));
@@ -272,19 +293,21 @@ class vulkan_layer final : public ilayer {
     _presentation_semaphores.clear();
     _frame_index = 0;
     _command_buffers.clear();
-    _imgui_descriptor_pool = nullptr;
-    _pp_compute_shader     = nullptr;
-    _descriptor_sets       = nullptr;
-    _descriptor_pool       = nullptr;
-    _descriptor_set_layout = nullptr;
-    _command_pool          = nullptr;
-    _graphics_pipeline     = nullptr;
-    _pipeline_layout       = nullptr;
-    _pp_back_image         = {};
-    _pp_front_image        = {};
-    _depth_buffer          = {};
-    _depth_image           = {};
-    _color_image           = {};
+    _imgui_descriptor_pool   = nullptr;
+    _pp_compute_shader       = nullptr;
+    _descriptor_sets         = nullptr;
+    _descriptor_pool         = nullptr;
+    _descriptor_set_layout   = nullptr;
+    _command_pool            = nullptr;
+    _graphics_pipeline       = nullptr;
+    _pipeline_layout         = nullptr;
+    _pp_back_image           = {};
+    _pp_front_image          = {};
+    _depth_buffer            = {};
+    _depth_image             = {};
+    _color_image             = {};
+    _msaa_entity_index_image = {};
+    _entity_index_image      = {};
     _swapchain_semaphores.clear();
     _swapchain_views.clear();
     _swapchain_images.clear();
@@ -376,6 +399,16 @@ class vulkan_layer final : public ilayer {
         vk::PhysicalDeviceVulkan13Features,
         vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT>();
 
+    if (!features.template get<vk::PhysicalDeviceFeatures2>().features.geometryShader) {
+      throw std::runtime_error(
+          "Selected physical device doesn't support 'geometry shader', exiting"
+      );
+    }
+    if (!features.template get<vk::PhysicalDeviceFeatures2>().features.independentBlend) {
+      throw std::runtime_error(
+          "Selected physical device doesn't support 'independant blend', exiting"
+      );
+    }
     if (!features.template get<vk::PhysicalDeviceFeatures2>().features.sampleRateShading) {
       throw std::runtime_error(
           "Selected physical device doesn't support 'sample shading rate', exiting"
@@ -684,9 +717,13 @@ class vulkan_layer final : public ilayer {
         vk::PhysicalDeviceExtendedDynamicStateFeaturesEXT>
         featureChain = {
             {.features =
-                 {.sampleRateShading = vk::True,
-                  .samplerAnisotropy = vk::True,
-                  .shaderInt64       = vk::True}},
+                 {
+                     .independentBlend  = vk::True,
+                     .geometryShader    = vk::True,
+                     .sampleRateShading = vk::True,
+                     .samplerAnisotropy = vk::True,
+                     .shaderInt64       = vk::True,
+                 }},
             {.shaderDrawParameters = vk::True},
             {
                 .shaderSampledImageArrayNonUniformIndexing = vk::True,
@@ -863,10 +900,10 @@ class vulkan_layer final : public ilayer {
       _pp_back_image.view   = nullptr;
 
       create_swapchain();
-      create_depth_resources();
+      create_image_resources();
       create_post_processing_resources();
       _pp_compute_shader.update_descriptor_sets(
-          _device, {&_depth_buffer}, {&_pp_front_image, &_pp_back_image}, {}
+          _device, {&_depth_buffer, &_entity_index_image}, {&_pp_front_image, &_pp_back_image}, {}
       );
 
       _vk_context->pending_updates.swapchain = false;
@@ -976,6 +1013,11 @@ class vulkan_layer final : public ilayer {
         .colorWriteMask      = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG
                                | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA
     };
+    vk::PipelineColorBlendAttachmentState index_blend_attachment{
+        .blendEnable    = vk::False,
+        .colorWriteMask = vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG
+                          | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA
+    };
 
     vk::PipelineDepthStencilStateCreateInfo depth_stencil{
         .depthTestEnable       = vk::True,
@@ -984,17 +1026,19 @@ class vulkan_layer final : public ilayer {
         .depthBoundsTestEnable = vk::False,
         .stencilTestEnable     = vk::False,
     };
+
+    std::vector blend_attachments{color_blend_attachment, index_blend_attachment};
     vk::PipelineColorBlendStateCreateInfo color_blending{
         .logicOpEnable   = vk::False,
         .logicOp         = vk::LogicOp::eCopy,
-        .attachmentCount = 1,
-        .pAttachments    = &color_blend_attachment
+        .attachmentCount = static_cast<uint32_t>(blend_attachments.size()),
+        .pAttachments    = blend_attachments.data()
     };
 
     vk::PushConstantRange push_constants_range{
         .stageFlags = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
         .offset     = 0,
-        .size       = sizeof(PC_graphics_properties)
+        .size       = sizeof(push_graphics_properties)
     };
 
     vk::PipelineLayoutCreateInfo pipeline_layout_info{
@@ -1035,11 +1079,14 @@ class vulkan_layer final : public ilayer {
       _vk_context->config.raster_color_format = vk::Format::eB8G8R8A8Unorm;
     }
 
+    std::vector<vk::Format> formats{
+        _vk_context->config.enable_post_processing ? _vk_context->config.raster_color_format
+                                                   : _vk_context->config.present_color_format,
+        vk::Format::eR32G32Uint
+    };
     vk::PipelineRenderingCreateInfo pipeline_rendering_info{
-        .colorAttachmentCount    = 1,
-        .pColorAttachmentFormats = _vk_context->config.enable_post_processing
-                                       ? &_vk_context->config.raster_color_format
-                                       : &_vk_context->config.present_color_format,
+        .colorAttachmentCount    = static_cast<uint32_t>(formats.size()),
+        .pColorAttachmentFormats = formats.data(),
         .depthAttachmentFormat   = _vk_context->config.depth_format
     };
     if (!_vk_context->config.enable_post_processing
@@ -1087,6 +1134,7 @@ class vulkan_layer final : public ilayer {
         get_app_context()->shader_modules[1],
         {
             shader_storage_type::ro_image,
+            shader_storage_type::ro_image,
             shader_storage_type::rw_image,
             shader_storage_type::rw_image,
         }
@@ -1104,7 +1152,7 @@ class vulkan_layer final : public ilayer {
     }
   }
 
-  void create_depth_resources() {
+  void create_image_resources() {
     auto cmd = begin_transient_command_buffer(_command_pool, _device);
     if (_vk_context->config.msaa_sample_count != vk::SampleCountFlagBits::e1) {
       _color_image = create_image(
@@ -1162,6 +1210,7 @@ class vulkan_layer final : public ilayer {
   }
 
   void create_post_processing_resources() {
+    // TODO: ONLY CREATE PP RESOURCES IF PP IS ENABLED
     _pp_front_image = create_image(
         _allocator,
         _device,
@@ -1185,15 +1234,54 @@ class vulkan_layer final : public ilayer {
         false
     );
 
+    if (_vk_context->config.msaa_sample_count != vk::SampleCountFlagBits::e1) {
+      _msaa_entity_index_image = create_image(
+          _allocator,
+          _device,
+          vk::Format::eR32G32Uint,
+          _swapchain_extent.width,
+          _swapchain_extent.height,
+          vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferSrc,
+          vk::ImageAspectFlagBits::eColor,
+          false,
+          1,
+          _vk_context->config.msaa_sample_count
+      );
+    }
+    _entity_index_image = create_image(
+        _allocator,
+        _device,
+        vk::Format::eR32G32Uint,
+        _swapchain_extent.width,
+        _swapchain_extent.height,
+        vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
+        vk::ImageAspectFlagBits::eColor,
+        false,
+        1,
+        vk::SampleCountFlagBits::e1
+    );
+
+    // TRANSITION RESOURCES LAYOUTS
     auto cmd = begin_transient_command_buffer(_command_pool, _device);
+
     transition_image_global_layout(
         _pp_front_image, cmd, layout_transition::undef_to_color_attachment_write
     );
     transition_image_global_layout(_pp_back_image, cmd, layout_transition::undef_to_src);
+
+    if (_vk_context->config.msaa_sample_count != vk::SampleCountFlagBits::e1) {
+      transition_image_global_layout(
+          _msaa_entity_index_image, cmd, layout_transition::undef_to_color_attachment_write
+      );
+    }
+    transition_image_global_layout(
+        _entity_index_image, cmd, layout_transition::undef_to_color_attachment_write
+    );
+
     submit_transient_command_buffer(_graphics_queue, std::move(cmd));
 
     _pp_compute_shader.update_descriptor_sets(
-        _device, {&_depth_buffer}, {&_pp_front_image, &_pp_back_image}, {}
+        _device, {&_depth_buffer, &_entity_index_image}, {&_pp_front_image, &_pp_back_image}, {}
     );
   }
 
@@ -1303,6 +1391,7 @@ class vulkan_layer final : public ilayer {
           .clearValue  = _vk_context->config.clear_color
       };
     }
+
     vk::RenderingAttachmentInfo depth_attachment_info;
     if (_vk_context->config.msaa_sample_count != vk::SampleCountFlagBits::e1) {
       depth_attachment_info = {
@@ -1324,11 +1413,39 @@ class vulkan_layer final : public ilayer {
           .clearValue  = _vk_context->config.clear_depth
       };
     }
+
+    vk::RenderingAttachmentInfo index_attachment_info;
+
+    if (_vk_context->config.msaa_sample_count != vk::SampleCountFlagBits::e1) {
+      index_attachment_info = {
+          .imageView          = _msaa_entity_index_image.view,
+          .imageLayout        = vk::ImageLayout::eColorAttachmentOptimal,
+          .resolveMode        = vk::ResolveModeFlagBits::eSampleZero,
+          .resolveImageView   = _entity_index_image.view,
+          .resolveImageLayout = vk::ImageLayout::eColorAttachmentOptimal,
+          .loadOp             = vk::AttachmentLoadOp::eClear,
+          .storeOp            = vk::AttachmentStoreOp::eDontCare,
+          .clearValue         = vk::ClearColorValue(-1U, -1U, -1U, -1U)
+      };
+    } else {
+      index_attachment_info = {
+          .imageView   = _entity_index_image.view,
+          .imageLayout = vk::ImageLayout::eColorAttachmentOptimal,
+          .loadOp      = vk::AttachmentLoadOp::eClear,
+          .storeOp     = vk::AttachmentStoreOp::eStore,
+          .clearValue  = vk::ClearColorValue(-1U, -1U, -1U, -1U)
+      };
+    }
+
+    std::vector<vk::RenderingAttachmentInfo> color_attachments{
+        color_attachment_info, index_attachment_info
+    };
+
     vk::RenderingInfo scene_rendering_info{
         .renderArea           = {.offset = {.x = 0, .y = 0}, .extent = _swapchain_extent},
         .layerCount           = 1,
-        .colorAttachmentCount = 1,
-        .pColorAttachments    = &color_attachment_info,
+        .colorAttachmentCount = static_cast<uint32_t>(color_attachments.size()),
+        .pColorAttachments    = color_attachments.data(),
         .pDepthAttachment     = &depth_attachment_info,
     };
 
@@ -1362,7 +1479,8 @@ class vulkan_layer final : public ilayer {
                              ->view<components::renderer_3d, components::transform>();
     for (auto [entity, renderer, transform] : registry_view.each()) {
       _push_constants.view_projection_matrix = _view_transform * transform.world_transform();
-      command_buffer.pushConstants<PC_graphics_properties>(
+      _push_constants.entity_index           = static_cast<uint32_t>(entity);
+      command_buffer.pushConstants<push_graphics_properties>(
           _pipeline_layout,
           vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
           0,
@@ -1388,20 +1506,22 @@ class vulkan_layer final : public ilayer {
 
       auto pp_data = _vk_context->config.post_processing;
       PC_post_processing_data push_constants{
-          .time               = static_cast<float>(get_app_context()->time),
-          .frame              = static_cast<uint32_t>(get_app_context()->frame),
-          .dithering_stength  = pp_data.dithering_stength,
-          .blur_kernel_radius = pp_data.blur_kernel_radius,
-          .blur_strength      = pp_data.blur_strength,
-          .exposure           = pp_data.exposure,
-          .srgb_transform     = uint32_t(pp_data.srgb_transform),
-          .srgb_gamma         = pp_data.srgb_gamma,
-          .srgb_offset        = pp_data.srgb_offset,
-          .znear              = get_app_context()->active_camera->get_near_clip(),
+          .time                   = static_cast<float>(get_app_context()->time),
+          .frame                  = static_cast<uint32_t>(get_app_context()->frame),
+          .dithering_stength      = pp_data.dithering_stength,
+          .blur_kernel_radius     = pp_data.blur_kernel_radius,
+          .blur_strength          = pp_data.blur_strength,
+          .exposure               = pp_data.exposure,
+          .srgb_transform         = uint32_t(pp_data.srgb_transform),
+          .srgb_gamma             = pp_data.srgb_gamma,
+          .srgb_offset            = pp_data.srgb_offset,
+          .znear                  = get_app_context()->active_camera->get_near_clip(),
           // .zfar               = get_app_context()->active_camera->get_far_clip(),
-          .enable_fog         = uint32_t(pp_data.enable_fog),
-          .fog_color          = pp_data.fog_color,
-          .fog_falloff        = pp_data.fog_falloff,
+          .enable_fog             = uint32_t(pp_data.enable_fog),
+          .fog_color              = pp_data.fog_color,
+          .fog_falloff            = pp_data.fog_falloff,
+          .debug_overlay_strength = pp_data.debug_overlay_strength,
+          .overlay_type           = pp_data.overlay_enabled ? pp_data.overlay_type : 0U
       };
 
       transition_image_global_layout(
@@ -1415,9 +1535,21 @@ class vulkan_layer final : public ilayer {
           vk::PipelineStageFlagBits2::eComputeShader
       );
 
+      transition_image_global_layout(
+          _entity_index_image,
+          command_buffer,
+          layout_transition::color_attachment_write_to_shader_storage_read
+      );
+
       _pp_compute_shader.bind(command_buffer);
       _pp_compute_shader.dispatch(
           command_buffer, push_constants, 8, 8, _swapchain_extent.width, _swapchain_extent.height
+      );
+
+      transition_image_global_layout(
+          _entity_index_image,
+          command_buffer,
+          layout_transition::shader_storage_read_to_color_attachment_write
       );
 
       transition_image_global_layout(
@@ -1616,8 +1748,10 @@ class vulkan_layer final : public ilayer {
   gpu_image _depth_buffer;
   gpu_image _pp_front_image;  // FOR POST PROCESSING
   gpu_image _pp_back_image;
+  gpu_image _msaa_entity_index_image;
+  gpu_image _entity_index_image;
 
-  PC_graphics_properties _push_constants;
+  push_graphics_properties _push_constants;
   vk::raii::Pipeline _graphics_pipeline     = nullptr;
   vk::raii::PipelineLayout _pipeline_layout = nullptr;
 

@@ -46,6 +46,10 @@ struct dynamic_config {
     bool enable_fog     = true;
     glm::vec3 fog_color = {0.23F, 0.43F, 1.F};
     float fog_falloff   = 800.F;
+
+    float debug_overlay_strength = 0.5F;
+    bool overlay_enabled         = true;
+    int32_t overlay_type         = 0;
   } post_processing;
 };
 

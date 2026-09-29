@@ -31,6 +31,9 @@ struct PC_post_processing_data {
   uint32_t enable_fog;
   glm::vec3 fog_color;
   float fog_falloff;
+
+  float debug_overlay_strength;
+  uint32_t overlay_type;
 };
 
 template <typename push_constants>

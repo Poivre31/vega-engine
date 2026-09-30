@@ -56,12 +56,12 @@ class camera_layer final : public ilayer {
       _active_camera->increment_position(_camera_speed * static_cast<float>(dt) * direction);
     }
 
-    if (!key_states[SDL_SCANCODE_LALT]) {
-      auto mouse_data = get_app_context()->mouse_data;
-      double dtheta   = mouse_data.dy / static_cast<float>(get_app_context()->height)
-                        * _active_camera->get_vfov();
-      double dphi     = mouse_data.dx / static_cast<float>(get_app_context()->width)
-                        * _active_camera->get_hfov();
+    auto mouse_data = get_app_context()->mouse_data;
+    if (!mouse_data.visible) {
+      double dtheta = mouse_data.dy / static_cast<float>(get_app_context()->height)
+                      * _active_camera->get_vfov();
+      double dphi   = mouse_data.dx / static_cast<float>(get_app_context()->width)
+                      * _active_camera->get_hfov();
       _active_camera->increment_latitude_longitude(dtheta, dphi);
       SDL_SetWindowRelativeMouseMode(get_app_context()->window, true);
     } else {

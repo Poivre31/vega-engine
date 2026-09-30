@@ -13,16 +13,18 @@ class host_buffer {
  public:
   host_buffer(std::nullptr_t) {};
   host_buffer(
-      const vulkan_context& vk_context,
+      vma::raii::Allocator& allocator,
       size_t number_of_elements,
-      bool permanent,
-      bool buffer_device_adress = true
+      bool gpu_to_cpu_transfer  = false,
+      bool buffer_device_adress = true,
+      bool permanent            = true
   )
       : _size(number_of_elements * sizeof(T)),
         _number(number_of_elements),
         _permanent(permanent),
+        _gpu_to_cpu_transfer(gpu_to_cpu_transfer),
         _bda(buffer_device_adress) {
-    _create_staging_buffer(vk_context);
+    _create_staging_buffer(allocator);
     if (_staging_buffer.getAllocation().getMemoryProperties()
         & vk::MemoryPropertyFlagBits::eDeviceLocal) {
       console::get(consoles::graphics)
@@ -36,17 +38,22 @@ class host_buffer {
       if (_bda) {
         usage |= vk::BufferUsageFlagBits::eShaderDeviceAddress;
       }
+      if (_gpu_to_cpu_transfer) {
+        usage |= vk::BufferUsageFlagBits::eTransferSrc;
+      }
+
       vk::BufferCreateInfo buffer_info{.size = _size, .usage = usage};
       vma::AllocationCreateFlags allocation_flags;
       if (_permanent) {
-        allocation_flags |= vma::AllocationCreateFlagBits::eMapped;
+        allocation_flags |= vma::AllocationCreateFlagBits::eMapped
+                            | vma::AllocationCreateFlagBits::eHostAccessSequentialWrite;
       }
 
       vma::AllocationCreateInfo allocation_info{
           .flags = allocation_flags,
           .usage = vma::MemoryUsage::eAutoPreferDevice,
       };
-      _buffer = vk_context.allocator->createBuffer(buffer_info, allocation_info);
+      _buffer = allocator.createBuffer(buffer_info, allocation_info);
       if (_buffer.getAllocation().getMemoryProperties()
           & vk::MemoryPropertyFlagBits::eDeviceLocal) {
         console::get(consoles::graphics)
@@ -77,7 +84,7 @@ class host_buffer {
     uint64_t copy_size = data.size() * sizeof(T);
     if (_staged) {
       if (!*_staging_buffer) {
-        _create_staging_buffer(vk_context);
+        _create_staging_buffer(*vk_context.allocator);
         console::get(consoles::graphics)
             ->warn(
                 "Recreating a staging buffer after host_buffer creation, this is valid but it's "
@@ -102,6 +109,9 @@ class host_buffer {
   }
 
   [[nodiscard]] vma::raii::Buffer& get() { return _buffer; }
+  [[nodiscard]] vk::DescriptorBufferInfo get_descriptor_info() {
+    return {.buffer = _buffer, .offset = 0, .range = vk::WholeSize};
+  }
 
   [[nodiscard]] vk::DeviceAddress get_adress(const vulkan_context& vk_context) {
     if (!_bda) {
@@ -122,8 +132,52 @@ class host_buffer {
     return adress;
   }
 
+  void wait_storage_write_for_cpu_read(vk::raii::CommandBuffer& cmd) {
+    vk::BufferMemoryBarrier2 barrier{
+        .srcStageMask        = vk::PipelineStageFlagBits2::eComputeShader,
+        .srcAccessMask       = vk::AccessFlagBits2::eShaderStorageWrite,
+        .dstStageMask        = vk::PipelineStageFlagBits2::eHost,
+        .dstAccessMask       = vk::AccessFlagBits2::eHostRead,
+        .srcQueueFamilyIndex = vk::QueueFamilyIgnored,
+        .dstQueueFamilyIndex = vk::QueueFamilyIgnored,
+        .buffer              = _buffer,
+        .offset              = 0,
+        .size                = _size,
+    };
+    vk::DependencyInfo dependency{.bufferMemoryBarrierCount = 1, .pBufferMemoryBarriers = &barrier};
+    cmd.pipelineBarrier2(dependency);
+  }
+
+  std::vector<T>
+  read_data_from_gpu(const vulkan_context& vk_context, vk::raii::CommandBuffer& cmd) {
+    if (!_gpu_to_cpu_transfer) {
+      throw std::runtime_error("Buffer was not created with the capability to read from cpu");
+    }
+    if (_permanent) {
+      if (_staged) {
+        vk::BufferCopy2 region{.srcOffset = 0, .dstOffset = 0, .size = _size};
+        vk::CopyBufferInfo2 copy_info{
+            .srcBuffer   = _buffer,
+            .dstBuffer   = _staging_buffer,
+            .regionCount = 1,
+            .pRegions    = &region
+        };
+        cmd.copyBuffer2(copy_info);
+      }
+      if (!_mapped_data) {
+        throw std::runtime_error(
+            "The mapped data to a permanenty mapped buffer is null, this shouldn't happend, buffer "
+            "creation has probably failed."
+        );
+      }
+      return std::vector<T>(_mapped_data, _mapped_data + _number);
+    } else {
+      throw std::runtime_error("Don't read data from gpu with a non persistent buffer");
+    }
+  }
+
  private:
-  void _create_staging_buffer(const vulkan_context& vk_context) {
+  void _create_staging_buffer(vma::raii::Allocator& allocator) {
     if (*_staging_buffer) {
       return;
     }
@@ -131,20 +185,33 @@ class host_buffer {
     if (_bda) {
       usage |= vk::BufferUsageFlagBits::eShaderDeviceAddress;
     }
+    if (_gpu_to_cpu_transfer) {
+      usage |= vk::BufferUsageFlagBits::eTransferDst;
+    }
+
     vk::BufferCreateInfo staging_buffer_info{
         .size        = _size,
         .usage       = usage,
         .sharingMode = vk::SharingMode::eExclusive,
     };
-    auto allocation_flags = vma::AllocationCreateFlagBits::eHostAccessSequentialWrite
-                            | vma::AllocationCreateFlagBits::eHostAccessAllowTransferInstead;
+    vma::AllocationCreateFlags allocation_flags =
+        vma::AllocationCreateFlagBits::eHostAccessAllowTransferInstead;
+    vma::MemoryUsage memory_usage = vma::MemoryUsage::eAuto;
     if (_permanent) {
       allocation_flags |= vma::AllocationCreateFlagBits::eMapped;
     }
-    vma::AllocationCreateInfo allocation_info{
-        .flags = allocation_flags, .usage = vma::MemoryUsage::eAutoPreferHost
-    };
-    _staging_buffer = vk_context.allocator->createBuffer(staging_buffer_info, allocation_info);
+    if (_gpu_to_cpu_transfer) {
+      allocation_flags |= vma::AllocationCreateFlagBits::eHostAccessRandom;
+      memory_usage      = vma::MemoryUsage::eGpuToCpu;
+    } else {
+      allocation_flags |= vma::AllocationCreateFlagBits::eHostAccessSequentialWrite;
+      memory_usage      = vma::MemoryUsage::eCpuToGpu;
+    }
+    vma::AllocationCreateInfo allocation_info{.flags = allocation_flags, .usage = memory_usage};
+    _staging_buffer = allocator.createBuffer(staging_buffer_info, allocation_info);
+    if (_permanent && _gpu_to_cpu_transfer) {
+      _mapped_data = static_cast<T*>(_staging_buffer.getAllocation().getInfo().pMappedData);
+    }
   }
 
   vma::raii::Buffer _buffer         = nullptr;
@@ -152,8 +219,10 @@ class host_buffer {
   bool _staged{};
   bool _permanent{};
   bool _bda{};
+  bool _gpu_to_cpu_transfer{};
   size_t _size{};
   size_t _number{};
+  T* _mapped_data = nullptr;
 };
 
 }  // namespace vega

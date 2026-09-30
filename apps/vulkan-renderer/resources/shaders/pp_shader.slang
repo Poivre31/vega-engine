@@ -2,10 +2,13 @@ Texture2D<float> depth;
 Texture2D<uint2> index;
 RWTexture2D<float3> source;
 RWTexture2D<float3> destination;
+RWStructuredBuffer<uint> selected_index;
 
 struct post_processing_data {
   float time;
   uint frame;
+
+  uint2 mouse_position;
 
   float dithering_stength;
 
@@ -132,16 +135,7 @@ void computeMain(uint3 threadId: SV_DispatchThreadID) {
     color += fog;
   }
 
-  if (bool(pp.srgb_transform)) {
-    color = linear_to_srgb(pp.exposure * color);
-  }
-
-  uint seed  = seed2Dto1D(threadId.xy) + 1375423u * pp.frame;
-  color     += 0.02 * pp.dithering_stength * randFloat3(-1, 1, &seed);
-
-  if (pp.overlay_type == 0) {
-    destination[threadId.xy] = color;
-  } else {
+  if (pp.overlay_type != 0) {
     uint id = -1U;
     switch (pp.overlay_type) {
       case 1:
@@ -152,10 +146,30 @@ void computeMain(uint3 threadId: SV_DispatchThreadID) {
         break;
     };
     float3 overlay_color = select(id != -1U, randFloat3(.2, .8, id), float3(1));
-    destination[threadId.xy] =
-        ((1 - pp.debug_overlay_strength) * color + pp.debug_overlay_strength * overlay_color);
+    color                = lerp(color, overlay_color, pp.debug_overlay_strength);
   }
 
+  if (pp.mouse_position.x < width && pp.mouse_position.y < height
+      && index[threadId.xy].x == index[pp.mouse_position].x && index[pp.mouse_position].x != -1U) {
+    color = lerp(color * float3(1, .5, .5), float3(1, .5, .5), 0.05);
+  }
+
+  if (bool(pp.srgb_transform)) {
+    color = linear_to_srgb(pp.exposure * color);
+  }
+
+  uint seed  = seed2Dto1D(threadId.xy) + 1375423u * pp.frame;
+  color     += 0.02 * pp.dithering_stength * randFloat3(-1, 1, &seed);
+
+  destination[threadId.xy] = color;
+
+  if (threadId.x == 0 && threadId.y == 0) {
+    if (pp.mouse_position.x < width && pp.mouse_position.y < height) {
+      selected_index[0] = index[pp.mouse_position].x;
+    } else {
+      selected_index[0] = -1U;
+    }
+  }
   //   float4 fog = 0.9*float4(0.2,0.4,1.,1);
   // float3 dir = normalize(inVert.world_position-push_constants.camera_position);
   // return albedo * float4(light, 1)+fog*(1-exp(-depth/50))+0.01*float4(light_color *

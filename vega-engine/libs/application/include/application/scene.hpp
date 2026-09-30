@@ -212,7 +212,7 @@ class scene {
       g_materials.emplace_back(color, texture_index);
     }
     _resources.material_buffer = host_buffer<gpu_material>(
-        *_vk_context, g_materials.size(), false, true
+        *_vk_context->allocator, g_materials.size()
     );
     _resources.material_buffer.upload_data(*_vk_context, g_materials);
     // _resources.material_buffer.getAllocation().copyFromMemory(g_materials.data(), 0, size);

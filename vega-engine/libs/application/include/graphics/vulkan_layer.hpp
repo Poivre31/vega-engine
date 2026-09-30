@@ -308,6 +308,7 @@ class vulkan_layer final : public ilayer {
     _color_image             = {};
     _msaa_entity_index_image = {};
     _entity_index_image      = {};
+    _hovered_entity_buffer   = nullptr;
     _swapchain_semaphores.clear();
     _swapchain_views.clear();
     _swapchain_images.clear();
@@ -903,7 +904,10 @@ class vulkan_layer final : public ilayer {
       create_image_resources();
       create_post_processing_resources();
       _pp_compute_shader.update_descriptor_sets(
-          _device, {&_depth_buffer, &_entity_index_image}, {&_pp_front_image, &_pp_back_image}, {}
+          _device,
+          {&_depth_buffer, &_entity_index_image},
+          {&_pp_front_image, &_pp_back_image},
+          {&_hovered_entity_buffer}
       );
 
       _vk_context->pending_updates.swapchain = false;
@@ -1129,7 +1133,7 @@ class vulkan_layer final : public ilayer {
   }
 
   void create_post_processing_shader() {
-    _pp_compute_shader = compute_shader<PC_post_processing_data>(
+    _pp_compute_shader = compute_shader<pc_post_processing_data>(
         _device,
         get_app_context()->shader_modules[1],
         {
@@ -1137,8 +1141,10 @@ class vulkan_layer final : public ilayer {
             shader_storage_type::ro_image,
             shader_storage_type::rw_image,
             shader_storage_type::rw_image,
+            shader_storage_type::rw_buffer,
         }
     );
+    _hovered_entity_buffer = host_buffer<uint32_t>(_allocator, 1, true);
   }
 
   void create_command_pool() {
@@ -1281,7 +1287,10 @@ class vulkan_layer final : public ilayer {
     submit_transient_command_buffer(_graphics_queue, std::move(cmd));
 
     _pp_compute_shader.update_descriptor_sets(
-        _device, {&_depth_buffer, &_entity_index_image}, {&_pp_front_image, &_pp_back_image}, {}
+        _device,
+        {&_depth_buffer, &_entity_index_image},
+        {&_pp_front_image, &_pp_back_image},
+        {&_hovered_entity_buffer}
     );
   }
 
@@ -1505,9 +1514,14 @@ class vulkan_layer final : public ilayer {
       );
 
       auto pp_data = _vk_context->config.post_processing;
-      PC_post_processing_data push_constants{
-          .time                   = static_cast<float>(get_app_context()->time),
-          .frame                  = static_cast<uint32_t>(get_app_context()->frame),
+      auto& io     = ImGui::GetIO();
+
+      bool mouse_over_scene = get_app_context()->mouse_data.visible;
+      pc_post_processing_data push_constants{
+          .time  = static_cast<float>(get_app_context()->time),
+          .frame = static_cast<uint32_t>(get_app_context()->frame),
+          .mouse_position =mouse_over_scene ?
+              glm::vec<2, uint32_t>{static_cast<uint32_t>(io.MousePos.x), static_cast<uint32_t>(io.MousePos.y)} : glm::vec<2, uint32_t>{-1U,-1U},
           .dithering_stength      = pp_data.dithering_stength,
           .blur_kernel_radius     = pp_data.blur_kernel_radius,
           .blur_strength          = pp_data.blur_strength,
@@ -1516,7 +1530,6 @@ class vulkan_layer final : public ilayer {
           .srgb_gamma             = pp_data.srgb_gamma,
           .srgb_offset            = pp_data.srgb_offset,
           .znear                  = get_app_context()->active_camera->get_near_clip(),
-          // .zfar               = get_app_context()->active_camera->get_far_clip(),
           .enable_fog             = uint32_t(pp_data.enable_fog),
           .fog_color              = pp_data.fog_color,
           .fog_falloff            = pp_data.fog_falloff,
@@ -1545,6 +1558,9 @@ class vulkan_layer final : public ilayer {
       _pp_compute_shader.dispatch(
           command_buffer, push_constants, 8, 8, _swapchain_extent.width, _swapchain_extent.height
       );
+      _hovered_entity_buffer.wait_storage_write_for_cpu_read(command_buffer);
+      get_app_context()->mouse_data.hovered_entity_index =
+          _hovered_entity_buffer.read_data_from_gpu(*_vk_context, command_buffer).front();
 
       transition_image_global_layout(
           _entity_index_image,
@@ -1750,6 +1766,7 @@ class vulkan_layer final : public ilayer {
   gpu_image _pp_back_image;
   gpu_image _msaa_entity_index_image;
   gpu_image _entity_index_image;
+  host_buffer<uint32_t> _hovered_entity_buffer = nullptr;
 
   push_graphics_properties _push_constants;
   vk::raii::Pipeline _graphics_pipeline     = nullptr;
@@ -1761,7 +1778,7 @@ class vulkan_layer final : public ilayer {
   vk::raii::DescriptorPool _descriptor_pool            = nullptr;
   vk::raii::DescriptorSets _descriptor_sets            = nullptr;
 
-  compute_shader<PC_post_processing_data> _pp_compute_shader = nullptr;
+  compute_shader<pc_post_processing_data> _pp_compute_shader = nullptr;
 
   vk::raii::DescriptorPool _imgui_descriptor_pool = nullptr;
 

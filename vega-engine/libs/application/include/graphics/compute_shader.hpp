@@ -6,14 +6,17 @@
 
 #include "graphics.hpp"
 #include "image.hpp"  // IWYU pragma: keep
+#include "buffer.hpp"
 
 namespace vega {
 
 enum class shader_storage_type : uint8_t { ro_image, rw_image, ro_buffer, rw_buffer };
 
-struct PC_post_processing_data {
+struct pc_post_processing_data {
   float time;
   uint32_t frame;
+
+  glm::vec<2, uint32_t> mouse_position;
 
   float dithering_stength;
 
@@ -171,7 +174,7 @@ class compute_shader {
       vk::raii::Device& device,
       const std::vector<gpu_image*>& sample_images,
       const std::vector<gpu_image*>& storage_images,
-      const std::vector<vma::raii::Buffer*>& buffers
+      const std::vector<host_buffer<uint32_t>*>& buffers
   ) {
     std::vector<vk::WriteDescriptorSet> write_descriptor_sets;
     std::vector<vk::DescriptorImageInfo> sample_image_descriptors(sample_images.size());
@@ -253,15 +256,13 @@ class compute_shader {
       binding++;
     }
     binding = 0;
-    for (const auto* buffer : buffers) {
+    for (auto* buffer : buffers) {
       if (!buffer) {
         throw std::runtime_error(
             "Passed a nullptr to compute shader storage buffer descriptor set update"
         );
       }
-      buffer_descriptors[binding] = vk::DescriptorBufferInfo{
-          .buffer = *buffer, .offset = 0, .range = vk::WholeSize
-      };
+      buffer_descriptors[binding] = buffer->get_descriptor_info();
       write_descriptor_sets.emplace_back(
           vk::WriteDescriptorSet{
               .dstSet          = _descriptor_set,

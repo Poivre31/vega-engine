@@ -36,6 +36,22 @@ class entity_layer final : public vega::ilayer {
     scene.upload_material_buffer();
   }
 
+  void gui_update() noexcept final {
+    if (!_editing_transform) {
+      return;
+    }
+    ImGui::Begin("Object editor");
+    std::array<float, 3> position{
+        float(_editing_transform->position.x),
+        float(_editing_transform->position.y),
+        float(_editing_transform->position.z)
+    };
+    if (ImGui::SliderFloat3("Position", position.data(), -10, 10)) {
+      _editing_transform->position = vec3d(position[0], position[1], position[2]);
+    }
+    ImGui::End();
+  }
+
   void fixed_update(double fixed_step) noexcept final {
     auto view = get_app_context()
                     ->active_scene.registry()
@@ -48,11 +64,19 @@ class entity_layer final : public vega::ilayer {
       physics.add_force(-0.2 * velocity.velocity);
       physics.iterate_euler(fixed_step, transform, velocity);
     }
+
+    if (get_app_context()->selected_entity_data.is_selected) {
+      _editing_transform =
+          &get_app_context()->active_scene.registry()->get<vega::components::transform>(
+              entt::entity(get_app_context()->selected_entity_data.index)
+          );
+    }
   }
 
  private:
   size_t _count{};
-  vega::vega_console _console = console::create("Entity");
+  vega::components::transform* _editing_transform = nullptr;
+  vega::vega_console _console                     = console::create("Entity");
 };
 
 int main() {

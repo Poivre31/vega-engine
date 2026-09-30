@@ -49,8 +49,10 @@ class sdl_layer final : public ilayer {
 
   void update(double dt) noexcept final {
     SDL_Event event{0};
-    get_app_context()->mouse_data.dx = 0;
-    get_app_context()->mouse_data.dy = 0;
+    get_app_context()->mouse_data.dx           = 0;
+    get_app_context()->mouse_data.dy           = 0;
+    get_app_context()->mouse_data.clicked_down = false;
+    get_app_context()->mouse_data.clicked_up   = false;
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
         case (SDL_EVENT_QUIT):
@@ -73,8 +75,12 @@ class sdl_layer final : public ilayer {
               .dy = -event.motion.yrel
           };
           break;
-        // case (SDL_EVENT_MOUSE_BUTTON_DOWN):
-        //   break;
+        case (SDL_EVENT_MOUSE_BUTTON_DOWN):
+          get_app_context()->mouse_data.clicked_down = true;
+          break;
+        case (SDL_EVENT_MOUSE_BUTTON_UP):
+          get_app_context()->mouse_data.clicked_up = true;
+          break;
         case (SDL_EVENT_WINDOW_RESIZED):
           get_app_context()->width  = event.window.data1;
           get_app_context()->height = event.window.data2;
@@ -87,6 +93,15 @@ class sdl_layer final : public ilayer {
       }
       if (SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_LALT]) {
         ImGui_ImplSDL3_ProcessEvent(&event);
+        get_app_context()->mouse_data.visible = true;
+
+        uint32_t hovered_index = get_app_context()->mouse_data.hovered_entity_index;
+        if (get_app_context()->mouse_data.clicked_down && hovered_index != -1U) {
+          get_app_context()->selected_entity_data.index       = hovered_index;
+          get_app_context()->selected_entity_data.is_selected = true;
+        }
+      } else {
+        get_app_context()->mouse_data.visible = false;
       }
     }
   }

@@ -30,11 +30,20 @@ struct application_context {
 
   Camera* active_camera = nullptr;
   struct {
+    bool visible;
     float x;
     float y;
     float dx;
     float dy;
+    bool clicked_down;
+    bool clicked_up;
+    uint32_t hovered_entity_index;
   } mouse_data{};
+
+  struct {
+    bool is_selected;
+    uint32_t index;
+  } selected_entity_data{};
 
   vulkan_context vulkan;
 

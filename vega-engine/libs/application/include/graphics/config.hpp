@@ -3,7 +3,7 @@
 #include <vector>
 #include "graphics.hpp"
 #include "vulkan/vulkan.hpp"
-#include "glm.hpp"  //IWYU pragma: keep
+#include "glm.hpp"  // IWYU pragma: keep
 
 namespace vega {
 
@@ -49,7 +49,7 @@ struct dynamic_config {
 
     float debug_overlay_strength = 0.5F;
     bool overlay_enabled         = true;
-    int32_t overlay_type         = 0;
+    uint32_t overlay_type        = 0;
   } post_processing;
 };
 

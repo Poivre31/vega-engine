@@ -13,6 +13,7 @@ class host_buffer {
  public:
   host_buffer(std::nullptr_t) {};
   host_buffer(
+      vk::raii::Device& device,
       vma::raii::Allocator& allocator,
       size_t number_of_elements,
       bool gpu_to_cpu_transfer  = false,
@@ -70,7 +71,11 @@ class host_buffer {
     }
   }
 
-  void upload_data(const vulkan_context& vk_context, const std::vector<T>& data) {
+  void upload_data(
+      vma::raii::Allocator& allocator,
+      vk::raii::CommandBuffer& cmd,
+      const std::vector<T>& data
+  ) {
     if (!data.data()) {
       throw std::runtime_error("Uploading invalid data (nullptr) to buffer");
     }
@@ -84,7 +89,7 @@ class host_buffer {
     uint64_t copy_size = data.size() * sizeof(T);
     if (_staged) {
       if (!*_staging_buffer) {
-        _create_staging_buffer(*vk_context.allocator);
+        _create_staging_buffer(allocator);
         console::get(consoles::graphics)
             ->warn(
                 "Recreating a staging buffer after host_buffer creation, this is valid but it's "
@@ -93,13 +98,11 @@ class host_buffer {
             );
       }
       _staging_buffer.getAllocation().copyFromMemory(data.data(), 0, copy_size);
-      auto cmd = begin_transient_command_buffer(vk_context);
       vk::BufferCopy2 region{.srcOffset = 0, .dstOffset = 0, .size = copy_size};
       vk::CopyBufferInfo2 copy_info{
           .srcBuffer = _staging_buffer, .dstBuffer = _buffer, .regionCount = 1, .pRegions = &region
       };
       cmd.copyBuffer2(copy_info);
-      submit_transient_command_buffer(vk_context, std::move(cmd));
       if (!_permanent) {
         _staging_buffer = nullptr;
       }
@@ -138,6 +141,22 @@ class host_buffer {
         .srcAccessMask       = vk::AccessFlagBits2::eShaderStorageWrite,
         .dstStageMask        = vk::PipelineStageFlagBits2::eHost,
         .dstAccessMask       = vk::AccessFlagBits2::eHostRead,
+        .srcQueueFamilyIndex = vk::QueueFamilyIgnored,
+        .dstQueueFamilyIndex = vk::QueueFamilyIgnored,
+        .buffer              = _buffer,
+        .offset              = 0,
+        .size                = _size,
+    };
+    vk::DependencyInfo dependency{.bufferMemoryBarrierCount = 1, .pBufferMemoryBarriers = &barrier};
+    cmd.pipelineBarrier2(dependency);
+  }
+
+  void wait_cpu_write_for_storage_read(vk::raii::CommandBuffer& cmd) {
+    vk::BufferMemoryBarrier2 barrier{
+        .srcStageMask        = vk::PipelineStageFlagBits2::eHost,
+        .srcAccessMask       = vk::AccessFlagBits2::eHostWrite,
+        .dstStageMask        = vk::PipelineStageFlagBits2::eComputeShader,
+        .dstAccessMask       = vk::AccessFlagBits2::eShaderStorageRead,
         .srcQueueFamilyIndex = vk::QueueFamilyIgnored,
         .dstQueueFamilyIndex = vk::QueueFamilyIgnored,
         .buffer              = _buffer,

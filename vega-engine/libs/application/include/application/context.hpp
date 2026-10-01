@@ -37,13 +37,11 @@ struct application_context {
     float dy;
     bool clicked_down;
     bool clicked_up;
-    uint32_t hovered_entity_index;
+    uint32_t hovered_entity_index = -1U;
   } mouse_data{};
 
-  struct {
-    bool is_selected;
-    uint32_t index;
-  } selected_entity_data{};
+  uint32_t selected_entity_index = -1U;
+  bool gui_hovered               = false;
 
   vulkan_context vulkan;
 

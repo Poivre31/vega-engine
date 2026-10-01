@@ -212,9 +212,11 @@ class scene {
       g_materials.emplace_back(color, texture_index);
     }
     _resources.material_buffer = host_buffer<gpu_material>(
-        *_vk_context->allocator, g_materials.size()
+        *_vk_context->device, *_vk_context->allocator, g_materials.size()
     );
-    _resources.material_buffer.upload_data(*_vk_context, g_materials);
+    auto cmd = begin_transient_command_buffer(*_vk_context);
+    _resources.material_buffer.upload_data(*_vk_context->allocator, cmd, g_materials);
+    submit_transient_command_buffer(*_vk_context, std::move(cmd));
     // _resources.material_buffer.getAllocation().copyFromMemory(g_materials.data(), 0, size);
   }
 

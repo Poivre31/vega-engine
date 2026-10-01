@@ -217,6 +217,16 @@ class vulkan_layer final : public ilayer {
       ImGui::EndCombo();
     }
     ImGui::SliderFloat("Overlay strength", &pp->debug_overlay_strength, 0, 1);
+    if (get_app_context()->mouse_data.hovered_entity_index == -1U) {
+      ImGui::Text("Entity hovered: none");
+    } else {
+      ImGui::Text("Entity hovered: %u", get_app_context()->mouse_data.hovered_entity_index);
+    }
+    if (get_app_context()->selected_entity_index == -1U) {
+      ImGui::Text("Entity selected: none");
+    } else {
+      ImGui::Text("Entity selected: %u", get_app_context()->selected_entity_index);
+    }
 
     ImGui::End();
 
@@ -1144,7 +1154,7 @@ class vulkan_layer final : public ilayer {
             shader_storage_type::rw_buffer,
         }
     );
-    _hovered_entity_buffer = host_buffer<uint32_t>(_allocator, 1, true);
+    _hovered_entity_buffer = host_buffer<uint32_t>(_device, _allocator, 2, true);
   }
 
   void create_command_pool() {
@@ -1554,13 +1564,19 @@ class vulkan_layer final : public ilayer {
           layout_transition::color_attachment_write_to_shader_storage_read
       );
 
+      _hovered_entity_buffer.upload_data(
+          _allocator, command_buffer, {-1U, get_app_context()->selected_entity_index}
+      );
+      _hovered_entity_buffer.wait_cpu_write_for_storage_read(command_buffer);
       _pp_compute_shader.bind(command_buffer);
       _pp_compute_shader.dispatch(
           command_buffer, push_constants, 8, 8, _swapchain_extent.width, _swapchain_extent.height
       );
       _hovered_entity_buffer.wait_storage_write_for_cpu_read(command_buffer);
-      get_app_context()->mouse_data.hovered_entity_index =
-          _hovered_entity_buffer.read_data_from_gpu(*_vk_context, command_buffer).front();
+      _graphics_queue.waitIdle();  // TODO: REMOVE THIS SH*T
+      auto index_data = _hovered_entity_buffer.read_data_from_gpu(*_vk_context, command_buffer);
+      get_app_context()->mouse_data.hovered_entity_index = index_data[0];
+      get_app_context()->selected_entity_index           = index_data[1];
 
       transition_image_global_layout(
           _entity_index_image,

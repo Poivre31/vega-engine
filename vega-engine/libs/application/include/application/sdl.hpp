@@ -53,6 +53,18 @@ class sdl_layer final : public ilayer {
     get_app_context()->mouse_data.dy           = 0;
     get_app_context()->mouse_data.clicked_down = false;
     get_app_context()->mouse_data.clicked_up   = false;
+    if (!ImGui::IsWindowHovered(ImGuiHoveredFlags_AnyWindow)) {
+      get_app_context()->gui_hovered = false;
+    } else {
+      ImGuiContext* context = ImGui::GetCurrentContext();
+      if (context->HoveredWindow) {
+        get_app_context()->gui_hovered = (context->HoveredWindow->Flags
+                                          & ImGuiWindowFlags_DockNodeHost)
+                                         == 0;
+      } else {
+        get_app_context()->gui_hovered = true;
+      }
+    }
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
         case (SDL_EVENT_QUIT):
@@ -95,10 +107,18 @@ class sdl_layer final : public ilayer {
         ImGui_ImplSDL3_ProcessEvent(&event);
         get_app_context()->mouse_data.visible = true;
 
-        uint32_t hovered_index = get_app_context()->mouse_data.hovered_entity_index;
-        if (get_app_context()->mouse_data.clicked_down && hovered_index != -1U) {
-          get_app_context()->selected_entity_data.index       = hovered_index;
-          get_app_context()->selected_entity_data.is_selected = true;
+        uint32_t hovered_index   = get_app_context()->mouse_data.hovered_entity_index;
+        uint32_t& selected_index = get_app_context()->selected_entity_index;
+        if (get_app_context()->mouse_data.clicked_down && !get_app_context()->gui_hovered) {
+          if (hovered_index != -1U) {
+            if (selected_index == hovered_index && selected_index != -1U) {
+              selected_index = -1U;
+            } else {
+              selected_index = hovered_index;
+            }
+          } else {
+            selected_index = -1U;
+          }
         }
       } else {
         get_app_context()->mouse_data.visible = false;

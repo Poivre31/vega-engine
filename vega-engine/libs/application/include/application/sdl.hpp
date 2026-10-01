@@ -79,50 +79,51 @@ class sdl_layer final : public ilayer {
           }
           break;
 
-        case (SDL_EVENT_MOUSE_MOTION):
-          get_app_context()->mouse_data = {
-              .x  = event.motion.x,
-              .y  = event.motion.y,
-              .dx = -event.motion.xrel,
-              .dy = -event.motion.yrel
-          };
-          break;
+        case (SDL_EVENT_MOUSE_MOTION): {
+          auto& mouse = get_app_context()->mouse_data;
+          mouse.x     = event.motion.x;
+          mouse.y     = event.motion.y;
+          mouse.dx    = -event.motion.xrel;
+          mouse.dy    = -event.motion.yrel;
+        } break;
         case (SDL_EVENT_MOUSE_BUTTON_DOWN):
           get_app_context()->mouse_data.clicked_down = true;
           break;
         case (SDL_EVENT_MOUSE_BUTTON_UP):
           get_app_context()->mouse_data.clicked_up = true;
           break;
-        case (SDL_EVENT_WINDOW_RESIZED):
+        case (SDL_EVENT_WINDOW_RESIZED): {
           get_app_context()->width  = event.window.data1;
           get_app_context()->height = event.window.data2;
 
           get_app_context()->vulkan.pending_updates.swapchain = true;
-          break;
+        } break;
 
         default:
           break;
       }
       if (SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_LALT]) {
         ImGui_ImplSDL3_ProcessEvent(&event);
-        get_app_context()->mouse_data.visible = true;
-
-        uint32_t hovered_index   = get_app_context()->mouse_data.hovered_entity_index;
-        uint32_t& selected_index = get_app_context()->selected_entity_index;
-        if (get_app_context()->mouse_data.clicked_down && !get_app_context()->gui_hovered) {
-          if (hovered_index != -1U) {
-            if (selected_index == hovered_index && selected_index != -1U) {
-              selected_index = -1U;
-            } else {
-              selected_index = hovered_index;
-            }
-          } else {
-            selected_index = -1U;
-          }
-        }
-      } else {
-        get_app_context()->mouse_data.visible = false;
       }
+    }
+    if (SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_LALT]) {
+      get_app_context()->mouse_data.visible = true;
+
+      uint32_t hovered_index   = get_app_context()->mouse_data.hovered_entity_index;
+      uint32_t& selected_index = get_app_context()->selected_entity_index;
+      if (get_app_context()->mouse_data.clicked_down && !get_app_context()->gui_hovered) {
+        if (hovered_index != -1U) {
+          if (selected_index == hovered_index && selected_index != -1U) {
+            selected_index = -1U;
+          } else {
+            selected_index = hovered_index;
+          }
+        } else {
+          selected_index = -1U;
+        }
+      }
+    } else {
+      get_app_context()->mouse_data.visible = false;
     }
   }
 

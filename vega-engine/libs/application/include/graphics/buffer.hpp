@@ -4,7 +4,6 @@
 
 #include "graphics.hpp"
 #include "context.hpp"
-#include "single_command_buffer.hpp"
 
 namespace vega {
 
@@ -136,11 +135,15 @@ class host_buffer {
   }
 
   void wait_storage_write_for_cpu_read(vk::raii::CommandBuffer& cmd) {
+    vk::PipelineStageFlags2 dst_stage_mask = _staged ? vk::PipelineStageFlagBits2::eTransfer
+                                                     : vk::PipelineStageFlagBits2::eHost;
+    vk::AccessFlagBits2 dst_access_mask    = _staged ? vk::AccessFlagBits2::eTransferRead
+                                                     : vk::AccessFlagBits2::eHostRead;
     vk::BufferMemoryBarrier2 barrier{
         .srcStageMask        = vk::PipelineStageFlagBits2::eComputeShader,
         .srcAccessMask       = vk::AccessFlagBits2::eShaderStorageWrite,
-        .dstStageMask        = vk::PipelineStageFlagBits2::eHost,
-        .dstAccessMask       = vk::AccessFlagBits2::eHostRead,
+        .dstStageMask        = dst_stage_mask,
+        .dstAccessMask       = dst_access_mask,
         .srcQueueFamilyIndex = vk::QueueFamilyIgnored,
         .dstQueueFamilyIndex = vk::QueueFamilyIgnored,
         .buffer              = _buffer,
@@ -152,9 +155,13 @@ class host_buffer {
   }
 
   void wait_cpu_write_for_storage_read(vk::raii::CommandBuffer& cmd) {
+    vk::PipelineStageFlags2 src_stage_mask = _staged ? vk::PipelineStageFlagBits2::eTransfer
+                                                     : vk::PipelineStageFlagBits2::eHost;
+    vk::AccessFlagBits2 src_access_mask    = _staged ? vk::AccessFlagBits2::eTransferWrite
+                                                     : vk::AccessFlagBits2::eHostWrite;
     vk::BufferMemoryBarrier2 barrier{
-        .srcStageMask        = vk::PipelineStageFlagBits2::eHost,
-        .srcAccessMask       = vk::AccessFlagBits2::eHostWrite,
+        .srcStageMask        = src_stage_mask,
+        .srcAccessMask       = src_access_mask,
         .dstStageMask        = vk::PipelineStageFlagBits2::eComputeShader,
         .dstAccessMask       = vk::AccessFlagBits2::eShaderStorageRead,
         .srcQueueFamilyIndex = vk::QueueFamilyIgnored,
@@ -167,8 +174,7 @@ class host_buffer {
     cmd.pipelineBarrier2(dependency);
   }
 
-  std::vector<T>
-  read_data_from_gpu(const vulkan_context& vk_context, vk::raii::CommandBuffer& cmd) {
+  void transfer_data_gpu_to_cpu(const vulkan_context& vk_context, vk::raii::CommandBuffer& cmd) {
     if (!_gpu_to_cpu_transfer) {
       throw std::runtime_error("Buffer was not created with the capability to read from cpu");
     }
@@ -182,7 +188,38 @@ class host_buffer {
             .pRegions    = &region
         };
         cmd.copyBuffer2(copy_info);
+        vk::BufferMemoryBarrier2 barrier{
+            .srcStageMask        = vk::PipelineStageFlagBits2::eTransfer,
+            .srcAccessMask       = vk::AccessFlagBits2::eTransferWrite,
+            .dstStageMask        = vk::PipelineStageFlagBits2::eHost,
+            .dstAccessMask       = vk::AccessFlagBits2::eHostRead,
+            .srcQueueFamilyIndex = vk::QueueFamilyIgnored,
+            .dstQueueFamilyIndex = vk::QueueFamilyIgnored,
+            .buffer              = _staging_buffer,
+            .offset              = 0,
+            .size                = _size,
+        };
+        vk::DependencyInfo dependency{
+            .bufferMemoryBarrierCount = 1, .pBufferMemoryBarriers = &barrier
+        };
+        cmd.pipelineBarrier2(dependency);
       }
+      if (!_mapped_data) {
+        throw std::runtime_error(
+            "The mapped data to a permanenty mapped buffer is null, this shouldn't happend, buffer "
+            "creation has probably failed."
+        );
+      }
+    } else {
+      throw std::runtime_error("Don't read data from gpu with a non persistent buffer");
+    }
+  }
+
+  std::vector<T> get_transfered_data() {
+    if (!_gpu_to_cpu_transfer) {
+      throw std::runtime_error("Buffer was not created with the capability to read from cpu");
+    }
+    if (_permanent) {
       if (!_mapped_data) {
         throw std::runtime_error(
             "The mapped data to a permanenty mapped buffer is null, this shouldn't happend, buffer "
@@ -215,7 +252,7 @@ class host_buffer {
     };
     vma::AllocationCreateFlags allocation_flags =
         vma::AllocationCreateFlagBits::eHostAccessAllowTransferInstead;
-    vma::MemoryUsage memory_usage = vma::MemoryUsage::eAuto;
+    vma::MemoryUsage memory_usage = vma::MemoryUsage::eAutoPreferDevice;
     if (_permanent) {
       allocation_flags |= vma::AllocationCreateFlagBits::eMapped;
     }
@@ -226,7 +263,11 @@ class host_buffer {
       allocation_flags |= vma::AllocationCreateFlagBits::eHostAccessSequentialWrite;
       memory_usage      = vma::MemoryUsage::eCpuToGpu;
     }
-    vma::AllocationCreateInfo allocation_info{.flags = allocation_flags, .usage = memory_usage};
+    vma::AllocationCreateInfo allocation_info{
+        .flags         = allocation_flags,
+        .usage         = memory_usage,
+        .requiredFlags = vk::MemoryPropertyFlagBits::eHostCoherent,
+    };
     _staging_buffer = allocator.createBuffer(staging_buffer_info, allocation_info);
     if (_permanent && _gpu_to_cpu_transfer) {
       _mapped_data = static_cast<T*>(_staging_buffer.getAllocation().getInfo().pMappedData);

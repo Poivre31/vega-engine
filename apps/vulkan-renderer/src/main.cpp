@@ -14,7 +14,7 @@ class entity_layer final : public vega::ilayer {
   using vega::ilayer::ilayer;
 
   void assets_init() noexcept final {
-    _count      = 20;
+    _count      = 30000;
     auto& scene = get_app_context()->active_scene;
 
     for (size_t i = 0; i < _count; i++) {

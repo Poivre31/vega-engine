@@ -37,6 +37,8 @@ struct pc_post_processing_data {
 
   float debug_overlay_strength;
   uint32_t overlay_type;
+
+  vk::DeviceAddress selected_index_buffer;
 };
 
 template <typename push_constants>

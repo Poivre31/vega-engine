@@ -2,7 +2,7 @@ Texture2D<float> depth;
 Texture2D<uint2> index;
 RWTexture2D<float3> source;
 RWTexture2D<float3> destination;
-RWStructuredBuffer<uint> selected_index;
+// RWStructuredBuffer<uint> selected_index;
 
 struct post_processing_data {
   float time;
@@ -29,6 +29,8 @@ struct post_processing_data {
 
   float debug_overlay_strength;
   uint overlay_type;
+
+  uint* selected_index;
 }
 
 [vk::push_constant]
@@ -153,7 +155,7 @@ void computeMain(uint3 threadId: SV_DispatchThreadID) {
       && index[threadId.xy].x == index[pp.mouse_position].x && index[pp.mouse_position].x != -1U) {
     color = lerp(color * float3(1, .8, .8), float3(1, .7, .7), 0.02);
   }
-  if (index[threadId.xy].x == selected_index[1] && selected_index[1] != -1U) {
+  if (index[threadId.xy].x == pp.selected_index[1] && pp.selected_index[1] != -1U) {
     color = lerp(color * float3(.9), float3(1), 0.02);
   }
 
@@ -168,9 +170,9 @@ void computeMain(uint3 threadId: SV_DispatchThreadID) {
 
   if (threadId.x == 0 && threadId.y == 0) {
     if (pp.mouse_position.x < width && pp.mouse_position.y < height) {
-      selected_index[0] = index[pp.mouse_position].x;
+      pp.selected_index[0] = index[pp.mouse_position].x;
     } else {
-      selected_index[0] = -1U;
+      pp.selected_index[0] = -1U;
     }
   }
   //   float4 fog = 0.9*float4(0.2,0.4,1.,1);

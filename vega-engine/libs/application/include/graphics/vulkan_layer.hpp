@@ -318,7 +318,7 @@ class vulkan_layer final : public ilayer {
     _color_image             = {};
     _msaa_entity_index_image = {};
     _entity_index_image      = {};
-    _hovered_entity_buffer   = nullptr;
+    _hovered_entity_buffer.clear();
     _swapchain_semaphores.clear();
     _swapchain_views.clear();
     _swapchain_images.clear();
@@ -914,10 +914,7 @@ class vulkan_layer final : public ilayer {
       create_image_resources();
       create_post_processing_resources();
       _pp_compute_shader.update_descriptor_sets(
-          _device,
-          {&_depth_buffer, &_entity_index_image},
-          {&_pp_front_image, &_pp_back_image},
-          {&_hovered_entity_buffer}
+          _device, {&_depth_buffer, &_entity_index_image}, {&_pp_front_image, &_pp_back_image}, {}
       );
 
       _vk_context->pending_updates.swapchain = false;
@@ -1151,10 +1148,13 @@ class vulkan_layer final : public ilayer {
             shader_storage_type::ro_image,
             shader_storage_type::rw_image,
             shader_storage_type::rw_image,
-            shader_storage_type::rw_buffer,
         }
     );
-    _hovered_entity_buffer = host_buffer<uint32_t>(_device, _allocator, 2, true);
+    _hovered_entity_buffer.clear();
+    _hovered_entity_buffer.reserve(vulkan_config::frames_in_flight);
+    for (size_t i = 0; i < vulkan_config::frames_in_flight; i++) {
+      _hovered_entity_buffer.emplace_back(_device, _allocator, 2, true);
+    }
   }
 
   void create_command_pool() {
@@ -1297,10 +1297,7 @@ class vulkan_layer final : public ilayer {
     submit_transient_command_buffer(_graphics_queue, std::move(cmd));
 
     _pp_compute_shader.update_descriptor_sets(
-        _device,
-        {&_depth_buffer, &_entity_index_image},
-        {&_pp_front_image, &_pp_back_image},
-        {&_hovered_entity_buffer}
+        _device, {&_depth_buffer, &_entity_index_image}, {&_pp_front_image, &_pp_back_image}, {}
     );
   }
 
@@ -1526,12 +1523,17 @@ class vulkan_layer final : public ilayer {
       auto pp_data = _vk_context->config.post_processing;
       auto& io     = ImGui::GetIO();
 
-      bool mouse_over_scene = get_app_context()->mouse_data.visible;
+      auto mouse            = get_app_context()->mouse_data;
+      bool mouse_over_scene = mouse.visible;
       pc_post_processing_data push_constants{
           .time  = static_cast<float>(get_app_context()->time),
           .frame = static_cast<uint32_t>(get_app_context()->frame),
-          .mouse_position =mouse_over_scene ?
-              glm::vec<2, uint32_t>{static_cast<uint32_t>(io.MousePos.x), static_cast<uint32_t>(io.MousePos.y)} : glm::vec<2, uint32_t>{-1U,-1U},
+          .mouse_position =
+              mouse_over_scene
+                  ? glm::vec<
+                        2,
+                        uint32_t>{static_cast<uint32_t>(mouse.x), static_cast<uint32_t>(mouse.y)}
+                  : glm::vec<2, uint32_t>{-1U, -1U},
           .dithering_stength      = pp_data.dithering_stength,
           .blur_kernel_radius     = pp_data.blur_kernel_radius,
           .blur_strength          = pp_data.blur_strength,
@@ -1544,7 +1546,8 @@ class vulkan_layer final : public ilayer {
           .fog_color              = pp_data.fog_color,
           .fog_falloff            = pp_data.fog_falloff,
           .debug_overlay_strength = pp_data.debug_overlay_strength,
-          .overlay_type           = pp_data.overlay_enabled ? pp_data.overlay_type : 0U
+          .overlay_type           = pp_data.overlay_enabled ? pp_data.overlay_type : 0U,
+          .selected_index_buffer  = _hovered_entity_buffer[_frame_index].get_adress(*_vk_context),
       };
 
       transition_image_global_layout(
@@ -1564,19 +1567,16 @@ class vulkan_layer final : public ilayer {
           layout_transition::color_attachment_write_to_shader_storage_read
       );
 
-      _hovered_entity_buffer.upload_data(
+      _hovered_entity_buffer[_frame_index].upload_data(
           _allocator, command_buffer, {-1U, get_app_context()->selected_entity_index}
       );
-      _hovered_entity_buffer.wait_cpu_write_for_storage_read(command_buffer);
+      _hovered_entity_buffer[_frame_index].wait_cpu_write_for_storage_read(command_buffer);
       _pp_compute_shader.bind(command_buffer);
       _pp_compute_shader.dispatch(
           command_buffer, push_constants, 8, 8, _swapchain_extent.width, _swapchain_extent.height
       );
-      _hovered_entity_buffer.wait_storage_write_for_cpu_read(command_buffer);
-      _graphics_queue.waitIdle();  // TODO: REMOVE THIS SH*T
-      auto index_data = _hovered_entity_buffer.read_data_from_gpu(*_vk_context, command_buffer);
-      get_app_context()->mouse_data.hovered_entity_index = index_data[0];
-      get_app_context()->selected_entity_index           = index_data[1];
+      _hovered_entity_buffer[_frame_index].wait_storage_write_for_cpu_read(command_buffer);
+      _hovered_entity_buffer[_frame_index].transfer_data_gpu_to_cpu(*_vk_context, command_buffer);
 
       transition_image_global_layout(
           _entity_index_image,
@@ -1692,6 +1692,14 @@ class vulkan_layer final : public ilayer {
       throw std::runtime_error("Waiting for fence failed: " + vk::to_string(fence_result));
     }
 
+    auto index_data = _hovered_entity_buffer.at(_frame_index).get_transfered_data();
+    get_app_context()->mouse_data.hovered_entity_index = index_data[0];
+    _console->info(
+        "hovered: {}, visible: {}",
+        get_app_context()->mouse_data.hovered_entity_index,
+        get_app_context()->mouse_data.visible
+    );
+
     auto [result, image_index] = _swapchain.acquireNextImage(
         std::numeric_limits<uint64_t>::max(),
         *_presentation_semaphores.at(_frame_index),
@@ -1782,7 +1790,7 @@ class vulkan_layer final : public ilayer {
   gpu_image _pp_back_image;
   gpu_image _msaa_entity_index_image;
   gpu_image _entity_index_image;
-  host_buffer<uint32_t> _hovered_entity_buffer = nullptr;
+  std::vector<host_buffer<uint32_t>> _hovered_entity_buffer;
 
   push_graphics_properties _push_constants;
   vk::raii::Pipeline _graphics_pipeline     = nullptr;

@@ -1,15 +1,18 @@
 #pragma once
 #include <math/vec.hpp>
+#include <glm/gtx/euler_angles.hpp>
 
 namespace vega::components {
 
 struct transform {
   math::vec3d position;
   math::vec3d scale = math::vec3d(1.F);
+  math::vec3d rotation;
 
   [[nodiscard]] glm::mat4x4 world_transform() const {
     auto mat = glm::mat4x4(1.F);
     mat      = glm::translate(mat, math::vec3d_to_glm_f(position));
+    mat      = mat * glm::eulerAngleZXY(float(rotation.z), float(rotation.x), float(rotation.y));
     mat      = glm::scale(mat, math::vec3d_to_glm_f(scale));
 
     return mat;

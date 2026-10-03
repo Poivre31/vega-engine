@@ -1694,11 +1694,6 @@ class vulkan_layer final : public ilayer {
 
     auto index_data = _hovered_entity_buffer.at(_frame_index).get_transfered_data();
     get_app_context()->mouse_data.hovered_entity_index = index_data[0];
-    _console->info(
-        "hovered: {}, visible: {}",
-        get_app_context()->mouse_data.hovered_entity_index,
-        get_app_context()->mouse_data.visible
-    );
 
     auto [result, image_index] = _swapchain.acquireNextImage(
         std::numeric_limits<uint64_t>::max(),

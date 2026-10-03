@@ -66,6 +66,23 @@ class entity_layer final : public vega::ilayer {
           )) {
         _editing_transform->scale = vec3d(scale[0], scale[1], scale[2]);
       }
+
+      std::array<float, 3> rotation{
+          float(_editing_transform->rotation.x),
+          float(_editing_transform->rotation.y),
+          float(_editing_transform->rotation.z)
+      };
+      if (ImGui::DragFloat3(
+              "Rotation",
+              rotation.data(),
+              0.1F,
+              0,
+              2 * vega::math::constants::pi,
+              nullptr,
+              ImGuiSliderFlags_NoRoundToFormat | ImGuiSliderFlags_WrapAround
+          )) {
+        _editing_transform->rotation = vec3d(rotation[0], rotation[1], rotation[2]);
+      }
     }
     ImGui::End();
   }

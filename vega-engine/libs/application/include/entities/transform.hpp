@@ -12,7 +12,7 @@ struct transform {
   [[nodiscard]] glm::mat4x4 world_transform() const {
     auto mat = glm::mat4x4(1.F);
     mat      = glm::translate(mat, math::vec3d_to_glm_f(position));
-    mat      = mat * glm::eulerAngleZXY(float(rotation.z), float(rotation.x), float(rotation.y));
+    mat      = mat * glm::eulerAngleZYX(float(rotation.z), float(rotation.x), float(rotation.y));
     mat      = glm::scale(mat, math::vec3d_to_glm_f(scale));
 
     return mat;

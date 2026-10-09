@@ -1,7 +1,7 @@
 
 struct PushConstants {
-  //   float4x4 object_matrix;
   float4x4 view_projection_matrix;
+  float4x4 object_matrix;
   uint entity_index;
   Material* materials;
   uint32_t material_count;
@@ -21,7 +21,7 @@ struct Material {
 
 static float3 light_dir     = float3(-0.2, -0.3, -1);
 static float3 light_color   = float3(1., 0.8, 0.6);
-static float3 ambient_color = float3(0.03, 0.08, 0.2);
+static float3 ambient_color = float3(0.03, 0.08, 0.2) * 0;
 
 struct VSInput {
   float3 position;
@@ -68,15 +68,18 @@ float4 linear_to_srgb(float4 x) {
 VertexOutput vertMain(VSInput vertex) {
   VertexOutput output;
   output.position = float4(vertex.position, 1);
-  output.position = mul(push_constants.view_projection_matrix, output.position);
-  output.normal   = vertex.normal;
-  output.uv       = vertex.uv;
+  output.position = mul(
+      mul(push_constants.view_projection_matrix, push_constants.object_matrix), output.position
+  );
+  float3x3 scale_rotation_matrix = float3x3(push_constants.object_matrix);
+  output.normal                  = normalize(mul(scale_rotation_matrix, vertex.normal));
+  output.uv                      = vertex.uv;
   // if(vertex.material_id<push_constants.material_count) {
   //   output.material = Material(float3(0,0,1),0);
   // } else {
   //   output.material = Material(1,0);
   // }
-  output.material = push_constants.materials[vertex.material_id];
+  output.material                = push_constants.materials[vertex.material_id];
   // if(pushConstants.culled) {
   //     output.color *= float3(1.0,0.3,0.2);
   // }

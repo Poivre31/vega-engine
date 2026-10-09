@@ -153,10 +153,10 @@ void computeMain(uint3 threadId: SV_DispatchThreadID) {
 
   if (pp.mouse_position.x < width && pp.mouse_position.y < height
       && index[threadId.xy].x == index[pp.mouse_position].x && index[pp.mouse_position].x != -1U) {
-    color = lerp(color * float3(1, .8, .8), float3(1, .7, .7), 0.02);
+    color = lerp(color * float3(1, .9, .9), float3(1, .7, .7), 0.01);
   }
   if (index[threadId.xy].x == pp.selected_index[1] && pp.selected_index[1] != -1U) {
-    color = lerp(color * float3(.9), float3(1), 0.02);
+    color = lerp(color * float3(.9), float3(1), 0.01);
   }
 
   if (bool(pp.srgb_transform)) {

@@ -25,6 +25,7 @@ namespace vega {
 
 struct push_graphics_properties {
   glm::mat4x4 view_projection_matrix{};
+  glm::mat4x4 object_matrix{};
   uint32_t entity_index{};
   vk::DeviceAddress material_buffer{};
   uint32_t material_count{};
@@ -271,10 +272,11 @@ class vulkan_layer final : public ilayer {
     }
     try {
       if (get_app_context()->active_camera) {
-        _view_transform = get_app_context()->active_camera->get_view_projection_matrix();
+        _push_constants.view_projection_matrix =
+            get_app_context()->active_camera->get_view_projection_matrix();
       } else {
         throw std::runtime_error("No active camera set");
-        _view_transform = glm::mat4x4{1.F};
+        _push_constants.view_projection_matrix = glm::mat4x4{1.F};
       }
 
       _push_constants.material_buffer =
@@ -1494,8 +1496,8 @@ class vulkan_layer final : public ilayer {
                              ->active_scene.registry()
                              ->view<components::renderer_3d, components::transform>();
     for (auto [entity, renderer, transform] : registry_view.each()) {
-      _push_constants.view_projection_matrix = _view_transform * transform.world_transform();
-      _push_constants.entity_index           = static_cast<uint32_t>(entity);
+      _push_constants.object_matrix = transform.world_transform();
+      _push_constants.entity_index  = static_cast<uint32_t>(entity);
       command_buffer.pushConstants<push_graphics_properties>(
           _pipeline_layout,
           vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment,
@@ -1805,8 +1807,6 @@ class vulkan_layer final : public ilayer {
   uint32_t _frame_index = 0;
   std::vector<vk::raii::Semaphore> _presentation_semaphores;
   std::vector<vk::raii::Fence> _draw_fences;
-
-  glm::mat4x4 _view_transform{1.F};
 
   vk::Rect2D _rect{};
 };

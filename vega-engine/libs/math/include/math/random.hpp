@@ -67,7 +67,7 @@ class random {
   static vec3<T> in_ball(T r) {
     return spherical_to_cartesian(
         vec3<T>{
-            r * std::sqrt(uniform(T(0), T(1))),
+            r * std::cbrt(uniform(T(0), T(1))),
             std::acos(uniform(T(-1), T(1))),
             uniform(T(0), T(2 * constants::pi))
         }

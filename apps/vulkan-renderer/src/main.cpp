@@ -14,7 +14,7 @@ class entity_layer final : public vega::ilayer {
   using vega::ilayer::ilayer;
 
   void assets_init() noexcept final {
-    _count      = 30000;
+    _count      = 1000;
     auto& scene = get_app_context()->active_scene;
 
     for (size_t i = 0; i < _count; i++) {
@@ -38,7 +38,88 @@ class entity_layer final : public vega::ilayer {
 
   void gui_update() noexcept final {
     ImGui::Begin("Object editor");
+    ImGui::Text(
+        "Number of objects: %zu",
+        get_app_context()->active_scene.registry()->view<entt::entity>()->size()
+    );
+    ImGui::Separator();
+    if (ImGui::Button("Create object")) {
+      vega::components::transform _transform;
+      if (_editing_transform) {
+        _transform = *_editing_transform;
+      }
+      auto entity = vega::add_game_object_3d(
+          get_app_context()->active_scene,
+          _transform,
+          {},
+          vega::components::physics(1.),
+          vega::meshes::primitives::cube,
+          vega::textures::m57
+      );
+      get_app_context()->active_scene.update_texture_descriptor();
+      get_app_context()->active_scene.upload_material_buffer();
+      get_app_context()->selected_entity_index = static_cast<uint64_t>(entity);
+      _editing_transform =
+          &get_app_context()->active_scene.registry()->get<vega::components::transform>(entity);
+    }
+    static bool random_objects_popup = false;
+    if (ImGui::Button("Create random objects")) {
+      random_objects_popup = true;
+    }
+    if (random_objects_popup) {
+      ImGui::OpenPopup("Random objects settings");
+      if (ImGui::BeginPopupModal("Random objects settings")) {
+        static int number_objects      = 1;
+        static float objects_scale     = 1.F;
+        static float objects_max_speed = 1.F;
+        static std::array<float, 3> objects_origin{};
+        ImGui::Text("Number of objects: ");
+        ImGui::SliderInt(
+            "##Number of objects", &number_objects, 1, 10000, nullptr, ImGuiSliderFlags_Logarithmic
+        );
+        ImGui::DragFloat3(
+            "Position",
+            objects_origin.data(),
+            1.F,
+            -10.F,
+            10.F,
+            nullptr,
+            ImGuiSliderFlags_NoRoundToFormat
+        );
+        ImGui::SliderFloat(
+            "Scale", &objects_scale, 0.01, 100., nullptr, ImGuiSliderFlags_Logarithmic
+        );
+        ImGui::SliderFloat("Max velocity", &objects_max_speed, 0.0, 10.);
+        if (ImGui::Button("Create")) {
+          for (size_t i = 0; i < number_objects; i++) {
+            vega::add_game_object_3d(
+                get_app_context()->active_scene,
+                {.position = vec3d(objects_origin[0], objects_origin[1], objects_origin[2]),
+                 .scale    = vec3d(objects_scale)},
+                {.velocity = random::in_ball(double(objects_max_speed))},
+                vega::components::physics(1.),
+                vega::meshes::primitives::cube,
+                vega::textures::m57
+            );
+          }
+          get_app_context()->active_scene.update_texture_descriptor();
+          get_app_context()->active_scene.upload_material_buffer();
+          random_objects_popup = false;
+        }
+        ImGui::EndPopup();
+      }
+    }
+    if (ImGui::Button("Destroy all objects")) {
+      vega::destroy_all_objects(get_app_context());
+    }
     if (_editing_transform) {
+      if (ImGui::Button("Destroy object")) {
+        vega::destroy_object(
+            get_app_context(), entt::entity(get_app_context()->selected_entity_index)
+        );
+      }
+      ImGui::Separator();
+      ImGui::Text("Transform");
       std::array<float, 3> position{
           float(_editing_transform->position.x),
           float(_editing_transform->position.y),
@@ -75,7 +156,7 @@ class entity_layer final : public vega::ilayer {
       if (ImGui::DragFloat3(
               "Rotation",
               rotation.data(),
-              0.1F,
+              0.2F,
               0,
               2 * vega::math::constants::pi,
               nullptr,

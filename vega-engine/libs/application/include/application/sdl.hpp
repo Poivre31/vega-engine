@@ -65,6 +65,9 @@ class sdl_layer final : public ilayer {
         get_app_context()->gui_hovered = true;
       }
     }
+    if (ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel)) {
+      get_app_context()->gui_hovered = true;
+    }
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
         case (SDL_EVENT_QUIT):
@@ -113,9 +116,11 @@ class sdl_layer final : public ilayer {
       uint32_t& selected_index = get_app_context()->selected_entity_index;
       if (get_app_context()->mouse_data.clicked_down && !get_app_context()->gui_hovered) {
         if (hovered_index != -1U) {
+          // UNSELECT IF ALREADY SELECTED
           if (selected_index == hovered_index && selected_index != -1U) {
             selected_index = -1U;
           } else {
+            // ELSE SELECT
             selected_index = hovered_index;
           }
         } else {

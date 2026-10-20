@@ -147,7 +147,7 @@ void computeMain(uint3 threadId: SV_DispatchThreadID) {
         id = index[threadId.xy].y;
         break;
     };
-    float3 overlay_color = select(id != -1U, randFloat3(.2, .8, id), float3(1));
+    float3 overlay_color = select(id != -1U, randFloat3(.1, .9, id), float3(1));
     color                = lerp(color, overlay_color, pp.debug_overlay_strength);
   }
 

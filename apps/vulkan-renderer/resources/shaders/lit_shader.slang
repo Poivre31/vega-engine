@@ -21,7 +21,7 @@ struct Material {
 
 static float3 light_dir     = float3(-0.2, -0.3, -1);
 static float3 light_color   = float3(1., 0.8, 0.6);
-static float3 ambient_color = float3(0.03, 0.08, 0.2) * 0;
+static float3 ambient_color = float3(0.03, 0.08, 0.2);
 
 struct VSInput {
   float3 position;

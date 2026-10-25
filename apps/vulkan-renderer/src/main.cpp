@@ -98,8 +98,7 @@ class entity_layer final : public vega::ilayer {
                  .scale    = vec3d(objects_scale)},
                 {.velocity = random::in_ball(double(objects_max_speed))},
                 vega::components::physics(1.),
-                vega::meshes::primitives::cube,
-                vega::textures::m57
+                vega::meshes::sponza
             );
           }
           get_app_context()->active_scene.update_texture_descriptor();

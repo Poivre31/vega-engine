@@ -7,8 +7,9 @@ namespace vega {
 
 class mesh_3D;
 struct model_info {
+  std::string name;
   std::string object_folder;
-  std::string mesh_name;
+  std::string file_name;
   float scale             = 1.F;
   bool z_is_up            = true;
   bool reverse_front_face = false;
@@ -19,35 +20,15 @@ namespace meshes {
 
 enum class primitives : uint8_t { cube };
 
-// const model_info viking{
-//     .object_folder      = "resources/models/",
-//     .mesh_name          = "viking_room.obj",
-//     .scale              = 1.F,
-//     .z_is_up            = true,
-//     .reverse_front_face = true,
-// };
-
-// const model_info tank{
-//     .object_folder      = "resources/models/t34/",
-//     .mesh_name          = "t34.obj",
-//     .scale              = 2.F,
-//     .z_is_up            = false,
-//     .reverse_front_face = false,
-// };
-
 model_info sponza{
+    .name          = "Sponza",
     .object_folder = "resources/models/sponza/",
-    .mesh_name     = "sponza.obj",
+    .file_name     = "sponza.obj",
     .scale         = 1.F / 200,
     .z_is_up       = false,
 };
 
-// const model_info tyra{
-//     .object_folder = "resources/models/",
-//     .mesh_name     = "tyra.obj",
-//     .scale         = 1.F,
-//     .z_is_up       = false,
-// };
+const std::unordered_map<std::string, model_info*> imports{{sponza.name, &sponza}};
 
 }  // namespace meshes
 }  // namespace vega

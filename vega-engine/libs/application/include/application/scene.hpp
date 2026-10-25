@@ -96,7 +96,7 @@ class scene {
 
     if (!info.handle.valid) {
       auto [vertices, obj_materials] = load_object(
-          info.object_folder + info.mesh_name, info.scale, info.z_is_up, info.reverse_front_face
+          info.object_folder + info.file_name, info.scale, info.z_is_up, info.reverse_front_face
       );
 
       if (!obj_materials.empty()) {
@@ -150,7 +150,7 @@ class scene {
 
     if (!info.handle.valid) {
       auto [vertices, _] = load_object(
-          info.object_folder + info.mesh_name, info.scale, info.z_is_up, info.reverse_front_face
+          info.object_folder + info.file_name, info.scale, info.z_is_up, info.reverse_front_face
       );
 
       for (auto& vertex : vertices) {
